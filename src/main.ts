@@ -10,5 +10,6 @@ window.onload = () => {
         (new Config()).push("canvas_width", "256")
                       .push("canvas_height", "192") 
                       .push("framerate", "60")
+                      .push("asset_path", "assets/assets.json")
     )).run(new GameScene())
 }

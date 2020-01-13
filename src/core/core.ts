@@ -22,7 +22,9 @@ class Core {
     constructor(conf : Config) {
 
         // Create an asset pack
-        this.assets = new AssetPack(null)
+        this.assets = new AssetPack(
+            conf.getParam("asset_path", "null")
+        );
 
         // Create a canvas
         this.canvas = new Canvas(
@@ -50,8 +52,37 @@ class Core {
     }
 
 
+    // Draw the loading screen
+    public drawLoadingScreen(c : Canvas) {
+
+        let barWidth = c.getWidth() / 4;
+        let barHeight = barWidth / 8;
+    
+        // Black background
+        c.clear(0);
+    
+        let t = this.assets.getLoadingRatio();
+        let x = c.getWidth()/2 - barWidth/2;
+        let y = c.getHeight()/2 - barHeight/2;
+
+        x |= 0;
+        y |= 0;
+    
+        // Draw outlines
+        c.setColor(255);
+        c.fillRect(x-2, y-2, barWidth+4, barHeight+4);
+        c.setColor(0);
+        c.fillRect(x-1, y-1, barWidth+2, barHeight+2);
+    
+        // Draw bar
+        let w = (barWidth*t) | 0;
+        c.setColor(255);
+        c.fillRect(x, y, w, barHeight);
+    }
+
+
     // The main loop
-    loop(ts : number) {
+    public loop(ts : number) {
 
         // In the case refresh rate gets too low,
         // we don't want the game update its logic
@@ -103,7 +134,7 @@ class Core {
             else {
 
                 // Draw the loading screen
-                //this.drawLoadingScreen(this.canvas);
+                this.drawLoadingScreen(this.canvas);
             }
         }
 
@@ -118,7 +149,7 @@ class Core {
 
 
     // Run the application
-    run(initialScene : Scene) {
+    public run(initialScene : Scene) {
 
         this.activeScene = initialScene;
 

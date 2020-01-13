@@ -1,0 +1,15 @@
+{
+    "bitmapPath" : "assets/bitmaps/",
+    "bitmaps" : [
+        {"name": "font",  "path": "font.png"},
+
+        {"name": "floor",  "path": "floor.png"},
+        {"name": "sky",  "path": "sky.png"},
+        {"name": "sun",  "path": "sun.png"},
+        {"name": "mountainsBack",  "path": "mountains_back.png"},
+        {"name": "mountainsFront",  "path": "mountains_front.png"},
+        {"name": "cloudsBack",  "path": "clouds_back.png"},
+        {"name": "cloudsFront",  "path": "clouds_front.png"},
+        {"name": "forest",  "path": "forest.png"}
+    ]
+}

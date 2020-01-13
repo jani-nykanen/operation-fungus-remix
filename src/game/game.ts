@@ -27,6 +27,9 @@ class GameScene implements Scene {
     draw(c : Canvas, ap : AssetPack) {
 
         c.clear(170, 170, 170);
+
+        c.drawText(ap.getBitmap("font"), "Hello world!",
+            2, 2, -1, 0, false);
     }
 
 

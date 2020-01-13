@@ -76,7 +76,7 @@ class Canvas {
 
 
     // Called when the window is resized (and in the creation)
-    resize(w : number, h : number) {
+    public resize(w : number, h : number) {
 
         let c = this.canvas;
         let x, y;
@@ -106,8 +106,11 @@ class Canvas {
 
 
     // Set global rendering color
-    setColor(r : number, g : number, b : number, a? : number) {
+    public setColor(r : number, g? : number, b? : number, a? : number) {
 
+        if (r == undefined) r = 255;
+        if (g == undefined) g = r;
+        if (b = undefined) b = g;
         if (a == undefined) a = 1.0;
 
         let s = getColorString(r, g, b, a);
@@ -117,7 +120,7 @@ class Canvas {
 
 
     // Clear screen with a color
-    clear(r: number, g: number, b: number, a?: number) {
+    public clear(r: number, g?: number, b?: number, a?: number) {
 
         this.setColor(r, g, b, a);
         this.fillRect(0, 0, this.width, this.height);
@@ -126,7 +129,7 @@ class Canvas {
 
 
     // Draw a filled rectangle
-    fillRect(x : number, y : number, w : number, h : number) {
+    public fillRect(x : number, y : number, w : number, h : number) {
 
         let c = this.ctx;
 
@@ -139,7 +142,7 @@ class Canvas {
 
 
     // Draw a full bitmap
-    drawBitmap(bmp : Bitmap, dx : number, dy : number, flip : boolean) {
+    public drawBitmap(bmp : Bitmap, dx : number, dy : number, flip : boolean) {
 
         this.drawBitmapRegion(bmp, 
             0, 0, bmp.getWidth(), bmp.getHeight(),
@@ -148,7 +151,7 @@ class Canvas {
 
     
     // Draw a bitmap region
-    drawBitmapRegion(bmp : Bitmap, 
+    public drawBitmapRegion(bmp : Bitmap, 
         sx : number, sy : number, sw : number, sh : number, 
         dx : number, dy : number, flip : boolean) {
 
@@ -199,7 +202,7 @@ class Canvas {
     // Draw scaled text
     public drawText(font : Bitmap, str : string, 
         dx : number, dy : number, xoff : 
-        number, yoff : number, center : boolean) {
+        number, yoff : number, center? : boolean) {
 
         let cw = font.getWidth() / 16;
         let ch = cw;
