@@ -6,5 +6,9 @@
 
 window.onload = () => {
     
-    (new Core()).run(new GameScene())
+    (new Core(
+        (new Config()).push("canvas_width", "256")
+                      .push("canvas_height", "192") 
+                      .push("framerate", "60")
+    )).run(new GameScene())
 }

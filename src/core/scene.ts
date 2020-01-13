@@ -9,6 +9,6 @@ interface Scene {
 
     activate: (param : any, ev : CoreEvent, ap : AssetPack) => any
     update: (ev : CoreEvent) => any
-    draw: (c : Canvas) => any
+    draw: (c : Canvas, ap : AssetPack) => any
     deactivate: () => any
 }

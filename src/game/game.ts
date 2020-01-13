@@ -24,8 +24,9 @@ class GameScene implements Scene {
     }
 
 
-    draw(c : Canvas) {
+    draw(c : Canvas, ap : AssetPack) {
 
+        c.clear(170, 170, 170);
     }
 
 

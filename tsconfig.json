@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "outFile": "./out.js",
+        "sourceRoot": "./src/",
+        "rootDir": "./"
+    },
+    "include": [
+        "src/**/*",
+        "src/*"
+    ],
+}
