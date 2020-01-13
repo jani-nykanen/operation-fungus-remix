@@ -236,37 +236,60 @@ class Canvas {
 
     // Draws a funky pseudo-3D floor
     draw3DFloor(bmp : Bitmap, dy : number, h : number, 
-        shift : number) {
+        shift : number, angle : number, 
+        width? : number, midy? : 
+        number, eps? : number) {
+
+        const EPS = 8;
 
         /*
          * This does not really work, it just gives a 
          * good enough impression.
          */
 
-        let w = bmp.width;
+        if (width == undefined) {
+
+            width = bmp.width;
+        }
+
+        let w = width;
         let x = this.width/2 - w/2;
-        let xstep = 1;
-        let ystep = 0;
-        let ydelta = 8.64 / bmp.height;
+        let xstep = angle;
         let sy = bmp.height-1;
+        let z;
+        if (midy == undefined) {
+
+            midy = this.height / 2;
+        }
+        else {
+
+            midy = 192 - midy;
+        }
+        if (eps == undefined) {
+
+            eps = EPS;
+        }
 
         w += h * xstep * 2;
         x -= h * xstep;
 
-        for (let y = h-1; y >= 0; -- y) {
+        for (let y = 0; y < h; ++ y) {
+            
+            // This might be a little slow...
+            z = Math.log(1 / 
+                ( (y+eps) / midy)) 
+                / Math.LN2;
+
+            sy = bmp.height / z;
+            sy = negMod(sy, bmp.height)
 
             this.ctx.drawImage(bmp.img, 
-                shift, sy | 0, bmp.width, 1, 
-                x, dy + y, w, 1);
+                shift, bmp.height-1 - (sy | 0), width, 1, 
+                x | 0, dy + (h-1-y), w | 0, 1);
 
             x += xstep;
             w -= xstep * 2;
-
-            sy -= ystep;
-            sy = negMod(sy, bmp.height)
-
-            ystep += ydelta;
         }
     }
-
+        
 }

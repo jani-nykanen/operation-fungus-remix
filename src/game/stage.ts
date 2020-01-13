@@ -10,6 +10,7 @@ class Stage {
     private readonly LAYER_COUNT = 6;
 
     private timers : Array<number>;
+    private bmpFloor : Bitmap;
 
 
     constructor() {
@@ -20,6 +21,8 @@ class Stage {
 
             this.timers[i] = 0;
         }
+
+        this.bmpFloor = null;
     }
 
 
@@ -67,6 +70,13 @@ class Stage {
         const SUN_X = 208;
         const SUN_Y = 48;
 
+        // Create the floor bitmap if none
+        if (this.bmpFloor == null) {
+
+            this.bmpFloor = createFilledBitmap(c.bitmaps.floor,
+                256 + c.bitmaps.floor.width, 32);
+        }
+
         // Draw sky
         c.drawBitmap(c.bitmaps.sky, 0, 0);
 
@@ -84,6 +94,8 @@ class Stage {
         }
 
         // Draw the floor
-        c.draw3DFloor(c.bitmaps.floor, 192-32, 32, 0);
+        c.draw3DFloor(this.bmpFloor, 192-32, 32, 
+            this.timers[0] % c.bitmaps.floor.width, 
+            3, 256, 129, 16);
     }
 }
