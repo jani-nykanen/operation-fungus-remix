@@ -7,19 +7,15 @@
 // Application event
 class CoreEvent {
 
-    private step : number
+    public readonly step : number
     // References to required objects
-    private ap : AssetPack
+    public readonly assets : AssetPack
 
 
-    constructor(fps : number, ap : AssetPack) {
+    constructor(fps : number, ap? : AssetPack) {
 
         this.step = 60.0 / fps;
         
-        this.ap = ap;
+        this.assets = ap;
     }
-    
-
-    // Getters
-    getStep = () => this.step
 }

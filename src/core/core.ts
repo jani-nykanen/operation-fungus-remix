@@ -55,15 +55,15 @@ class Core {
     // Draw the loading screen
     public drawLoadingScreen(c : Canvas) {
 
-        let barWidth = c.getWidth() / 4;
+        let barWidth = c.width / 4;
         let barHeight = barWidth / 8;
     
         // Black background
         c.clear(0);
     
         let t = this.assets.getLoadingRatio();
-        let x = c.getWidth()/2 - barWidth/2;
-        let y = c.getHeight()/2 - barHeight/2;
+        let x = c.width/2 - barWidth/2;
+        let y = c.height/2 - barHeight/2;
 
         x |= 0;
         y |= 0;
@@ -89,7 +89,7 @@ class Core {
         // more than 5 times (i.e. the minimum fps
         // is 60 / 5 = 12)
         const MAX_REFRESH = 5;
-        const TARGET = 17 / this.ev.getStep();
+        const TARGET = 17 / this.ev.step;
 
         this.timeSum += ts - this.oldTime;
 
@@ -112,9 +112,12 @@ class Core {
                 if (!this.initialized) {
 
                     // Initialize the initial scene
-                    this.activeScene.activate(null, this.ev, this.assets)
+                    this.activeScene.activate(null, this.ev)
                     this.initialized = true;
                 }
+
+                // Update the active scene
+                this.activeScene.update(this.ev);
             }
 
             // Update input
@@ -129,7 +132,7 @@ class Core {
 
             if (this.assets.hasLoaded()) {
                 
-                this.activeScene.draw(this.canvas, this.assets);
+                this.activeScene.draw(this.canvas);
             }
             else {
 

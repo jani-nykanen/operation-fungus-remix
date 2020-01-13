@@ -7,8 +7,8 @@
 // Scene type
 interface Scene {
 
-    activate: (param : any, ev : CoreEvent, ap : AssetPack) => any
+    activate: (param : any, ev : CoreEvent) => any
     update: (ev : CoreEvent) => any
-    draw: (c : Canvas, ap : AssetPack) => any
+    draw: (c : Canvas) => any
     deactivate: () => any
 }

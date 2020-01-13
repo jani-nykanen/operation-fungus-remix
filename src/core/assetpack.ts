@@ -8,20 +8,19 @@
 class AssetPack {
 
 
-    private bitmaps : Array<KeyValuePair<Bitmap>>
+    public readonly bitmaps : any;
     private total : number
     private loaded : number
 
 
     constructor(path : string) {
 
-        this.bitmaps = new Array<KeyValuePair<Bitmap>> ();
+        this.bitmaps = new Array ();
 
         this.total = 1;
         this.loaded = 0;
 
         this.loadListFile(path);
-
     }
     
 
@@ -58,9 +57,7 @@ class AssetPack {
         image.onload = () => {
 
             ++ this.loaded;
-            this.bitmaps.push(
-                new KeyValuePair<Bitmap>(name, new Bitmap(image))
-            );
+            this.bitmaps[name] = new Bitmap(image);
         }
         image.src = path;
     }
@@ -90,22 +87,8 @@ class AssetPack {
 
     // Get how many items have been loaded
     // (in range [0,1])
-    getLoadingRatio() : number {
+    public getLoadingRatio() : number {
 
         return (this.total == 0 ? 1 : this.loaded/this.total);
-    }
-    
-
-    // Getters for assets
-    public getBitmap(name : string) : Bitmap {
-
-        for (let bmp of this.bitmaps) {
-
-            if (bmp.key == name) {
-
-                return bmp.value;
-            }
-        }
-        return null;
     }
 }

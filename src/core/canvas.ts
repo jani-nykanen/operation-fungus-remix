@@ -11,11 +11,11 @@ class Canvas {
     private canvas : HTMLCanvasElement
     private ctx : CanvasRenderingContext2D
 
-    private width : number
-    private height : number
+    public readonly width : number
+    public readonly height : number
     private tr : Vector2
 
-    private ap : AssetPack
+    public readonly bitmaps : any;
 
 
     constructor(w : number, h : number, ap? : AssetPack) {
@@ -25,7 +25,7 @@ class Canvas {
 
         this.width = w;
         this.height = h;
-        this.ap = ap;
+        this.bitmaps = ap.bitmaps;
 
         // Set other initial values
         this.tr = new Vector2();
@@ -67,12 +67,6 @@ class Canvas {
         this.ctx = this.canvas.getContext("2d");
         this.ctx.imageSmoothingEnabled = false;
     }
-
-
-    // Getters
-    getWidth = () => this.width
-    getHeight = () => this.height
-    getBitmap = (name : string) => this.ap.getBitmap(name)
 
 
     // Called when the window is resized (and in the creation)
@@ -142,10 +136,10 @@ class Canvas {
 
 
     // Draw a full bitmap
-    public drawBitmap(bmp : Bitmap, dx : number, dy : number, flip : boolean) {
+    public drawBitmap(bmp : Bitmap, dx : number, dy : number, flip? : boolean) {
 
         this.drawBitmapRegion(bmp, 
-            0, 0, bmp.getWidth(), bmp.getHeight(),
+            0, 0, bmp.width, bmp.height,
             dx, dy, flip);
     }
 
@@ -153,7 +147,7 @@ class Canvas {
     // Draw a bitmap region
     public drawBitmapRegion(bmp : Bitmap, 
         sx : number, sy : number, sw : number, sh : number, 
-        dx : number, dy : number, flip : boolean) {
+        dx : number, dy : number, flip? : boolean) {
 
         if (sw <= 0 || sh <= 0) 
             return;
@@ -189,7 +183,7 @@ class Canvas {
         }
 
 
-        c.drawImage(bmp.getImage(), sx, sy, sw, sh, dx, dy, dw, dh);
+        c.drawImage(bmp.img, sx, sy, sw, sh, dx, dy, dw, dh);
 
         // ... and restore the old
         if (flip) {
@@ -204,7 +198,7 @@ class Canvas {
         dx : number, dy : number, xoff : 
         number, yoff : number, center? : boolean) {
 
-        let cw = font.getWidth() / 16;
+        let cw = font.width / 16;
         let ch = cw;
 
         let x = dx;
@@ -239,5 +233,40 @@ class Canvas {
         }
     }
     
+
+    // Draws a funky pseudo-3D floor
+    draw3DFloor(bmp : Bitmap, dy : number, h : number, 
+        shift : number) {
+
+        /*
+         * This does not really work, it just gives a 
+         * good enough impression.
+         */
+
+        let w = bmp.width;
+        let x = this.width/2 - w/2;
+        let xstep = 1;
+        let ystep = 0;
+        let ydelta = 8.64 / bmp.height;
+        let sy = bmp.height-1;
+
+        w += h * xstep * 2;
+        x -= h * xstep;
+
+        for (let y = h-1; y >= 0; -- y) {
+
+            this.ctx.drawImage(bmp.img, 
+                shift, sy | 0, bmp.width, 1, 
+                x, dy + y, w, 1);
+
+            x += xstep;
+            w -= xstep * 2;
+
+            sy -= ystep;
+            sy = negMod(sy, bmp.height)
+
+            ystep += ydelta;
+        }
+    }
 
 }

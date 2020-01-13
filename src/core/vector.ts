@@ -1,6 +1,10 @@
+/**
+ * Operating Fungus Remix
+ * (c) 2020 Jani Nykänen
+ */
 
 
-
+// 2-components real-valued vector
 class Vector2 {
 
     public x : number

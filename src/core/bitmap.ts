@@ -5,9 +5,9 @@
 
 class Bitmap {
 
-    private img : HTMLImageElement
-    private width : number
-    private height : number
+    public readonly img : HTMLImageElement
+    public readonly width : number
+    public readonly height : number
 
 
     constructor(img : HTMLImageElement) {
@@ -17,10 +17,4 @@ class Bitmap {
         this.width = img.width;
         this.height = img.height;
     }
-
-
-    // Getters
-    getWidth = () => this.width
-    getHeight = () => this.height
-    getImage = () => this.img
 }
