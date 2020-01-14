@@ -69,6 +69,9 @@ class Stage {
         ];
         const SUN_X = 208;
         const SUN_Y = 48;
+        const FLOOR_VANISH_Y = 129; // "Vanishing point"
+        const FLOOR_OFF = 16;
+        const FLOOR_DRIFT = 3;
 
         // Create the floor bitmap if none
         if (this.bmpFloor == null) {
@@ -96,6 +99,7 @@ class Stage {
         // Draw the floor
         c.draw3DFloor(this.bmpFloor, 192-32, 32, 
             this.timers[0] % c.bitmaps.floor.width, 
-            3, 256, 129, 16);
+            FLOOR_DRIFT, c.width, 
+            FLOOR_VANISH_Y, FLOOR_OFF);
     }
 }
