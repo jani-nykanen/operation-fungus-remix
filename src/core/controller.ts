@@ -6,14 +6,14 @@
 
 class ControllerButton {
 
-    public readonly key : number;
+    public readonly key : string;
     public readonly jbutton : number;
     public readonly jbutton2? : number;
     public readonly name : string;
 
     public state : State;
 
-    constructor(name : string, key : number, 
+    constructor(name : string, key : string, 
         jbutton? : number,
         jbutton2? : number) {
 
@@ -46,7 +46,7 @@ class Controller {
 
     // Add a button
     public addButton(name : string, 
-        key : number, jbutton? : number, 
+        key : string, jbutton? : number, 
         jbutton2? : number) : Controller {
 
         this.buttons.push(
@@ -54,6 +54,23 @@ class Controller {
         );
 
         return this;
+    }
+
+
+    // "Initialize", i.e. make sure the 
+    // bound keys are prevented
+    public initialize(input : InputManager) {
+
+        for (let b of this.buttons) {
+
+            input.preventDefault(b.key);
+        }
+
+        // Also prevent arrow keys
+        input.preventDefault("ArrowLeft");
+        input.preventDefault("ArrowRight");
+        input.preventDefault("ArrowUp");
+        input.preventDefault("ArrowDown");
     }
 
 
@@ -67,20 +84,20 @@ class Controller {
 
         // Update stick
         this.stick = new Vector2();
-        if (input.getKeyState(37) == State.Down) {
+        if (input.getKeyState("ArrowLeft") == State.Down) {
 
             this.stick.x = -1.0;
         }
-        else if (input.getKeyState(39) == State.Down) {
+        else if (input.getKeyState("ArrowRight") == State.Down) {
 
             this.stick.x = 1.0;
         }
 
-        if (input.getKeyState(38) == State.Down) {
+        if (input.getKeyState("ArrowUp") == State.Down) {
 
             this.stick.y = -1.0;
         }
-        else if (input.getKeyState(40) == State.Down) {
+        else if (input.getKeyState("ArrowDown") == State.Down) {
 
             this.stick.y = 1.0;
         }
@@ -103,4 +120,8 @@ class Controller {
 
         return State.Up;
     }
+
+
+    // Other getters
+    public getStick = () => this.stick.clone();
 }

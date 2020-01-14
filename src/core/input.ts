@@ -18,16 +18,14 @@ enum State {
 class InputManager {
 
     // State arrays
-    private keyStates : Array<State>;
-
+    private keyStates : any;
     private prevent : any;
     private anyPressed : boolean;
 
 
     constructor() {
 
-        this.keyStates = new Array<State> ();
-
+        this.keyStates = new Array();
         this.prevent = new Array();
         this.anyPressed = false;
 
@@ -35,13 +33,13 @@ class InputManager {
         window.addEventListener("keydown", 
             (e) => {
 
-                if (this.keyPressed(e.keyCode))
+                if (this.keyPressed(e.code)) 
                     e.preventDefault();
             });
         window.addEventListener("keyup", 
             (e) => {
 
-                if (this.keyReleased(e.keyCode))
+                if (this.keyReleased(e.code))
                     e.preventDefault();
             });   
     
@@ -63,7 +61,7 @@ class InputManager {
 
 
     // Called when a key pressed
-    private keyPressed(key : number) {
+    private keyPressed(key : string) {
 
         if (this.keyStates[key] != State.Down) {
 
@@ -76,7 +74,7 @@ class InputManager {
 
 
     // Called when a key released
-    private keyReleased(key : number) {
+    private keyReleased(key : string) {
 
         if (this.keyStates[key] != State.Up)
             this.keyStates[key] = State.Released;
@@ -100,9 +98,16 @@ class InputManager {
     }
 
 
+    // Prevent a key
+    public preventDefault(key : string) {
+
+        this.prevent[key] = true;
+    }
+
+
     // Getters
     public isAnyPressed = () => this.anyPressed;
-    public getKeyState = (key : number) => 
+    public getKeyState = (key : string) => 
         this.keyStates[key] | State.Up;
 
 }

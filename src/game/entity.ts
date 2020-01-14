@@ -7,8 +7,9 @@
 // A general entity class
 class Entity {
 
-    private base : EntityBase;
-    private renderComp? : RenderComponent;
+    protected base : EntityBase;
+    protected renderComp? : RenderComponent;
+    protected ai? : AIComponent;
 
 
     constructor(x? : number, y? : number) {
@@ -17,20 +18,25 @@ class Entity {
     }
 
 
-    // Update EVERYTHING!!!
+    // Update the entity
     update(ev : CoreEvent) {
 
         if (!this.base.exist) return;
 
+        // Update every component
+        if (this.ai != undefined) {
+
+            this.ai.update(ev);
+        }
         this.base.update(ev);
     }
 
 
     // Draw
-    draw(c : Canvas, bmp : Bitmap) {
+    draw(c : Canvas, bmp? : Bitmap) {
 
         if (!this.base.exist) return;
-
+        
         if (this.renderComp != undefined) {
 
             this.renderComp.draw(c, bmp);

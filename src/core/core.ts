@@ -38,6 +38,7 @@ class Core {
         // Create input
         this.input = new InputManager();
         this.gamepad = gamepad;
+        this.gamepad.initialize(this.input);
 
         // Set some basic events
         window.addEventListener("resize",

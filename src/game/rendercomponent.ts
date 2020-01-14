@@ -27,11 +27,10 @@ class RenderComponent {
         let x = Math.round(this.base.pos.x - this.spr.width/2);
         let y = Math.round(this.base.pos.y - this.spr.width/2);
 
-        if (bmp == null) {
+        if (bmp != null) {
 
             c.drawSprite(this.spr, bmp, x, y,
                 this.flip);
-
         }
         else {
 

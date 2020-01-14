@@ -15,6 +15,7 @@ class EntityBase {
     public target : Vector2
     public acc : Vector2
     public exist : boolean;
+    public hitbox : Vector2;
 
 
     constructor(x? : number, y? : number) {
@@ -24,6 +25,7 @@ class EntityBase {
         this.speed = new Vector2();
         this.target = new Vector2();
         this.acc = new Vector2(1, 1);
+        this.hitbox = new Vector2(1, 1);
 
         this.exist = false;
     }

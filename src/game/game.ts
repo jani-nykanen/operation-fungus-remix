@@ -12,6 +12,7 @@ class GameScene implements Scene {
     private gstate : GameState;
     private lstate : LocalState;
     private hud : HUDRenderer;
+    private objm : ObjectManager;
 
 
     constructor() {
@@ -36,6 +37,8 @@ class GameScene implements Scene {
 
         this.lstate = new LocalState(this.gstate);
         this.hud = new HUDRenderer(this.lstate);
+        
+        this.objm = new ObjectManager(this.lstate);
     }
 
 
@@ -43,6 +46,9 @@ class GameScene implements Scene {
 
         // Update stage
         this.stage.update(ev);
+
+        // Update objects
+        this.objm.update(ev);
     }
 
 
@@ -52,6 +58,9 @@ class GameScene implements Scene {
 
         // Draw stage
         this.stage.draw(c);
+
+        // Draw objects
+        this.objm.draw(c);
 
         // Draw HUD
         this.hud.draw(c);
