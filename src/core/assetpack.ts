@@ -8,14 +8,14 @@
 class AssetPack {
 
 
-    public readonly bitmaps : any;
+    private bitmaps : Array<KeyValuePair<Bitmap>>;
     private total : number
     private loaded : number
 
 
     constructor(path : string) {
 
-        this.bitmaps = new Array ();
+        this.bitmaps = new Array<KeyValuePair<Bitmap>> ();
 
         this.total = 1;
         this.loaded = 0;
@@ -57,7 +57,7 @@ class AssetPack {
         image.onload = () => {
 
             ++ this.loaded;
-            this.bitmaps[name] = new Bitmap(image);
+            this.bitmaps.push(new KeyValuePair<Bitmap>(name, new Bitmap(image)));
         }
         image.src = path;
     }
@@ -90,5 +90,17 @@ class AssetPack {
     public getLoadingRatio() : number {
 
         return (this.total == 0 ? 1 : this.loaded/this.total);
+    }
+
+
+    // Get a bitmap
+    public getBitmap(name : string) : Bitmap {
+
+        for (let b of this.bitmaps) {
+
+            if (b.key == name)
+                return b.value;
+        }
+        return null;
     }
 }

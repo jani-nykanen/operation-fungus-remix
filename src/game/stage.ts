@@ -74,31 +74,34 @@ class Stage {
         const FLOOR_DRIFT = 3;
 
         // Create the floor bitmap if none
+        let b;
         if (this.bmpFloor == null) {
 
-            this.bmpFloor = createFilledBitmap(c.bitmaps.floor,
-                256 + c.bitmaps.floor.width, 32);
+            b = c.getBitmap("floor");
+            this.bmpFloor = createFilledBitmap(b,
+                256 + b.width, 32);
         }
 
         // Draw sky
-        c.drawBitmap(c.bitmaps.sky, 0, 0);
+        c.drawBitmap(c.getBitmap("sky"), 0, 0);
 
         // Draw the sun
-        c.drawBitmap(c.bitmaps.sun,
-            SUN_X - c.bitmaps.sun.width/2,
-            SUN_Y - c.bitmaps.sun.height/2);
+        b = c.getBitmap("sun");
+        c.drawBitmap(b,
+            SUN_X - b.width/2,
+            SUN_Y - b.height/2);
 
         // Draw the moving layers
         for (let i = this.LAYER_COUNT-1; i >= 1; -- i) {
 
-            this.drawLayer(c, c.bitmaps[LAYERS_BITMAPS[i-1]], 
+            this.drawLayer(c, c.getBitmap(LAYERS_BITMAPS[i-1]), 
                 this.timers[i-1],
                 0, LAYERS_TOP[i-1]);
         }
 
         // Draw the floor
         c.draw3DFloor(this.bmpFloor, 192-32, 32, 
-            this.timers[0] % c.bitmaps.floor.width, 
+            this.timers[0] % c.getBitmap("floor").width, 
             FLOOR_DRIFT, c.width, 
             FLOOR_VANISH_Y, FLOOR_OFF);
     }

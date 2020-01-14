@@ -10,6 +10,7 @@ class Core {
 
     private canvas : Canvas
     private assets : AssetPack
+    private input : InputManager
     private ev : CoreEvent
     
     private initialized : boolean
@@ -33,6 +34,9 @@ class Core {
             this.assets
         );
 
+        // Create input
+        this.input = new InputManager();
+
         // Set some basic events
         window.addEventListener("resize",
             (e) => {
@@ -44,7 +48,8 @@ class Core {
         // Create an event... thing
         this.ev = new CoreEvent(
             Number(conf.getParam("framerate", "60")),
-            this.assets
+            this.assets,
+            this.input
         );
 
         // Set initial values
@@ -121,7 +126,7 @@ class Core {
             }
 
             // Update input
-            // this.input.updateStates();
+            this.input.updateStates();
 
             this.timeSum -= TARGET;
             redraw = true;

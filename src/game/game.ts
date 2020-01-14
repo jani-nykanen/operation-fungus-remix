@@ -51,7 +51,7 @@ class GameScene implements Scene {
         // Draw stage
         this.stage.draw(c);
 
-        c.drawText(c.bitmaps.font, "Hello world!",
+        c.drawText(c.getBitmap("font"), "Hello world!",
             2, 2, -1, 0, false);
     }
 

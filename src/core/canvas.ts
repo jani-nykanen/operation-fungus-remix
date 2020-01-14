@@ -15,7 +15,7 @@ class Canvas {
     public readonly height : number
     private tr : Vector2
 
-    public readonly bitmaps : any;
+    private readonly assets : AssetPack;
 
 
     constructor(w : number, h : number, ap? : AssetPack) {
@@ -25,7 +25,7 @@ class Canvas {
 
         this.width = w;
         this.height = h;
-        this.bitmaps = ap.bitmaps;
+        this.assets = ap;
 
         // Set other initial values
         this.tr = new Vector2();
@@ -292,4 +292,10 @@ class Canvas {
         }
     }
         
+
+    // Getters
+    public getBitmap(name : string) : Bitmap {
+
+        return this.assets.getBitmap(name);
+    }
 }
