@@ -11,6 +11,7 @@ class Core {
     private canvas : Canvas
     private assets : AssetPack
     private input : InputManager
+    private gamepad : Controller
     private ev : CoreEvent
     
     private initialized : boolean
@@ -20,7 +21,7 @@ class Core {
     private activeScene : Scene
 
 
-    constructor(conf : Config) {
+    constructor(conf : Config, gamepad? : Controller) {
 
         // Create an asset pack
         this.assets = new AssetPack(
@@ -36,6 +37,7 @@ class Core {
 
         // Create input
         this.input = new InputManager();
+        this.gamepad = gamepad;
 
         // Set some basic events
         window.addEventListener("resize",
@@ -49,7 +51,8 @@ class Core {
         this.ev = new CoreEvent(
             Number(conf.getParam("framerate", "60")),
             this.assets,
-            this.input
+            this.input,
+            this.gamepad
         );
 
         // Set initial values
@@ -125,6 +128,11 @@ class Core {
                 this.activeScene.update(this.ev);
             }
 
+            // Update gamepad
+            if (this.gamepad != undefined) {
+
+                this.gamepad.updateButtons(this.input);
+            }
             // Update input
             this.input.updateStates();
 

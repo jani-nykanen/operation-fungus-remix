@@ -293,6 +293,23 @@ class Canvas {
     }
         
 
+     // Draw a sprite frame (another way)
+     drawSpriteFrame(spr : Sprite, bmp : Bitmap, 
+        frame : number, row : number, 
+        x : number, y : number, flip? : boolean)  {
+
+        spr.drawFrame(this, bmp, frame, row, x, y, flip);
+    }
+
+
+    // Draw a sprite (another way)
+    drawSprite(spr : Sprite, bmp : Bitmap, 
+        x : number, y : number, flip? : boolean)  {
+
+        spr.draw(this, bmp, x, y, flip);
+    }
+
+
     // Getters
     public getBitmap(name : string) : Bitmap {
 

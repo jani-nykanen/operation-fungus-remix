@@ -11,15 +11,18 @@ class CoreEvent {
     // References to required objects
     public readonly assets : AssetPack;
     public readonly input : InputManager;
+    public readonly gamepad : Controller;
 
 
     constructor(framerate : number, 
         ap? : AssetPack, 
-        input? : InputManager) {
+        input? : InputManager,
+        gamepad? : Controller) {
 
         this.step = 60.0 / framerate;
         
         this.assets = ap;
         this.input = input;
+        this.gamepad = gamepad;
     }
 }
