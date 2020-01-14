@@ -9,7 +9,9 @@ class GameScene implements Scene {
 
     // Components
     private stage : Stage
-
+    private gstate : GameState;
+    private lstate : LocalState;
+    private hud : HUDRenderer;
 
     constructor() {
 
@@ -19,6 +21,19 @@ class GameScene implements Scene {
     activate(param : any, ev : CoreEvent) {
 
         this.stage = new Stage();
+
+        // Create or get the global game state
+        if (param == null) {
+
+            this.gstate = new GameState();
+        }
+        else {
+
+            this.gstate = param;
+        }
+
+        this.lstate = new LocalState(this.gstate);
+        this.hud = new HUDRenderer(this.lstate);
     }
 
 
@@ -41,7 +56,8 @@ class GameScene implements Scene {
     }
 
 
-    deactivate() {
+    deactivate() : any {
 
+        return this.gstate;
     }
 }
