@@ -77,6 +77,7 @@ class PlayerRenderComponent extends RenderComponent {
 
 
     private sprHead : Sprite;
+    private sprLegs : Sprite;
 
 
     constructor(base : EntityBase) {
@@ -86,6 +87,38 @@ class PlayerRenderComponent extends RenderComponent {
         // Create additional sprites
         this.sprHead = new Sprite(32, 16);
         this.sprHead.setFrame(0, 1);
+
+        this.sprLegs = new Sprite(32, 16);
+        this.sprLegs.setFrame(1, 1);
+    }
+
+
+    // Animate
+    public animate(ev : CoreEvent) {
+
+        const EPS = 0.5;
+
+        // Animate head
+        this.sprHead.setFrame(0, 1);
+        if (this.base.speed.y < -EPS) {
+
+            this.sprHead.setFrame(0, 2);
+        }
+        else if (this.base.speed.y > EPS) {
+
+            this.sprHead.setFrame(0, 3);
+        }
+
+        // Animate legs
+        this.sprLegs.setFrame(1, 1);
+        if (this.base.speed.x < -EPS) {
+
+            this.sprLegs.setFrame(1, 3);
+        }
+        else if (this.base.speed.x > EPS) {
+
+            this.sprLegs.setFrame(1, 2);
+        }
     }
 
 
@@ -103,7 +136,12 @@ class PlayerRenderComponent extends RenderComponent {
         // Draw head
         c.drawSprite(this.sprHead,
             c.getBitmap("player"),
-            x, y, this.flip);
+            x, y+2, this.flip);
+
+        // Draw legs
+        c.drawSprite(this.sprLegs,
+            c.getBitmap("player"),
+            x, y+16, this.flip);
     }
 }
 

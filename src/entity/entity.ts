@@ -28,6 +28,11 @@ class Entity {
 
             this.ai.update(ev);
         }
+        if (this.renderComp != undefined &&
+            this.renderComp.animate != undefined) {
+
+            this.renderComp.animate(ev);
+        }
         this.base.update(ev);
     }
 

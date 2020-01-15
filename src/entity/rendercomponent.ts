@@ -21,6 +21,10 @@ class RenderComponent {
     }
 
 
+    // Animate
+    public animate?(ev : CoreEvent) : any;
+
+
     // Draw
     public draw(c : Canvas, bmp? : Bitmap) {
 
