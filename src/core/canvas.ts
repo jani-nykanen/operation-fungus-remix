@@ -136,11 +136,23 @@ class Canvas {
 
 
     // Draw a full bitmap
-    public drawBitmap(bmp : Bitmap, dx : number, dy : number, flip? : boolean) {
+    public drawBitmap(bmp : Bitmap, dx : number, dy : number, 
+        flip? : boolean) {
 
         this.drawBitmapRegion(bmp, 
             0, 0, bmp.width, bmp.height,
             dx, dy, flip);
+    }
+
+
+    // Draw a full, scaled bitmap
+    public drawScaledBitmap(bmp : Bitmap, 
+        dx : number, dy : number, dw : number, dh: number,
+        flip? : boolean) {
+
+        this.drawScaledBitmapRegion(bmp, 
+            0, 0, bmp.width, bmp.height,
+            dx, dy, dw, dh, flip);
     }
 
     
@@ -149,13 +161,21 @@ class Canvas {
         sx : number, sy : number, sw : number, sh : number, 
         dx : number, dy : number, flip? : boolean) {
 
+        this.drawScaledBitmapRegion(bmp, sx, sy, sw, sh,
+            dx, dy, sw, sh, flip);
+    }
+
+
+     // Draw a scaled bitmap region
+     public drawScaledBitmapRegion(bmp : Bitmap, 
+        sx : number, sy : number, sw : number, sh : number, 
+        dx : number, dy : number, dw : number, dh : number,
+         flip? : boolean) {
+
         if (sw <= 0 || sh <= 0) 
             return;
 
         let c = this.ctx;
-
-        let dw = sw;
-        let dh = sh;
             
         // Apply translation
         dx += this.tr.x;
@@ -307,6 +327,16 @@ class Canvas {
         x : number, y : number, flip? : boolean)  {
 
         spr.draw(this, bmp, x, y, flip);
+    }
+
+
+    // Set global alpha
+    setAlpha(alpha? : number) {
+
+        if (alpha == undefined)
+            alpha = 1.0;
+
+        this.ctx.globalAlpha = clamp(alpha, 0, 1);
     }
 
 

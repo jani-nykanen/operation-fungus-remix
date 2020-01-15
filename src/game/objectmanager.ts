@@ -27,6 +27,11 @@ class ObjectManager {
     draw(c : Canvas) {
 
         c.setColor(255, 0, 0);
+
+        // Draw shadows
+        this.player.drawShadow(c);
+
+        // Draw objects
         this.player.draw(c);
     }
 }

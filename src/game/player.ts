@@ -78,6 +78,7 @@ class PlayerRenderComponent extends RenderComponent {
 
     private sprHead : Sprite;
     private sprLegs : Sprite;
+    private sprPropeller : Sprite;
 
 
     constructor(base : EntityBase) {
@@ -86,10 +87,8 @@ class PlayerRenderComponent extends RenderComponent {
 
         // Create additional sprites
         this.sprHead = new Sprite(32, 16);
-        this.sprHead.setFrame(0, 1);
-
         this.sprLegs = new Sprite(32, 16);
-        this.sprLegs.setFrame(1, 1);
+        this.sprPropeller = new Sprite(32, 16);
     }
 
 
@@ -97,6 +96,8 @@ class PlayerRenderComponent extends RenderComponent {
     public animate(ev : CoreEvent) {
 
         const EPS = 0.5;
+        const PROPELLER_SPEED = 3;
+
 
         // Animate head
         this.sprHead.setFrame(0, 1);
@@ -111,14 +112,19 @@ class PlayerRenderComponent extends RenderComponent {
 
         // Animate legs
         this.sprLegs.setFrame(1, 1);
-        if (this.base.speed.x < -EPS) {
+        let sum = 0.5 * (this.base.speed.x + this.base.speed.y);
+        if (sum < -EPS) {
 
             this.sprLegs.setFrame(1, 3);
         }
-        else if (this.base.speed.x > EPS) {
+        else if (sum > EPS) {
 
             this.sprLegs.setFrame(1, 2);
         }
+
+        // Animate propeller
+        this.sprPropeller.animate(2, 0, 3, 
+            PROPELLER_SPEED, ev.step);
     }
 
 
@@ -127,6 +133,11 @@ class PlayerRenderComponent extends RenderComponent {
 
         let x = Math.round(this.base.pos.x - this.spr.width/2);
         let y = Math.round(this.base.pos.y - this.spr.width/2);
+
+        // Draw propeller
+        c.drawSprite(this.sprPropeller, 
+            c.getBitmap("player"),
+            x-6, y-3, this.flip);
 
         // Draw body
         c.drawSprite(this.spr, 

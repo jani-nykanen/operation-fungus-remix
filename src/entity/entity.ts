@@ -37,6 +37,18 @@ class Entity {
     }
 
 
+    // Draw shadows
+    drawShadow(c : Canvas) {
+
+        if (!this.base.exist) return;
+
+        if (this.renderComp != undefined) {
+
+            this.renderComp.drawShadow(c);
+        }
+    }
+
+
     // Draw
     draw(c : Canvas, bmp? : Bitmap) {
 
