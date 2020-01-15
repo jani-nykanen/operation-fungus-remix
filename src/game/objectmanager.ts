@@ -27,6 +27,6 @@ class ObjectManager {
     draw(c : Canvas) {
 
         c.setColor(255, 0, 0);
-        this.player.draw(c);
+        this.player.draw(c, c.getBitmap("player"));
     }
 }

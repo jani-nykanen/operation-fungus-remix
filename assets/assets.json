@@ -10,6 +10,7 @@
         {"name": "mountainsFront",  "path": "mountains_front.png"},
         {"name": "cloudsBack",  "path": "clouds_back.png"},
         {"name": "cloudsFront",  "path": "clouds_front.png"},
-        {"name": "forest",  "path": "forest.png"}
+        {"name": "forest",  "path": "forest.png"},
+        {"name": "player",  "path": "player.png"}
     ]
 }

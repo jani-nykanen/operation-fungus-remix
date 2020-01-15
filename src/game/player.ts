@@ -79,7 +79,7 @@ class Player extends Entity {
 
         super(x, y);
 
-        this.renderComp = new RenderComponent(this.base, 24, 24);
+        this.renderComp = new RenderComponent(this.base, 32, 32);
         this.ai = new PlayerAI(this.base);
 
         this.base.acc.x = 0.25;
