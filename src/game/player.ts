@@ -10,6 +10,7 @@ class PlayerAI extends AIComponent {
 
     private readonly renderComp : PlayerRenderComponent;
     private dustTimer : number;
+    private disappear : number;
 
 
     constructor(base : EntityBase, 
@@ -19,6 +20,7 @@ class PlayerAI extends AIComponent {
 
         this.renderComp = renderComp;
         this.dustTimer = 0.0;
+        this.disappear = 0;
     }
 
 
@@ -64,11 +66,20 @@ class PlayerAI extends AIComponent {
         this.base.target.x = stick.x * 2;
         this.base.target.y = stick.y * 2;
 
+        if (this.disappear) return;
+
         // Shoot a bullet
         if (!this.renderComp.isShooting() &&
             ev.gamepad.getButtonState("fire1") == State.Down) {
 
             this.renderComp.animateShooting();
+        }
+
+        // Disappear
+        if (ev.gamepad.getButtonState("fire2") == State.Pressed) {
+
+            this.renderComp.startDisappearing();
+            this.disappear = 1;
         }
     }
 
@@ -78,6 +89,8 @@ class PlayerAI extends AIComponent {
 
         const DUST_TIME_BASE = 12.0;
         const DUST_TIME_VARY = 2.0;
+
+        if (this.disappear != 0) return;
 
         let time = DUST_TIME_BASE - 
             DUST_TIME_VARY*this.base.speed.len();
@@ -93,6 +106,8 @@ class PlayerAI extends AIComponent {
 
 
     public update (ev : CoreEvent) {
+
+        this.disappear = this.renderComp.getDisappearPhase();
 
         this.control(ev);
         this.updateDust(ev);
@@ -117,8 +132,11 @@ class PlayerRenderComponent extends RenderComponent {
 
     private wave : number;
     private shooting : boolean;
+    private shootWait : number;
 
     private dust : Array<Dust>;
+
+    private disappear : number;
 
 
     constructor(base : EntityBase) {
@@ -132,9 +150,35 @@ class PlayerRenderComponent extends RenderComponent {
         this.sprArm = new Sprite(32, 16);
 
         this.shooting = false;
+        this.shootWait = 0.0;
         this.wave = 0.0;
 
         this.dust = new Array<Dust> ();
+    }
+
+
+    // Animate disappearing
+    private animateDisappear(ev : CoreEvent) {
+
+        const ANIM_SPEED = 4;
+
+        if (this.disappear == 1) {
+
+            this.spr.animate(2, 0, 5, ANIM_SPEED, ev.step);
+            if (this.spr.getFrame() == 5) {
+
+                this.disappear = 2;
+            }
+        }
+        else {
+            
+            this.spr.animate(2, 5, -1, ANIM_SPEED, ev.step);
+            if (this.spr.getFrame() == -1) {
+
+                this.spr.setFrame(0, 0);
+                this.disappear = 0;
+            }
+        }
     }
 
 
@@ -144,8 +188,9 @@ class PlayerRenderComponent extends RenderComponent {
         const EPS = 0.5;
         const PROPELLER_SPEED_BASE = 5;
         const PROPELLER_VARY = 1.0;
-        const SHOOT_SPEED = 5;
+        const SHOOT_SPEED = 4;
         const WAVE_SPEED = 0.075;
+        const SHOOT_WAIT_TIME = 15;
 
         // Update wave
         this.wave = (this.wave + WAVE_SPEED*ev.step) % (Math.PI*2);
@@ -154,6 +199,13 @@ class PlayerRenderComponent extends RenderComponent {
         for (let d of this.dust) {
 
             d.update(ev);
+        }
+
+        // Disappear
+        if (this.disappear != 0) {
+
+            this.animateDisappear(ev);
+            return;
         }
 
         // Animate head
@@ -168,15 +220,23 @@ class PlayerRenderComponent extends RenderComponent {
         }
 
         // Animate legs
-        this.sprLegs.setFrame(1, 1);
-        let sum = 0.5 * (this.base.speed.x + this.base.speed.y);
-        if (sum < -EPS) {
+        let angle = Math.atan2(this.base.speed.y, this.base.speed.x);
+        let len = this.base.speed.len();
+        
+        if (len > EPS) {
 
-            this.sprLegs.setFrame(1, 3);
+            if (angle <= -Math.PI/4 || angle > Math.PI - Math.PI/4) {
+
+                this.sprLegs.setFrame(1, 3);
+            }
+            else {
+
+                this.sprLegs.setFrame(1, 2);
+            }
         }
-        else if (sum > EPS) {
+        else {
 
-            this.sprLegs.setFrame(1, 2);
+            this.sprLegs.setFrame(1, 1);
         }
 
         // Animate propeller
@@ -184,9 +244,13 @@ class PlayerRenderComponent extends RenderComponent {
                 PROPELLER_VARY*this.base.speed.len()) | 0;
         this.sprPropeller.animate(2, 0, 3, 
             propSpeed, ev.step);
+
+        // Update shoot wait timer
+        if (this.shootWait > 0.0)
+            this.shootWait -= ev.step;
     
         // Animate arm
-        if (this.shooting) {
+        if (this.shooting && this.shootWait <= 0.0) {
 
             this.sprArm.animate(3, 1, 7, SHOOT_SPEED, ev.step);
             if (this.sprArm.getFrame() == 7) {
@@ -195,11 +259,12 @@ class PlayerRenderComponent extends RenderComponent {
                 this.sprArm.setFrame(3, 1);
 
                 this.shooting = false;
+                this.shootWait = SHOOT_WAIT_TIME;
             }    
         }
         else {
 
-            this.sprArm.setFrame(3, 0);
+            this.sprArm.setFrame(3, this.shooting ? 1 : 0);
         }
     }
 
@@ -214,15 +279,24 @@ class PlayerRenderComponent extends RenderComponent {
 
         y += (Math.sin(this.wave) * WAVE_AMPLITUDE) | 0;
 
-        // Draw propeller
-        c.drawSprite(this.sprPropeller, 
-            c.getBitmap("player"),
-            x-6, y-3, this.flip);
+        if (this.disappear == 0) {
+
+            // Draw propeller
+            c.drawSprite(this.sprPropeller, 
+                c.getBitmap("player"),
+                x-6, y-3, this.flip);
+        }
+        else {
+
+            y -= 4;
+        }
 
         // Draw body
         c.drawSprite(this.spr, 
             c.getBitmap("player"),
             x, y, this.flip);
+
+        if (this.disappear > 0) return;
 
         // Draw arm
         c.drawSprite(this.sprArm, 
@@ -281,14 +355,32 @@ class PlayerRenderComponent extends RenderComponent {
 
 
     // Start shooting animation
-    animateShooting() {
+    public animateShooting() {
 
         this.shooting = true;
     }
 
 
+    // Animate disappearing
+    public startDisappearing() {
+
+        if (this.disappear != 0) return;
+
+        this.disappear = 1;
+        this.spr.setFrame(2, 0);
+
+        this.sprPropeller.setFrame(2, 0);
+
+        this.shooting = false;
+        this.shootWait = 0;
+        this.sprArm.setFrame(3, 0);
+    }
+
+
     // Getters
     public isShooting = () => this.shooting;
+    public getBodyFrame = () => this.spr.getFrame();
+    public getDisappearPhase = () => this.disappear;
 }
 
 
