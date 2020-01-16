@@ -137,6 +137,17 @@ class PlayerAI extends AIComponent {
         this.control(ev);
         this.updateDust(ev);
         this.restrict();
+
+        // Compute shadow scale, if disappearing
+        this.renderComp.shadowSize.x = 24;
+        
+        let f = this.renderComp.getBodyFrame();
+        if (this.disappear > 0) {
+
+            this.renderComp.shadowSize.x -= f*3;
+        }
+        this.renderComp.shadowSize.y = 
+            this.renderComp.shadowSize.x/4;
     }
 
 
@@ -218,7 +229,7 @@ class PlayerRenderComponent extends RenderComponent {
         const PROPELLER_VARY = 1.0;
         const SHOOT_SPEED = 4;
         const WAVE_SPEED = 0.075;
-        const SHOOT_WAIT_TIME = 15;
+        const SHOOT_WAIT_TIME = 10; // This will be computed from stats later
         const WAVE_AMPLITUDE = 3;
 
         // Update wave
