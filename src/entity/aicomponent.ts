@@ -20,4 +20,6 @@ class AIComponent {
     // Methods
     public update? (ev : CoreEvent) : any;
     public animate? (spr : Sprite, ev : CoreEvent) : any;
+    public reset?(speed : Vector2, 
+        target? : Vector2, acc? : Vector2) : any;
 }

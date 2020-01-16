@@ -27,8 +27,10 @@ class RenderComponent {
     }
 
 
-    // Animate
+    // Optional methods
     public animate?(ev : CoreEvent) : any;
+    public reset?(row? : number, speed? : number) : any;
+    public drawBefore?(c : Canvas) : any;
 
 
     // Draw

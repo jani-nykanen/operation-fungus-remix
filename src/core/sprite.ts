@@ -117,4 +117,10 @@ class Sprite {
             this.frame, this.row,
             dx, dy, flip);
     }
+
+
+    // Getters
+    public getFrame = () => this.frame;
+    public getRow = () => this.row;
 }
+

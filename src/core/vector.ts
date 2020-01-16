@@ -17,13 +17,17 @@ class Vector2 {
         this.y = y == undefined ? 0 : y;
     }
 
+    
+    // Get length
+    public len = () =>  Math.sqrt(this.x*this.x + this.y*this.y);
 
+    
     // Normalize
     public normalize() : Vector2 {
 
         const EPS = 0.001;
 
-        let len = Math.sqrt(this.x*this.x + this.y*this.y);
+        let len = this.len();
         if (len < EPS) return this.clone();
 
         this.x /= len;

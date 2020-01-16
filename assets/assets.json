@@ -12,6 +12,7 @@
         {"name": "cloudsFront",  "path": "clouds_front.png"},
         {"name": "forest",  "path": "forest.png"},
         {"name": "player",  "path": "player.png"},
-        {"name": "shadow",  "path": "shadow.png"}
+        {"name": "shadow",  "path": "shadow.png"},
+        {"name": "dust",  "path": "dust.png"}
     ]
 }

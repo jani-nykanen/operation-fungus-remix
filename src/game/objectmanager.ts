@@ -31,7 +31,10 @@ class ObjectManager {
         // Draw shadows
         this.player.drawShadow(c);
 
-        // Draw objects
+        // Draw objets (back layer)
+        this.player.drawBackLayer(c);
+
+        // Draw objects (base layer)
         this.player.draw(c);
     }
 }

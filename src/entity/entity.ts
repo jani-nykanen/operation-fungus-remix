@@ -24,7 +24,8 @@ class Entity {
         if (!this.base.exist) return;
 
         // Update every component
-        if (this.ai != undefined) {
+        if (this.ai != undefined &&
+            this.ai.update != undefined) {
 
             this.ai.update(ev);
         }
@@ -49,6 +50,19 @@ class Entity {
     }
 
 
+    // Draw the back layer stuff
+    drawBackLayer(c : Canvas) {
+
+        if (!this.base.exist) return;
+        
+        if (this.renderComp != undefined &&
+            this.renderComp.drawBefore != undefined) {
+
+            this.renderComp.drawBefore(c);
+        }
+    }
+
+
     // Draw
     draw(c : Canvas, bmp? : Bitmap) {
 
@@ -59,5 +73,9 @@ class Entity {
             this.renderComp.draw(c, bmp);
         }
     }
+
+
+    // Getters
+    public doesExist = () => this.base.exist;
 
 }
