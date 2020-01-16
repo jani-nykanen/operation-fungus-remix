@@ -13,6 +13,7 @@
         {"name": "forest",  "path": "forest.png"},
         {"name": "player",  "path": "player.png"},
         {"name": "shadow",  "path": "shadow.png"},
-        {"name": "dust",  "path": "dust.png"}
+        {"name": "dust",  "path": "dust.png"},
+        {"name": "bullet",  "path": "bullet.png"}
     ]
 }

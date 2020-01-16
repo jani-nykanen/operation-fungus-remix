@@ -12,6 +12,9 @@ class PlayerAI extends AIComponent {
     private dustTimer : number;
     private disappear : number;
 
+    private bulletCB : ((row : number,
+        pos : Vector2, speed : Vector2, friendly : boolean) => any);
+
 
     constructor(base : EntityBase, 
         renderComp? : PlayerRenderComponent) {
@@ -61,6 +64,8 @@ class PlayerAI extends AIComponent {
     // Handle controls
     control(ev : CoreEvent) {
 
+        const BULLET_SPEED = 3;
+
         let stick = ev.gamepad.getStick();
 
         this.base.target.x = stick.x * 2;
@@ -72,7 +77,18 @@ class PlayerAI extends AIComponent {
         if (!this.renderComp.isShooting() &&
             ev.gamepad.getButtonState("fire1") == State.Down) {
 
-            this.renderComp.animateShooting();
+            if (this.renderComp.animateShooting() &&
+                this.bulletCB != undefined) {
+
+                this.bulletCB(0, 
+                    new Vector2(
+                        this.base.pos.x+20, 
+                        this.base.pos.y +this.renderComp.getWaveDelta()-2),
+                    new Vector2(
+                        BULLET_SPEED + this.base.speed.x/4, 
+                        this.base.speed.y/4),
+                    true);
+            }
         }
 
         // Disappear
@@ -98,10 +114,19 @@ class PlayerAI extends AIComponent {
         if ((this.dustTimer += ev.step) >= time) {
 
             this.renderComp.spawnDust(
-                this.base.pos.x-4, this.base.pos.y+8
+                this.base.pos.x-4, 
+                this.base.pos.y +8
                 );
             this.dustTimer -= time;
         }
+    }
+
+
+    // Set bullet callback
+    public setBulletCallback(cb : ((row : number,
+        pos : Vector2, speed : Vector2, friendly : boolean) => any)) {
+
+        this.bulletCB = cb;
     }
 
 
@@ -131,6 +156,8 @@ class PlayerRenderComponent extends RenderComponent {
     private sprArm : Sprite;
 
     private wave : number;
+    private waveDelta : number;
+
     private shooting : boolean;
     private shootWait : number;
 
@@ -152,6 +179,7 @@ class PlayerRenderComponent extends RenderComponent {
         this.shooting = false;
         this.shootWait = 0.0;
         this.wave = 0.0;
+        this.waveDelta = 0.0;
 
         this.dust = new Array<Dust> ();
     }
@@ -191,9 +219,11 @@ class PlayerRenderComponent extends RenderComponent {
         const SHOOT_SPEED = 4;
         const WAVE_SPEED = 0.075;
         const SHOOT_WAIT_TIME = 15;
+        const WAVE_AMPLITUDE = 3;
 
         // Update wave
         this.wave = (this.wave + WAVE_SPEED*ev.step) % (Math.PI*2);
+        this.waveDelta = (Math.sin(this.wave) * WAVE_AMPLITUDE);
 
         // Update dust
         for (let d of this.dust) {
@@ -245,10 +275,6 @@ class PlayerRenderComponent extends RenderComponent {
         this.sprPropeller.animate(2, 0, 3, 
             propSpeed, ev.step);
 
-        // Update shoot wait timer
-        if (this.shootWait > 0.0)
-            this.shootWait -= ev.step;
-    
         // Animate arm
         if (this.shooting && this.shootWait <= 0.0) {
 
@@ -266,18 +292,27 @@ class PlayerRenderComponent extends RenderComponent {
 
             this.sprArm.setFrame(3, this.shooting ? 1 : 0);
         }
+
+         // Update shoot wait timer
+         if (this.shootWait > 0.0) {
+            
+            this.shootWait -= ev.step;
+            if (this.shootWait <= 0.0) {
+
+                this.shooting = false;
+                this.shootWait = 0.0;
+            }
+        }
     }
 
 
     // Override draw
     public draw(c : Canvas, bmp? : Bitmap) {
 
-        const WAVE_AMPLITUDE = 3;
-
         let x = Math.round(this.base.pos.x - this.spr.width/2);
         let y = Math.round(this.base.pos.y - this.spr.width/2);
 
-        y += (Math.sin(this.wave) * WAVE_AMPLITUDE) | 0;
+        y += this.waveDelta | 0;
 
         if (this.disappear == 0) {
 
@@ -355,9 +390,11 @@ class PlayerRenderComponent extends RenderComponent {
 
 
     // Start shooting animation
-    public animateShooting() {
+    public animateShooting() : boolean {
 
         this.shooting = true;
+
+        return this.shootWait <= 0;
     }
 
 
@@ -381,11 +418,16 @@ class PlayerRenderComponent extends RenderComponent {
     public isShooting = () => this.shooting;
     public getBodyFrame = () => this.spr.getFrame();
     public getDisappearPhase = () => this.disappear;
+    public getWaveDelta = () => this.waveDelta;
 }
 
 
 // The player itself
 class Player extends Entity {
+
+
+    private aiRef : PlayerAI;
+
 
     constructor(x : number, y : number) {
 
@@ -393,11 +435,19 @@ class Player extends Entity {
 
         let plrend = new PlayerRenderComponent(this.base);
         this.renderComp = plrend;
-        this.ai = new PlayerAI(this.base, plrend);
+        this.ai = (this.aiRef = new PlayerAI(this.base, plrend));
 
         this.base.acc.x = 0.25;
         this.base.acc.y = 0.25;
         this.base.exist = true;
         this.base.hitbox = new Vector2(24, 24);
+    }
+
+
+    // Set bullet callback
+    public setBulletCallback(cb : ((row : number,
+        pos : Vector2, speed : Vector2, friendly : boolean) => any)  ) {
+
+        this.aiRef.setBulletCallback(cb);
     }
 }
