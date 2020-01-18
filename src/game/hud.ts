@@ -71,6 +71,36 @@ class HUDRenderer {
     }
 
 
+    // Draw the power bar (this one is slightly
+    // different than the other bards. In other words,
+    // I'm lazy to make a generalized method for these)
+    private drawPowerBar(c : Canvas, dy : number, fill : number) {
+
+        const WIDTH = 96;
+        const HEIGHT = 8;
+
+        let x = c.width/2 - WIDTH/2;
+        let y = dy;
+
+        let bmp = c.getBitmap("hud");
+
+        // Draw background bar
+        c.drawBitmapRegion(bmp, 16, 48, WIDTH, HEIGHT,
+            x, y);
+        
+        // Draw the filling (temporary, no animation)
+        let w = ((WIDTH-4) * fill) | 0;
+        if (w == WIDTH-5) w = WIDTH-4;
+        c.drawBitmapRegion(bmp, 16+2, 64, w, HEIGHT,
+            x, y);
+
+        // Draw the icon
+        c.drawBitmapRegion(bmp, 0, 48, 16, 16,
+            x-17, y-6);
+
+    }
+
+
     // Update
     public update() {
 
@@ -106,6 +136,9 @@ class HUDRenderer {
         this.drawBar(c, 80, 6, 32, 6,
             220, 13, 
             this.state.getMulTimer());
+
+        // Draw the power bar
+        this.drawPowerBar(c, c.height-11, this.state.getPower());
     }
 
 }

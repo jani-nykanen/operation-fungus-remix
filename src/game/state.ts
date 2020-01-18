@@ -13,6 +13,7 @@ class LocalState {
     private level : number;
     private multiplier : number;
     private mulTimer : number;
+    private power : number;
 
 
     constructor() {
@@ -27,6 +28,7 @@ class LocalState {
         this.level = 1;
         this.multiplier = 0;
         this.mulTimer = 0;
+        this.power = 0;
     }
 
 
@@ -37,7 +39,9 @@ class LocalState {
     public getExp = () => this.xp;
     public getMultiplier = () => this.multiplier;
     public getMulTimer = () => this.mulTimer;
-    public getXpPercentage = () => (this.xp / (1000*this.level));
+    public getXpRequired = (lvl : number) =>  1000 * lvl;
+    public getXpPercentage = () => (this.xp / this.getXpRequired(this.level));
+    public getPower = () => this.power;
 
 
     // Update health
