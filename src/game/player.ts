@@ -30,7 +30,8 @@ class PlayerAI extends AIComponent {
     // Restrict player movements
     private restrict() {
 
-        const GROUND_HEIGHT = 16;
+        const GROUND_HEIGHT = 20;
+        const TOP_OFF = 20;
 
         if (this.base.speed.x < 0 &&
             this.base.pos.x-this.base.hitbox.x/2 < 0) {
@@ -46,10 +47,10 @@ class PlayerAI extends AIComponent {
         }
 
         if (this.base.speed.y < 0 &&
-            this.base.pos.y-this.base.hitbox.y/2 < 0) {
+            this.base.pos.y-this.base.hitbox.y/2 < TOP_OFF) {
 
             this.base.speed.y = 0;
-            this.base.pos.y = this.base.hitbox.y/2;
+            this.base.pos.y = TOP_OFF + this.base.hitbox.y/2;
         }
         else if (this.base.speed.y > 0 &&
             this.base.pos.y+this.base.hitbox.y/2 >= 192-GROUND_HEIGHT) {
