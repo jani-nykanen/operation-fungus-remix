@@ -90,6 +90,12 @@ class PlayerAI extends AIComponent {
                     true);
             }
         }
+        // Sword attack
+        else if (!this.renderComp.isShooting() &&
+            ev.gamepad.getButtonState("fire3") == State.Down) {
+
+            this.renderComp.animateShooting(1);
+        }
 
         // Disappear
         if (ev.gamepad.getButtonState("fire2") == State.Pressed) {
@@ -171,6 +177,7 @@ class PlayerRenderComponent extends RenderComponent {
 
     private shooting : boolean;
     private shootWait : number;
+    private shootMode : number;
 
     private dust : Array<Dust>;
 
@@ -221,15 +228,64 @@ class PlayerRenderComponent extends RenderComponent {
     }
 
 
+    // Animate arms
+    private animateArms(ev : CoreEvent) {
+
+        const SHOOT_SPEED = [4, 4] ;
+        const SHOOT_WAIT_TIME = 10; // This will be computed from stats later
+
+        let index = clamp(this.shootMode, 0, 1);
+
+        let row = 3 + this.shootMode*3;
+        let end = [6, 6] [index];
+        let start = [1, 0] [index];
+
+        // Animate arm
+        if (this.shooting && this.shootWait <= 0.0) {
+
+            this.sprArm.animate(row, start, end+1, 
+                SHOOT_SPEED[index], ev.step);
+            if (this.sprArm.getFrame() == end+1) {
+
+                // In the case we continue shooting
+                if (this.shootMode == 0)
+                    this.sprArm.setFrame(3, 1);
+                else 
+                    this.sprArm.setFrame(3, 0);
+
+                this.shootMode = 0;
+                this.shooting = false;
+
+                if (this.shootMode == 0)
+                    this.shootWait = SHOOT_WAIT_TIME;
+            }    
+        }
+        else {
+
+            this.sprArm.setFrame(3, 
+                (this.shooting && this.shootMode == 0) ? 1 : 0);
+        }
+
+         // Update shoot wait timer
+         if (this.shootWait > 0.0) {
+            
+            this.shootWait -= ev.step;
+            if (this.shootWait <= 0.0) {
+
+                this.shooting = false;
+                this.shootWait = 0.0;
+            }
+        }
+    }
+
+
     // Animate
     public animate(ev : CoreEvent) {
 
         const EPS = 0.5;
         const PROPELLER_SPEED_BASE = 5;
         const PROPELLER_VARY = 1.0;
-        const SHOOT_SPEED = 4;
         const WAVE_SPEED = 0.075;
-        const SHOOT_WAIT_TIME = 10; // This will be computed from stats later
         const WAVE_AMPLITUDE = 3;
 
         // Update wave
@@ -286,34 +342,8 @@ class PlayerRenderComponent extends RenderComponent {
         this.sprPropeller.animate(2, 0, 3, 
             propSpeed, ev.step);
 
-        // Animate arm
-        if (this.shooting && this.shootWait <= 0.0) {
-
-            this.sprArm.animate(3, 1, 7, SHOOT_SPEED, ev.step);
-            if (this.sprArm.getFrame() == 7) {
-
-                // In the case we continue shooting
-                this.sprArm.setFrame(3, 1);
-
-                this.shooting = false;
-                this.shootWait = SHOOT_WAIT_TIME;
-            }    
-        }
-        else {
-
-            this.sprArm.setFrame(3, this.shooting ? 1 : 0);
-        }
-
-         // Update shoot wait timer
-         if (this.shootWait > 0.0) {
-            
-            this.shootWait -= ev.step;
-            if (this.shootWait <= 0.0) {
-
-                this.shooting = false;
-                this.shootWait = 0.0;
-            }
-        }
+        // Animate arm(s)
+        this.animateArms(ev);
     }
 
 
@@ -347,7 +377,7 @@ class PlayerRenderComponent extends RenderComponent {
         // Draw arm
         c.drawSprite(this.sprArm, 
             c.getBitmap("player"),
-            x+16, y+8, this.flip);
+            x+12, y+9, this.flip);
 
         // Draw head
         c.drawSprite(this.sprHead,
@@ -401,11 +431,12 @@ class PlayerRenderComponent extends RenderComponent {
 
 
     // Start shooting animation
-    public animateShooting() : boolean {
+    public animateShooting(mode? : number) : boolean {
 
         this.shooting = true;
+        this.shootMode = mode == undefined ? 0 : mode;
 
-        return this.shootWait <= 0;
+        return this.shootWait <= 0 || this.shootMode != 0;
     }
 
 
