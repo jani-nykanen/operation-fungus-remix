@@ -23,6 +23,17 @@ class Entity {
 
         if (!this.base.exist) return;
 
+        // Check death
+        if (this.base.dying) {
+
+            if (this.renderComp.animateDeath(ev)) {
+
+                this.base.exist = false;
+            }
+
+            return;
+        }
+
         // Update every component
         if (this.ai != undefined &&
             this.ai.update != undefined) {

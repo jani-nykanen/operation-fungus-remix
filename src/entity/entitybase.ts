@@ -15,6 +15,7 @@ class EntityBase {
     public target : Vector2
     public acc : Vector2
     public exist : boolean;
+    public dying : boolean;
     public hitbox : Vector2;
 
 
@@ -27,6 +28,7 @@ class EntityBase {
         this.acc = new Vector2(1, 1);
         this.hitbox = new Vector2(1, 1);
 
+        this.dying = false;
         this.exist = false;
     }
 
@@ -45,5 +47,18 @@ class EntityBase {
 
         this.pos.x += this.speed.x * ev.step;
         this.pos.y += this.speed.y * ev.step;
+    }
+
+
+    // Die
+    public die() {
+
+        if (!this.exist && this.dying)
+            return;
+
+        this.dying = true;
+    
+        this.speed.zeroes();
+        this.target.zeroes();
     }
 }

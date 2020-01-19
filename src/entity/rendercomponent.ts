@@ -33,6 +33,13 @@ class RenderComponent {
     public drawBefore?(c : Canvas) : any;
 
 
+    // Animate death
+    public animateDeath(ev : CoreEvent) : boolean {
+
+        return true;
+    }
+
+
     // Draw
     public draw(c : Canvas, bmp? : Bitmap) {
 

@@ -42,4 +42,12 @@ class Vector2 {
 
         return new Vector2(this.x, this.y);
     }
+
+
+    // Set to zeroes
+    public zeroes() {
+
+        this.x = 0;
+        this.y = 0;
+    }
 }

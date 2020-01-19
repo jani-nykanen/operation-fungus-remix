@@ -19,6 +19,7 @@ class BulletAI  extends AIComponent {
 
         this.base.speed = speed.clone();
         this.base.target = speed.clone();
+        this.base.dying = false;
     }
 
 
@@ -29,7 +30,7 @@ class BulletAI  extends AIComponent {
 
         if (this.base.pos.y > MIN_Y) {
 
-            this.base.exist = false;
+            this.base.die();
         }
 
         if (this.base.pos.x > 256+16)
@@ -64,6 +65,18 @@ class BulletRenderComponent extends RenderComponent {
             this.spr.animate(this.spr.getRow(),
                 0, 2, APPEAR_SPEED, ev.step);
         }
+    }
+
+
+    // Animate death
+    public animateDeath(ev : CoreEvent) : boolean {
+
+        const DEATH_SPEED = 4;
+
+        this.spr.animate(this.spr.getRow(), 3, 7, 
+            DEATH_SPEED, ev.step);
+
+        return this.spr.getFrame() == 7;
     }
 }
 
