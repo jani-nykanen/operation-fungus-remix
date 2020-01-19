@@ -74,6 +74,7 @@ class ObjectManager {
 
         // Draw shadows
         this.player.drawShadow(c);
+        this.enemyGen.drawShadows(c);
 
         // Draw objects (back layer)
         this.player.drawBackLayer(c);

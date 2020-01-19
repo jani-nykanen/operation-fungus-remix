@@ -42,7 +42,7 @@ class EnemyGenerator {
         }
 
         enemy.spawn(new Vector2(256+12, 
-                20 + Math.floor(Math.random()*(192-40) ) ),
+                20 + Math.floor(Math.random()*(192-64) ) ),
                 EnemyType.Fly
                 );
     }
@@ -68,13 +68,24 @@ class EnemyGenerator {
     }
 
 
+    // Draw shadows
+    public drawShadows(c : Canvas) {
+
+        // Draw enemies
+        for (let e of this.enemies) {
+
+            e.drawShadow(c);
+        }
+    }
+
+
     // Draw
     public draw(c : Canvas) {
 
         // Draw enemies
         for (let e of this.enemies) {
 
-            e.draw(c);
+            e.draw(c, c.getBitmap("enemies"));
         }
     }
 

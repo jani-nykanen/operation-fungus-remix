@@ -56,7 +56,7 @@ class FlyAI extends BaseEnemyAI {
     
         // TODO: Get the values elsewhere
         this.moveComp = new WaveMovement(base,
-            16.0, 0.1, -1.0);
+            8.0, 0.05, -1.40);
         this.shootComp = new ShootingLogic(base);
     }
 }
@@ -82,7 +82,7 @@ class EnemyRenderer extends RenderComponent {
 
     public animate(ev : CoreEvent) {
 
-        this.spr.animate(this.spr.getRow(), 0, 4, 
+        this.spr.animate(this.spr.getRow(), 0, 3, 
             this.animSpeed, ev.step);
     }
 }
@@ -121,6 +121,10 @@ class Enemy extends Entity {
         case EnemyType.Fly:
 
             this.ai = new FlyAI(this.base);
+            this.renderComp.reset(
+                0, 4
+            );
+
             break;
 
         default:

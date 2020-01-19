@@ -15,6 +15,7 @@
         {"name": "shadow",  "path": "shadow.png"},
         {"name": "dust",  "path": "dust.png"},
         {"name": "bullet",  "path": "bullet.png"},
-        {"name": "hud",  "path": "hud.png"}
+        {"name": "hud",  "path": "hud.png"},
+        {"name": "enemies",  "path": "enemies.png"}
     ]
 }
