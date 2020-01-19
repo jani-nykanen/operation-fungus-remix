@@ -9,6 +9,7 @@ class ObjectManager {
 
     private player : Player;
     private bullets : Array<Bullet>;
+    private enemyGen : EnemyGenerator;
 
 
     constructor(lstate? : LocalState) {
@@ -21,6 +22,7 @@ class ObjectManager {
         );
 
         this.bullets = new Array<Bullet> ();
+        this.enemyGen = new EnemyGenerator();
     }
 
 
@@ -57,6 +59,9 @@ class ObjectManager {
             b.update(ev);
         }
 
+        // Update enemies
+        this.enemyGen.update(ev);
+
         // Update player
         this.player.update(ev);
     }
@@ -72,6 +77,9 @@ class ObjectManager {
 
         // Draw objects (back layer)
         this.player.drawBackLayer(c);
+
+        // Draw enemies
+        this.enemyGen.draw(c);
 
         // Draw objects (base layer)
         this.player.draw(c);

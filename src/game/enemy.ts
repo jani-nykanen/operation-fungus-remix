@@ -3,9 +3,18 @@
  * (c) 2020 Jani Nykänen
  */
 
+ 
+enum EnemyType {
+    Fly = 0,
+}
+
 
 // The base AI component
 class BaseEnemyAI extends AIComponent {
+
+
+    protected moveComp? : MovementLogic;
+    protected shootComp? : ShootingLogic;
 
 
     constructor(base : EntityBase) {
@@ -14,28 +23,49 @@ class BaseEnemyAI extends AIComponent {
     }
 
 
-    // "Control" the enemy
-    protected control?(ev : CoreEvent) : any;
-
-
-    // Update (general)
+    // Update
     public update(ev : CoreEvent) {
 
-        if (this.control != undefined) {
+        // Move
+        if (this.moveComp != undefined &&
+            this.moveComp.move != undefined) {
 
-            this.control(ev);
+            this.moveComp.move(ev);
         }    
 
+        // Shoot
+        if (this.shootComp != undefined) {
+
+            // ...
+        }   
+
+        // Check if gone too far
         if (this.base.pos.x < -12)
             this.base.exist = false;
     }
 }
 
 
+// Specific AIs
+class FlyAI extends BaseEnemyAI {
+
+
+    constructor(base : EntityBase) {
+
+        super(base);
+    
+        // TODO: Get the values elsewhere
+        this.moveComp = new WaveMovement(base,
+            16.0, 0.1, -1.0);
+        this.shootComp = new ShootingLogic(base);
+    }
+}
+
 
 // Renders enemies
 class EnemyRenderer extends RenderComponent {
 
+    private animSpeed : number;
 
     constructor(base : EntityBase) {
 
@@ -45,7 +75,15 @@ class EnemyRenderer extends RenderComponent {
 
     public reset(row? : number, speed? : number) {
 
+        this.spr.setFrame(row, 0);
+        this.animSpeed = speed;
+    }
 
+
+    public animate(ev : CoreEvent) {
+
+        this.spr.animate(this.spr.getRow(), 0, 4, 
+            this.animSpeed, ev.step);
     }
 }
 
@@ -55,14 +93,16 @@ class EnemyRenderer extends RenderComponent {
 class Enemy extends Entity {
 
 
-    constructor(x : number, y : number) {
+    constructor() {
 
-        super(x, y);
+        super();
 
         this.base.acc.x = 0.25;
         this.base.acc.y = 0.25;
-        this.base.exist = true;
+        this.base.exist = false;
         this.base.hitbox = new Vector2(24, 24);
+
+        this.renderComp = new EnemyRenderer(this.base);
     }
 
 
@@ -72,7 +112,19 @@ class Enemy extends Entity {
         this.base.exist = true;
         this.base.dying = false;
         this.base.pos = pos.clone();
+        this.base.startPos = pos.clone();
 
         this.renderComp.reset();
+        
+        switch(index) {
+
+        case EnemyType.Fly:
+
+            this.ai = new FlyAI(this.base);
+            break;
+
+        default:
+            break;
+        }
     }
 }

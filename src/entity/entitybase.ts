@@ -11,6 +11,7 @@ class EntityBase {
     // they never are never accessed
     // outside the entity
     public pos : Vector2
+    public startPos : Vector2;
     public speed : Vector2
     public target : Vector2
     public acc : Vector2
@@ -22,6 +23,7 @@ class EntityBase {
     constructor(x? : number, y? : number) {
 
         this.pos = new Vector2(x, y);
+        this.startPos = this.pos.clone();
 
         this.speed = new Vector2();
         this.target = new Vector2();
