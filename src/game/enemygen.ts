@@ -22,8 +22,46 @@ class EnemyGenerator {
     }
 
 
-    // Spawn an enemy
-    private spawnEnemy() {
+    // Spawn flies
+    private spawnFlies(count : number) {
+
+        const MIN_Y = 32;
+        const MAX_Y = 160;
+        const AMPLITUDE_MIN = 8.0;
+        const AMPLITUDE_MAX = 32.0;
+        const COUNT_MODIF = 1.0;
+        const LATITUDE_BASE = 0.05;
+        const BODY_OFF = 32;
+
+        let maxAmpl = AMPLITUDE_MAX - COUNT_MODIF;
+
+        let ampl = AMPLITUDE_MIN + 
+            Math.floor(
+                Math.random()*(maxAmpl-AMPLITUDE_MIN)
+            );
+        let lat = LATITUDE_BASE /
+            (1 + (ampl-AMPLITUDE_MIN)/(maxAmpl-AMPLITUDE_MIN));
+        let x = 256+12;
+        let y = MIN_Y+ampl + 
+            Math.floor(
+                Math.random()* (MAX_Y - MIN_Y -2*ampl)
+                );
+
+        let start = Math.random() * (Math.PI*2);
+        for (let i = 0; i < count; ++ i) {
+
+            this.getNextEnemy().spawn(
+                new Vector2(x + i*BODY_OFF, y),
+                EnemyType.Fly,
+                [ampl, lat, 1, 
+                start + Math.PI/count * i]
+                );
+        }
+    }
+
+
+    // Get the next "non-existent" enemy in an array
+    private getNextEnemy() : Enemy {
 
         let enemy : Enemy;
         for (let e of this.enemies) {
@@ -41,23 +79,32 @@ class EnemyGenerator {
             this.enemies.push(enemy);
         }
 
-        enemy.spawn(new Vector2(256+12, 
-                20 + Math.floor(Math.random()*(192-64) ) ),
-                EnemyType.Fly
-                );
+        return enemy;
+    }
+
+
+    // Spawn an enemy
+    private spawnEnemy() : number {
+
+        let count = 1 + Math.floor(Math.random()*4);
+
+        this.spawnFlies(count);
+
+        return count;
     }
 
 
     // Update
     public update(ev : CoreEvent) {
 
-        const WAIT_TIME = 120;
+        const WAIT_TIME_MIN = 30;
+        const WAIT_MOD = 45;
 
         // Update timer
         if ((this.enemyTimer -= ev.step) <= 0.0) {
 
-            this.spawnEnemy();
-            this.enemyTimer += WAIT_TIME;
+            this.enemyTimer += WAIT_TIME_MIN +
+                this.spawnEnemy() * WAIT_MOD;
         }
 
         // Update enemies

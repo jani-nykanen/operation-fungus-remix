@@ -74,9 +74,16 @@ class PlayerAI extends AIComponent {
 
         if (this.disappear) return;
 
+        let fire1 = ev.gamepad.getButtonState("fire1");
+
+        // Sword attack
+        if (ev.gamepad.getButtonState("fire3") == State.Pressed) {
+
+            this.renderComp.animateShooting(1);
+        }
         // Shoot a bullet
-        if (!this.renderComp.isShooting() &&
-            ev.gamepad.getButtonState("fire1") == State.Down) {
+        else if (!this.renderComp.isShooting() &&
+            (fire1 == State.Down || fire1 == State.Pressed)) {
 
             if (this.renderComp.animateShooting() &&
                 this.bulletCB != undefined) {
@@ -90,12 +97,6 @@ class PlayerAI extends AIComponent {
                         this.base.speed.y/4),
                     true);
             }
-        }
-        // Sword attack
-        else if (!this.renderComp.isShooting() &&
-            ev.gamepad.getButtonState("fire3") == State.Down) {
-
-            this.renderComp.animateShooting(1);
         }
 
         // Disappear
@@ -433,6 +434,11 @@ class PlayerRenderComponent extends RenderComponent {
 
     // Start shooting animation
     public animateShooting(mode? : number) : boolean {
+
+        if (mode == 1) {
+
+            this.shootWait = 0;
+        }
 
         this.shooting = true;
         this.shootMode = mode == undefined ? 0 : mode;

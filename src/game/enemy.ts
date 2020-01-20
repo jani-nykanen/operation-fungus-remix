@@ -15,11 +15,14 @@ class BaseEnemyAI extends AIComponent {
 
     protected moveComp? : MovementLogic;
     protected shootComp? : ShootingLogic;
+    protected readonly follow? : Entity;
 
 
-    constructor(base : EntityBase) {
+    constructor(base : EntityBase, follow? : Entity) {
 
         super(base);
+    
+        this.follow = follow;
     }
 
 
@@ -50,13 +53,14 @@ class BaseEnemyAI extends AIComponent {
 class FlyAI extends BaseEnemyAI {
 
 
-    constructor(base : EntityBase) {
+    constructor(base : EntityBase, 
+        params? : Array<number>,
+        follow? : Entity) {
 
-        super(base);
-    
-        // TODO: Get the values elsewhere
+        super(base, follow);
+
         this.moveComp = new WaveMovement(base,
-            8.0, 0.05, -1.40);
+            params[0], params[1], params[2], params[3]);
         this.shootComp = new ShootingLogic(base);
     }
 }
@@ -75,7 +79,7 @@ class EnemyRenderer extends RenderComponent {
 
     public reset(row? : number, speed? : number) {
 
-        this.spr.setFrame(row, 0);
+        this.spr.setFrame(row, (Math.random()*4) | 0);
         this.animSpeed = speed;
     }
 
@@ -107,7 +111,10 @@ class Enemy extends Entity {
 
 
     // Spawn
-    public spawn(pos : Vector2, index : number) {
+    public spawn(pos : Vector2, index : number, 
+        params? : Array<number>, follow? : Entity) {
+
+        const BASE_SPEED = 1.40;
 
         this.base.exist = true;
         this.base.dying = false;
@@ -120,7 +127,7 @@ class Enemy extends Entity {
 
         case EnemyType.Fly:
 
-            this.ai = new FlyAI(this.base);
+            this.ai = new FlyAI(this.base, params, follow);
             this.renderComp.reset(
                 0, 4
             );
@@ -130,5 +137,9 @@ class Enemy extends Entity {
         default:
             break;
         }
+
+
+        this.base.speed.x *= -BASE_SPEED;
+        this.base.target.x *= -BASE_SPEED;
     }
 }
