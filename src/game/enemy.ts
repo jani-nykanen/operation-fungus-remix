@@ -9,67 +9,13 @@ enum EnemyType {
 }
 
 
-// The base AI component
-class BaseEnemyAI extends AIComponent {
-
-
-    protected moveComp? : MovementLogic;
-    protected shootComp? : ShootingLogic;
-    protected readonly follow? : Entity;
-
-
-    constructor(base : EntityBase, follow? : Entity) {
-
-        super(base);
-    
-        this.follow = follow;
-    }
-
-
-    // Update
-    public update(ev : CoreEvent) {
-
-        // Move
-        if (this.moveComp != undefined &&
-            this.moveComp.move != undefined) {
-
-            this.moveComp.move(ev);
-        }    
-
-        // Shoot
-        if (this.shootComp != undefined) {
-
-            // ...
-        }   
-
-        // Check if gone too far
-        if (this.base.pos.x < -12)
-            this.base.exist = false;
-    }
-}
-
-
-// Specific AIs
-class FlyAI extends BaseEnemyAI {
-
-
-    constructor(base : EntityBase, 
-        params? : Array<number>,
-        follow? : Entity) {
-
-        super(base, follow);
-
-        this.moveComp = new WaveMovement(base,
-            params[0], params[1], params[2], params[3]);
-        this.shootComp = new ShootingLogic(base);
-    }
-}
-
 
 // Renders enemies
 class EnemyRenderer extends RenderComponent {
 
     private animSpeed : number;
+    private shootTimer : number;
+
 
     constructor(base : EntityBase) {
 
@@ -86,15 +32,125 @@ class EnemyRenderer extends RenderComponent {
 
     public animate(ev : CoreEvent) {
 
-        this.spr.animate(this.spr.getRow(), 0, 3, 
+        let start = 0;
+        if (this.shootTimer > 0) {
+
+            this.shootTimer -= ev.step;
+            if (this.shootTimer <= 0) {
+
+                this.spr.setFrame(this.spr.getRow(),
+                    this.spr.getFrame() - 4);
+            }
+            else {
+
+                start += 4;
+            }
+        }
+        
+        this.spr.animate(this.spr.getRow(), start, start+3, 
             this.animSpeed, ev.step);
+    }
+
+
+    // Animate shooting
+    public animateShooting(time : number) {
+
+        if (this.shootTimer <= 0) {
+
+            this.spr.setFrame(this.spr.getRow(),
+                this.spr.getFrame() + 4);
+        }
+
+        this.shootTimer = time;
+
     }
 }
 
 
+// The base AI component
+class BaseEnemyAI extends AIComponent {
+
+    
+    protected moveComp? : MovementLogic;
+    protected shootComp? : ShootingLogic;
+    protected readonly follow? : Entity;
+    protected readonly rendComp? : EnemyRenderer;
+
+
+    constructor(base : EntityBase, 
+        rendComp : EnemyRenderer,
+        follow? : Entity) {
+
+        super(base);
+    
+        this.rendComp = rendComp;
+        this.follow = follow;
+    }
+
+
+    // Update
+    public update(ev : CoreEvent) {
+
+        // Move
+        if (this.moveComp != undefined &&
+            this.moveComp.move != undefined) {
+
+            this.moveComp.move(ev);
+        }    
+
+        // Update shoot component
+        if (this.shootComp != undefined &&
+            this.shootComp.update != undefined) {
+
+            this.shootComp.update(ev);
+        }   
+
+        // Check if gone too far
+        if (this.base.pos.x < -12)
+            this.base.exist = false;
+    }
+
+
+    // Animate shooting
+    protected animateShooting() {
+
+        const SHOOT_TIME = 20;
+
+        this.rendComp.animateShooting(SHOOT_TIME);
+    }
+}
+
+
+// Specific AIs
+class FlyAI extends BaseEnemyAI {
+
+
+    constructor(base : EntityBase,
+        rendComp? : EnemyRenderer,
+        params? : Array<number>,
+        follow? : Entity) {
+
+        super(base, rendComp, follow);
+
+        this.moveComp = new WaveMovement(base,
+            params[0], params[1], params[2], params[3]);
+            
+        this.shootComp = new SingleShot(base,
+                Math.PI*2 / params[1],
+                params[3] / params[1],
+                -2.0, 
+                () => {
+                    this.animateShooting();
+                });
+    }
+}
+
 
 // The base enemy class
 class Enemy extends Entity {
+
+
+    private rendRef : EnemyRenderer;
 
 
     constructor() {
@@ -106,7 +162,8 @@ class Enemy extends Entity {
         this.base.exist = false;
         this.base.hitbox = new Vector2(24, 24);
 
-        this.renderComp = new EnemyRenderer(this.base);
+        this.rendRef = new EnemyRenderer(this.base);
+        this.renderComp = this.rendRef;
     }
 
 
@@ -127,7 +184,8 @@ class Enemy extends Entity {
 
         case EnemyType.Fly:
 
-            this.ai = new FlyAI(this.base, params, follow);
+            this.ai = new FlyAI(this.base, this.rendRef, 
+                params, follow);
             this.renderComp.reset(
                 0, 4
             );

@@ -47,7 +47,7 @@ class EnemyGenerator {
                 Math.random()* (MAX_Y - MIN_Y -2*ampl)
                 );
 
-        let start = Math.random() * (Math.PI*2);
+        let start = 0; // Math.random() * (Math.PI*2);
         for (let i = 0; i < count; ++ i) {
 
             this.getNextEnemy().spawn(

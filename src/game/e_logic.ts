@@ -20,14 +20,24 @@ class MovementLogic {
     public move? (ev : CoreEvent) : any;
 }
 
+
 class ShootingLogic {
 
     protected base : EntityBase;
+    protected animCB : (() => any);
+    protected timer : number;
 
-    constructor(base : EntityBase) {
+
+    constructor(base : EntityBase,
+        animCB? : (() => any)) {
 
         this.base = base;
+        this.timer = 0;
+        this.animCB = animCB;
     }
+
+
+    public update?(ev : CoreEvent) : any;
 }
 
 
@@ -71,9 +81,8 @@ class WaveMovement extends MovementLogic {
 }
 
 
-// Triple-shot
-class TripleShot extends ShootingLogic {
-
+// Shoots a single bullet
+class SingleShot extends ShootingLogic {
 
     private period : number;
     private speed : number;
@@ -81,11 +90,30 @@ class TripleShot extends ShootingLogic {
 
     constructor(base : EntityBase,
             period : number,
-            speed : number) {
+            startTime : number,
+            speed : number,
+            animCB? : (() => any)) {
 
-        super(base);
+        super(base, animCB);
 
         this.period = period;
         this.speed = speed;
+
+        this.timer -= startTime % period;
+    }
+
+
+    // Update
+    public update(ev : CoreEvent) {
+
+        this.timer += ev.step;
+        if (this.timer >= this.period) {
+
+            this.timer -= this.period;
+            if (this.animCB != undefined) {
+
+                this.animCB();
+            }
+        }
     }
 }
