@@ -11,6 +11,7 @@ class RenderComponent {
     public base : EntityBase;
     public flip : boolean;
     public shadowSize : Vector2;
+    public flickerTime : number;
 
 
     constructor(base : EntityBase, 
@@ -24,6 +25,8 @@ class RenderComponent {
         this.shadowSize = new Vector2();
         this.shadowSize.x = width * 0.75;
         this.shadowSize.y = this.shadowSize.x / 4;
+
+        this.flickerTime = 0.0;
     }
 
 
@@ -79,5 +82,20 @@ class RenderComponent {
         c.setAlpha(SHADOW_ALPHA);
         c.drawScaledBitmap(c.getBitmap("shadow"), x, y, w, h);
         c.setAlpha();
-    }   
+    }
+    
+    
+    // Update
+    public update(ev : CoreEvent) {
+
+        if (this.flickerTime > 0.0) {
+
+            this.flickerTime -= ev.step;
+        }
+
+        if (this.animate != undefined) {
+
+            this.animate(ev);
+        }
+    }
 }

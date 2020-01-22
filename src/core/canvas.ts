@@ -340,6 +340,23 @@ class Canvas {
     }
 
 
+    // Translate the top-left corner
+    public move(x : number, y : number) {
+
+        this.tr.x = x;
+        this.tr.y = y;
+    }
+
+
+    // Move the top-left corner to the given coordinate
+    public moveTo(x? : number, y? : number) {
+
+        this.tr.x = x == undefined ? 0 : x;
+        this.tr.y = y == undefined ? 0 : y;
+    }
+     
+
+
     // Getters
     public getBitmap(name : string) : Bitmap {
 

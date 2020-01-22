@@ -10,6 +10,7 @@ class Entity {
     protected base : EntityBase;
     protected renderComp? : RenderComponent;
     protected ai? : AIComponent;
+    protected offset : Vector2;
 
     protected power : number;
 
@@ -18,6 +19,7 @@ class Entity {
 
         this.base = new EntityBase(x, y);
 
+        this.offset = new Vector2();
         this.power = 1;
     }
 
@@ -45,9 +47,9 @@ class Entity {
             this.ai.update(ev);
         }
         if (this.renderComp != undefined &&
-            this.renderComp.animate != undefined) {
+            this.renderComp.update != undefined) {
 
-            this.renderComp.animate(ev);
+            this.renderComp.update(ev);
         }
         this.base.update(ev);
     }
@@ -82,10 +84,17 @@ class Entity {
     draw(c : Canvas, bmp? : Bitmap) {
 
         if (!this.base.exist) return;
+
+        // Skip frame, if flickering
+        if (this.renderComp.flickerTime > 0 &&
+            Math.floor(this.renderComp.flickerTime/4) % 2 == 0)
+            return;
         
         if (this.renderComp != undefined) {
 
+            c.move(this.offset.x | 0, this.offset.y | 0);
             this.renderComp.draw(c, bmp);
+            c.move(-this.offset.x | 0, -this.offset.y | 0);
         }
     }
 
@@ -98,10 +107,15 @@ class Entity {
         if (!e.doesExist() || !this.base.exist ||
              e.isDying() || this.base.dying) return;
 
-        let p = e.getPos();
-        let ep = e.getPos();
+        let off = this.getOffset();
+        let poff = e.getOffset();
 
-        let h = e.getHitbox();
+        let p = this.base.pos.clone();
+        p.x += off.x; p.y += off.y;
+        let ep = e.getPos();
+        ep.x += poff.x; p.y += poff.y;
+
+        let h = this.base.hitbox;
         let eh = e.getHitbox();
 
         let collide = 
@@ -116,8 +130,23 @@ class Entity {
             this.hostileCollision(e);
         }
 
-
         return false;
+    }
+
+
+    // Kill
+    public kill() {
+
+        if (!this.base.exist) return;
+
+        this.base.die();
+    }
+
+
+    // Start flickering
+    public flicker(time : number) {
+
+        this.renderComp.flickerTime = time;
     }
 
 
@@ -125,6 +154,9 @@ class Entity {
     public doesExist = () => this.base.exist;
     public getPower = () => this.power;
     public getPos = () => this.base.pos.clone();
+    public getSpeed = () => this.base.speed.clone();
     public getHitbox = () => this.base.hitbox.clone();
     public isDying = () => this.base.dying;
+    public getOffset = () => this.offset.clone();
+
 }

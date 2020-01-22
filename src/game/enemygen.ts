@@ -99,7 +99,7 @@ class EnemyGenerator {
 
 
     // Update
-    public update(ev : CoreEvent) {
+    public update(bullets : Array<Bullet>, ev : CoreEvent) {
 
         const WAIT_TIME_MIN = 30;
         const WAIT_MOD = 45;
@@ -115,6 +115,17 @@ class EnemyGenerator {
         for (let e of this.enemies) {
 
             e.update(ev);
+
+            // Bullet collisions
+            if (e.doesExist() && !e.isDying()) {
+
+                for (let b of bullets) {
+
+                    if (!b.isFriendly()) continue;
+
+                    e.entityCollision(b, true);
+                }
+            }
         }
     }
 

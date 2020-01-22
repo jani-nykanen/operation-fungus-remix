@@ -43,6 +43,8 @@ class GameScene implements Scene {
 
     draw(c : Canvas) {
 
+        c.moveTo();
+
         c.clear(170, 170, 170);
 
         // Draw stage

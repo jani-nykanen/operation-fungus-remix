@@ -65,10 +65,16 @@ class ObjectManager {
         }
 
         // Update enemies
-        this.enemyGen.update(ev);
+        this.enemyGen.update(this.bullets, ev);
 
         // Update player
         this.player.update(ev);
+        for (let b of this.bullets) {
+
+            if (b.isFriendly()) continue;
+
+            this.player.entityCollision(b, true);
+        }
     }
 
 

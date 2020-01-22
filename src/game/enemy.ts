@@ -178,6 +178,7 @@ class Enemy extends Entity {
         this.base.dying = false;
         this.base.pos = pos.clone();
         this.base.startPos = pos.clone();
+        this.offset = new Vector2();
 
         this.renderComp.reset();
         
@@ -190,6 +191,7 @@ class Enemy extends Entity {
             this.renderComp.reset(
                 0, 4
             );
+            this.offset.y = -4;
 
             break;
 
@@ -201,4 +203,15 @@ class Enemy extends Entity {
         this.base.speed.x *= -BASE_SPEED;
         this.base.target.x *= -BASE_SPEED;
     }
+
+
+    // Hostile (read: bullet) collision
+    protected hostileCollision(e : Entity) {
+
+        this.flicker(30);
+        this.base.speed.x = e.getSpeed().x;
+
+        e.kill();
+    }
+
 }

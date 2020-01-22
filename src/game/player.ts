@@ -30,8 +30,8 @@ class PlayerAI extends AIComponent {
     // Restrict player movements
     private restrict() {
 
-        const GROUND_HEIGHT = 20;
-        const TOP_OFF = 20;
+        const GROUND_HEIGHT = 24;
+        const TOP_OFF = 24;
 
         if (this.base.speed.x < 0 &&
             this.base.pos.x-this.base.hitbox.x/2 < 0) {
@@ -489,7 +489,7 @@ class Player extends Entity {
         this.base.acc.x = 0.25;
         this.base.acc.y = 0.25;
         this.base.exist = true;
-        this.base.hitbox = new Vector2(24, 24);
+        this.base.hitbox = new Vector2(16, 16);
     }
 
 
@@ -498,5 +498,17 @@ class Player extends Entity {
         pos : Vector2, speed : Vector2, friendly : boolean) => any)  ) {
 
         this.aiRef.setBulletCallback(cb);
+    }
+
+
+    // Hostile collision
+    protected hostileCollision(e : Entity) {
+
+        if (this.renderComp.flickerTime > 0) return;
+
+        this.flicker(60);
+
+        // TODO: Check for bullets...
+        e.kill();
     }
 }

@@ -111,6 +111,8 @@ class HUDRenderer {
     // Draw
     public draw(c : Canvas) {
 
+        c.moveTo();
+
         // Draw health & exp bars
         this.drawBar(c, 16, 16, 64, 16,
             4, 4, 
