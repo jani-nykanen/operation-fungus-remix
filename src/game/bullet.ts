@@ -33,7 +33,10 @@ class BulletAI  extends AIComponent {
             this.base.die();
         }
 
-        if (this.base.pos.x > 256+16)
+        // Out of bounds
+        if (this.base.pos.y < -16 ||
+            this.base.pos.x > 256+16 ||
+            this.base.pos.x < -16)
             this.base.exist = false;
     }
 }

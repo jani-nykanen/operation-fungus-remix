@@ -9,14 +9,16 @@ class EnemyGenerator {
 
 
     private enemies : Array<Enemy>;
+    private shootCB : (pos : Vector2, speed: Vector2) => any;
 
     // TODO: Moar timers?
     private enemyTimer : number;
 
 
-    constructor() {
+    constructor(shootCB? : (pos : Vector2, speed: Vector2) => any) {
 
         this.enemies = new Array<Enemy> ();
+        this.shootCB = shootCB;
 
         this.enemyTimer = 120;
     }
@@ -47,14 +49,16 @@ class EnemyGenerator {
                 Math.random()* (MAX_Y - MIN_Y -2*ampl)
                 );
 
-        let start = 0; // Math.random() * (Math.PI*2);
+        let start = Math.random() * (Math.PI); // *2
         for (let i = 0; i < count; ++ i) {
 
             this.getNextEnemy().spawn(
                 new Vector2(x + i*BODY_OFF, y),
                 EnemyType.Fly,
                 [ampl, lat, 1, 
-                start + Math.PI/count * i]
+                start + Math.PI/count * i],
+                null,
+                this.shootCB
                 );
         }
     }

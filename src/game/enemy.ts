@@ -16,7 +16,6 @@ class EnemyRenderer extends RenderComponent {
     private animSpeed : number;
     private shootTimer : number;
 
-
     constructor(base : EntityBase) {
 
         super(base, 24, 24);
@@ -76,7 +75,6 @@ class BaseEnemyAI extends AIComponent {
     protected readonly follow? : Entity;
     protected readonly rendComp? : EnemyRenderer;
 
-
     constructor(base : EntityBase, 
         rendComp : EnemyRenderer,
         follow? : Entity) {
@@ -99,7 +97,8 @@ class BaseEnemyAI extends AIComponent {
         }    
 
         // Update shoot component
-        if (this.shootComp != undefined &&
+        if (this.base.pos.x < 256-this.rendComp.spr.width/2 &&
+            this.shootComp != undefined &&
             this.shootComp.update != undefined) {
 
             this.shootComp.update(ev);
@@ -114,7 +113,7 @@ class BaseEnemyAI extends AIComponent {
     // Animate shooting
     protected animateShooting() {
 
-        const SHOOT_TIME = 20;
+        const SHOOT_TIME = 30;
 
         this.rendComp.animateShooting(SHOOT_TIME);
     }
@@ -128,7 +127,8 @@ class FlyAI extends BaseEnemyAI {
     constructor(base : EntityBase,
         rendComp? : EnemyRenderer,
         params? : Array<number>,
-        follow? : Entity) {
+        follow? : Entity,
+        shootCB? : (pos : Vector2, speed: Vector2) => any) {
 
         super(base, rendComp, follow);
 
@@ -137,11 +137,11 @@ class FlyAI extends BaseEnemyAI {
             
         this.shootComp = new SingleShot(base,
                 Math.PI*2 / params[1],
-                params[3] / params[1],
-                -2.0, 
+                params[3] / (Math.PI*2),
+                -3.0, 
                 () => {
                     this.animateShooting();
-                });
+                }, shootCB);
     }
 }
 
@@ -169,7 +169,8 @@ class Enemy extends Entity {
 
     // Spawn
     public spawn(pos : Vector2, index : number, 
-        params? : Array<number>, follow? : Entity) {
+        params? : Array<number>, follow? : Entity,
+        shootCB? : (pos : Vector2, speed: Vector2) => any) {
 
         const BASE_SPEED = 1.40;
 
@@ -185,7 +186,7 @@ class Enemy extends Entity {
         case EnemyType.Fly:
 
             this.ai = new FlyAI(this.base, this.rendRef, 
-                params, follow);
+                params, follow, shootCB);
             this.renderComp.reset(
                 0, 4
             );

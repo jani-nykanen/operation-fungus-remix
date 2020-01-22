@@ -22,7 +22,12 @@ class ObjectManager {
         );
 
         this.bullets = new Array<Bullet> ();
-        this.enemyGen = new EnemyGenerator();
+        this.enemyGen = new EnemyGenerator(
+            (pos : Vector2, speed: Vector2) => {
+
+                this.spawnBullet(1, pos, speed, false);
+            }
+        );
     }
 
 

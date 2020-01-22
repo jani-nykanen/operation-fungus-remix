@@ -25,15 +25,18 @@ class ShootingLogic {
 
     protected base : EntityBase;
     protected animCB : (() => any);
+    protected shootCB : ((pos : Vector2, speed : Vector2) => any);
     protected timer : number;
 
 
     constructor(base : EntityBase,
-        animCB? : (() => any)) {
+        animCB? : (() => any),
+        shootCB? : ((pos: Vector2, speed : Vector2) => any)) {
 
         this.base = base;
         this.timer = 0;
         this.animCB = animCB;
+        this.shootCB = shootCB;
     }
 
 
@@ -90,16 +93,20 @@ class SingleShot extends ShootingLogic {
 
     constructor(base : EntityBase,
             period : number,
-            startTime : number,
+            delay : number,
             speed : number,
-            animCB? : (() => any)) {
+            animCB? : (() => any),
+            shootCB? : ((pos: Vector2, speed : Vector2) => any)) {
 
-        super(base, animCB);
+        super(base, animCB, shootCB);
 
         this.period = period;
         this.speed = speed;
+                
+        this.timer = period * (1-delay);
 
-        this.timer -= startTime % period;
+        // console.log("Period: %d", period);
+        // console.log("Timer: %d", this.timer);
     }
 
 
@@ -110,9 +117,17 @@ class SingleShot extends ShootingLogic {
         if (this.timer >= this.period) {
 
             this.timer -= this.period;
+            // Shoot
             if (this.animCB != undefined) {
 
                 this.animCB();
+            }
+            if (this.shootCB != undefined) {
+
+                this.shootCB(
+                    new Vector2(this.base.pos.x-8, this.base.pos.y+4),
+                    new Vector2(this.speed, 0.0)
+                    );
             }
         }
     }
