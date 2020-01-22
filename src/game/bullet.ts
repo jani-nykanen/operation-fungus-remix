@@ -99,6 +99,10 @@ class Bullet extends Entity {
         this.ai = new BulletAI(this.base);
 
         this.base.exist = false;
+
+        this.base.hitbox = new Vector2(
+            4, 4
+        );
     }
 
 

@@ -3,11 +3,7 @@
  * (c) 2020 Jani Nykänen
  */
 
-// Why so stupid/weird a filename? So I can use
-// *.ts in tsconfig.json without tsc
-// complaining something not defined...
-
-
+ 
 class MovementLogic {
 
     protected base : EntityBase;

@@ -160,7 +160,7 @@ class Enemy extends Entity {
         this.base.acc.x = 0.25;
         this.base.acc.y = 0.25;
         this.base.exist = false;
-        this.base.hitbox = new Vector2(24, 24);
+        this.base.hitbox = new Vector2(16, 16);
 
         this.rendRef = new EnemyRenderer(this.base);
         this.renderComp = this.rendRef;
