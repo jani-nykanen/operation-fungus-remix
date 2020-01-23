@@ -3,42 +3,6 @@
  * (c) 2020 Jani Nykänen
  */
 
- 
-class MovementLogic {
-
-    protected base : EntityBase;
-
-    constructor(base : EntityBase) {
-
-        this.base = base;
-    }
-
-    public move? (ev : CoreEvent) : any;
-}
-
-
-class ShootingLogic {
-
-    protected base : EntityBase;
-    protected animCB : (() => any);
-    protected shootCB : ((pos : Vector2, speed : Vector2) => any);
-    protected timer : number;
-
-
-    constructor(base : EntityBase,
-        animCB? : (() => any),
-        shootCB? : ((pos: Vector2, speed : Vector2) => any)) {
-
-        this.base = base;
-        this.timer = 0;
-        this.animCB = animCB;
-        this.shootCB = shootCB;
-    }
-
-
-    public update?(ev : CoreEvent) : any;
-}
-
 
 // Wave-like movement
 class WaveMovement extends MovementLogic {
@@ -100,9 +64,6 @@ class SingleShot extends ShootingLogic {
         this.speed = speed;
                 
         this.timer = period * (1-delay);
-
-        // console.log("Period: %d", period);
-        // console.log("Timer: %d", this.timer);
     }
 
 
@@ -126,5 +87,30 @@ class SingleShot extends ShootingLogic {
                     );
             }
         }
+    }
+}
+
+
+// Specific AIs
+class FlyAI extends BaseEnemyAI {
+
+
+    constructor(base : EntityBase,
+        rendComp? : EnemyRenderer,
+        params? : Array<number>,
+        shootCB? : (pos : Vector2, speed: Vector2) => any) {
+
+        super(base, rendComp);
+
+        this.moveComp = new WaveMovement(base,
+            params[0], params[1], params[2], params[3]);
+            
+        this.shootComp = new SingleShot(base,
+                Math.PI*2 / params[1],
+                params[3] / (Math.PI*2),
+                -3.0, 
+                () => {
+                    this.animateShooting();
+                }, shootCB);
     }
 }

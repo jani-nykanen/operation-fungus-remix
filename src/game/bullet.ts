@@ -108,7 +108,8 @@ class Bullet extends Entity {
 
     // Spawn
     public spawn(row : number, pos : Vector2,
-        speed : Vector2, friendly : boolean) {
+        speed : Vector2, friendly : boolean,
+        power = 1) {
 
         this.base.exist = true;
         this.base.pos = pos.clone();
@@ -117,6 +118,8 @@ class Bullet extends Entity {
         this.renderComp.reset(row);
 
         this.friendly = friendly;
+
+        this.power = power;
     }
 
 

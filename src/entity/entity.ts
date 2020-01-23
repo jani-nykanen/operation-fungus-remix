@@ -12,6 +12,8 @@ class Entity {
     protected ai? : AIComponent;
     protected offset : Vector2;
 
+    protected health : number;
+    protected maxHealth : number;
     protected power : number;
 
 
@@ -21,6 +23,9 @@ class Entity {
 
         this.offset = new Vector2();
         this.power = 1;
+
+        this.maxHealth = 1;
+        this.health = this.maxHealth;
     }
 
 
@@ -102,7 +107,7 @@ class Entity {
     protected hostileCollision?(e : Entity) : any;
 
     // Collision with another entity
-    public entityCollision(e : Entity, hostile? : boolean) : boolean {
+    public entityCollision(e : Entity, hostile? : boolean) : number {
 
         if (!e.doesExist() || !this.base.exist ||
              e.isDying() || this.base.dying) return;
@@ -128,9 +133,10 @@ class Entity {
             this.hostileCollision != undefined) {
 
             this.hostileCollision(e);
+            return e.getPower();
         }
 
-        return false;
+        return 0;
     }
 
 
@@ -150,6 +156,17 @@ class Entity {
     }
 
 
+    // Reduce health
+    public reduceHealth(delta : number) {
+
+        this.health -= delta;
+        if (this.health <= 0) {
+
+            this.kill();
+        }
+    }
+
+
     // Getters
     public doesExist = () => this.base.exist;
     public getPower = () => this.power;
@@ -158,5 +175,6 @@ class Entity {
     public getHitbox = () => this.base.hitbox.clone();
     public isDying = () => this.base.dying;
     public getOffset = () => this.offset.clone();
+    public getHealth = () => this.health;
 
 }

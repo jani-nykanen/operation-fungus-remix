@@ -10,6 +10,7 @@ class ObjectManager {
     private player : Player;
     private bullets : Array<Bullet>;
     private enemyGen : EnemyGenerator;
+    private flyingText : Array<FlyingText>;
 
 
     constructor(lstate? : LocalState) {
@@ -28,12 +29,17 @@ class ObjectManager {
                 this.spawnBullet(1, pos, speed, false);
             }
         );
+
+        this.flyingText = new Array<FlyingText> ();
     }
 
 
     // Spawn a bullet
     spawnBullet(row : number,
-        pos : Vector2, speed : Vector2, friendly : boolean) {
+        pos : Vector2, 
+        speed : Vector2, 
+        friendly : boolean,
+        power = 1) {
 
         let bullet : Bullet;
          for (let b of this.bullets) {
@@ -51,7 +57,7 @@ class ObjectManager {
             this.bullets.push(bullet);
         }
 
-        bullet.spawn(row, pos, speed, friendly);
+        bullet.spawn(row, pos, speed, friendly, power);
     }
 
 
@@ -65,7 +71,8 @@ class ObjectManager {
         }
 
         // Update enemies
-        this.enemyGen.update(this.bullets, ev);
+        this.enemyGen.update(this.bullets,
+            this.flyingText, ev);
 
         // Update player
         this.player.update(ev);
@@ -74,6 +81,12 @@ class ObjectManager {
             if (b.isFriendly()) continue;
 
             this.player.entityCollision(b, true);
+        }
+
+        // Update the flying text
+        for (let t of this.flyingText) {
+
+            t.update(ev);
         }
     }
 
@@ -100,6 +113,12 @@ class ObjectManager {
         for (let b of this.bullets) {
 
             b.draw(c, c.getBitmap("bullet"));
+        }
+
+        // Draw the flying text
+        for (let t of this.flyingText) {
+
+            t.draw(c);
         }
     }
 }

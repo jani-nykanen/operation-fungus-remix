@@ -10,6 +10,43 @@ enum EnemyType {
 
 
 
+ 
+class MovementLogic {
+
+    protected base : EntityBase;
+
+    constructor(base : EntityBase) {
+
+        this.base = base;
+    }
+
+    public move? (ev : CoreEvent) : any;
+}
+
+
+class ShootingLogic {
+
+    protected base : EntityBase;
+    protected animCB : (() => any);
+    protected shootCB : ((pos : Vector2, speed : Vector2) => any);
+    protected timer : number;
+
+
+    constructor(base : EntityBase,
+        animCB? : (() => any),
+        shootCB? : ((pos: Vector2, speed : Vector2) => any)) {
+
+        this.base = base;
+        this.timer = 0;
+        this.animCB = animCB;
+        this.shootCB = shootCB;
+    }
+
+
+    public update?(ev : CoreEvent) : any;
+}
+
+
 // Renders enemies
 class EnemyRenderer extends RenderComponent {
 
@@ -24,7 +61,7 @@ class EnemyRenderer extends RenderComponent {
 
     public reset(row? : number, speed? : number) {
 
-        this.spr.setFrame(row, (Math.random()*4) | 0);
+        this.spr.setFrame(row+1, (Math.random()*4) | 0);
         this.animSpeed = speed;
     }
 
@@ -63,26 +100,36 @@ class EnemyRenderer extends RenderComponent {
         this.shootTimer = time;
 
     }
+
+
+    // Animate death
+    public animateDeath(ev : CoreEvent) : boolean {
+
+        const DEATH_SPEED = 4;
+
+        this.spr.animate(0, 0, 6, 
+            DEATH_SPEED, ev.step);
+
+        return this.spr.getFrame() == 6;
+    }
 }
 
 
 // The base AI component
 class BaseEnemyAI extends AIComponent {
 
-    
     protected moveComp? : MovementLogic;
     protected shootComp? : ShootingLogic;
     protected readonly follow? : Entity;
     protected readonly rendComp? : EnemyRenderer;
 
+
     constructor(base : EntityBase, 
-        rendComp : EnemyRenderer,
-        follow? : Entity) {
+        rendComp : EnemyRenderer) {
 
         super(base);
     
         this.rendComp = rendComp;
-        this.follow = follow;
     }
 
 
@@ -120,37 +167,11 @@ class BaseEnemyAI extends AIComponent {
 }
 
 
-// Specific AIs
-class FlyAI extends BaseEnemyAI {
-
-
-    constructor(base : EntityBase,
-        rendComp? : EnemyRenderer,
-        params? : Array<number>,
-        follow? : Entity,
-        shootCB? : (pos : Vector2, speed: Vector2) => any) {
-
-        super(base, rendComp, follow);
-
-        this.moveComp = new WaveMovement(base,
-            params[0], params[1], params[2], params[3]);
-            
-        this.shootComp = new SingleShot(base,
-                Math.PI*2 / params[1],
-                params[3] / (Math.PI*2),
-                -3.0, 
-                () => {
-                    this.animateShooting();
-                }, shootCB);
-    }
-}
-
-
 // The base enemy class
 class Enemy extends Entity {
 
 
-    private rendRef : EnemyRenderer;
+    protected rendRef : EnemyRenderer;
 
 
     constructor() {
@@ -167,12 +188,20 @@ class Enemy extends Entity {
     }
 
 
+    protected spawnEvent? (params? : Array<number>, 
+        follow? : Entity,
+        shootCB? : (pos : Vector2, speed: Vector2) => any) : any;
+
+    
     // Spawn
-    public spawn(pos : Vector2, index : number, 
-        params? : Array<number>, follow? : Entity,
+    public spawn(pos : Vector2, index : EnemyType, 
+        params? : Array<number>,
         shootCB? : (pos : Vector2, speed: Vector2) => any) {
 
         const BASE_SPEED = 1.40;
+        const ENEMY_HEALTH = [
+            3 // Fly
+        ];
 
         this.base.exist = true;
         this.base.dying = false;
@@ -181,24 +210,29 @@ class Enemy extends Entity {
         this.offset = new Vector2();
 
         this.renderComp.reset();
-        
+
+        // This would look better with generics, but apparently
+        // TypeScript does not support it in a way I want
         switch(index) {
 
-        case EnemyType.Fly:
-
-            this.ai = new FlyAI(this.base, this.rendRef, 
-                params, follow, shootCB);
-            this.renderComp.reset(
-                0, 4
-            );
-            this.offset.y = -4;
-
-            break;
-
-        default:
-            break;
+            case EnemyType.Fly:
+    
+                this.ai = new FlyAI(this.base, this.rendRef, 
+                    params, shootCB);
+                this.renderComp.reset(
+                    0, 4
+                );
+                this.offset.y = -4;
+    
+                break;
+    
+            default:
+                break;
         }
 
+        this.maxHealth = ENEMY_HEALTH[
+            clamp(index, 0, ENEMY_HEALTH.length)];
+        this.health = this.maxHealth;
 
         this.base.speed.x *= -BASE_SPEED;
         this.base.target.x *= -BASE_SPEED;
@@ -210,6 +244,7 @@ class Enemy extends Entity {
 
         this.flicker(30);
         this.base.speed.x = e.getSpeed().x;
+        this.reduceHealth(e.getPower());
 
         e.kill();
     }

@@ -57,7 +57,6 @@ class EnemyGenerator {
                 EnemyType.Fly,
                 [ampl, lat, 1, 
                 start + Math.PI/count * i],
-                null,
                 this.shootCB
                 );
         }
@@ -98,8 +97,36 @@ class EnemyGenerator {
     }
 
 
+    // Spawn the damage text
+    private spawnDamageText(texts : Array<FlyingText>,
+            dmg : number, pos : Vector2) {
+
+        let text : FlyingText;
+
+        for (let t of texts) {
+    
+            if (!t.doesExist()) {
+    
+                text = t;
+                break;
+            }
+        }
+    
+        if (text == null) {
+            
+            text = new FlyingText();
+            texts.push(text);
+        }
+
+        text.spawn("-" + String(dmg), pos, 2,
+            10, 30);
+
+    }
+
+
     // Update
-    public update(bullets : Array<Bullet>, ev : CoreEvent) {
+    public update(bullets : Array<Bullet>, 
+        text : Array<FlyingText>, ev : CoreEvent) {
 
         const WAIT_TIME_MIN = 30;
         const WAIT_MOD = 45;
@@ -112,6 +139,7 @@ class EnemyGenerator {
         }
 
         // Update enemies
+        let dmg : number;
         for (let e of this.enemies) {
 
             e.update(ev);
@@ -123,7 +151,11 @@ class EnemyGenerator {
 
                     if (!b.isFriendly()) continue;
 
-                    e.entityCollision(b, true);
+                    dmg = e.entityCollision(b, true);
+                    if (dmg > 0) {
+
+                        this.spawnDamageText(text, dmg, b.getPos());
+                    }
                 }
             }
         }
