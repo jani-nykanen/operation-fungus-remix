@@ -117,6 +117,7 @@ class Entity {
 
         let p = this.base.pos.clone();
         p.x += off.x; p.y += off.y;
+        
         let ep = e.getPos();
         ep.x += poff.x; p.y += poff.y;
 
@@ -177,5 +178,5 @@ class Entity {
     public getOffset = () => this.offset.clone();
     public getHealth = () => this.base.health;
     public getXP = () => this.base.xp;
-    
+
 }

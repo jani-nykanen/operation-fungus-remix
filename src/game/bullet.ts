@@ -123,6 +123,16 @@ class Bullet extends Entity {
     }
 
 
+    // Hostile (read: bullet) collision
+    protected hostileCollision(e : Entity, kill = true) {
+
+        this.kill();
+
+        if (kill)
+            e.kill();
+    }
+
+
     // Getters
     public isFriendly = () => this.friendly;
 }

@@ -144,6 +144,7 @@ class EnemyGenerator {
 
         // Update enemies
         let dmg : number;
+        let blade = player.getBlade();
         for (let e of this.enemies) {
 
             e.update(ev);
@@ -154,6 +155,19 @@ class EnemyGenerator {
                 if (player.entityCollision(e, true, false) > 0) {
 
                     lstate.resetMultiplier();
+                }
+
+                // Blade collision
+                if (blade != null &&
+                    e.getHurtIndex() < blade.getAttackIndex()) {
+
+                    dmg = e.entityCollision(blade, true, false);
+                    if (dmg > 0) {
+
+                        this.spawnDamageText(text, dmg, blade.getPos());
+                        e.setHurtIndex(blade.getAttackIndex());
+                    }
+
                 }
 
                 for (let b of bullets) {

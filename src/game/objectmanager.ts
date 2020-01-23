@@ -81,9 +81,15 @@ class ObjectManager {
 
         // Update player
         this.player.update(ev);
+        let blade = this.player.getBlade();
         for (let b of this.bullets) {
 
             if (b.isFriendly()) continue;
+
+            if (blade != null) {
+
+                b.entityCollision(blade, true, false);
+            }
 
             if (this.player.entityCollision(b, true) > 0) {
 
@@ -115,8 +121,10 @@ class ObjectManager {
         this.enemyGen.draw(c);
 
         // Draw objects (base layer)
+        //if (this.player.getBlade() != null)
+        //    this.player.getBlade().draw(c);
         this.player.draw(c);
-
+       
         // Draw bullets
         for (let b of this.bullets) {
 

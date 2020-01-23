@@ -4,6 +4,60 @@
  */
 
 
+// Player blade entity
+class Blade extends Entity {
+
+
+    private readonly follow : Player;
+    private readonly lstate : LocalState;
+
+    private attackIndex : number;
+
+
+    constructor(pl : Player, lstate : LocalState) {
+
+        super(0, 0);
+
+        this.base.exist = true;
+        this.follow = pl;
+        this.lstate = lstate;
+
+        // this.renderComp = new RenderComponent(this.base, 32,  16);
+
+        this.base.hitbox = new Vector2(32, 16);
+
+        this.attackIndex = 0;
+
+        this.base.speed.x = 4.0;
+    }
+
+
+    // Refresh
+    public refresh(ev : CoreEvent) {
+
+        let p = this.follow.getPos();
+
+        // TODO: Get this from local state
+        this.base.power = 10;
+
+        this.base.pos.x = p.x + 16;
+        this.base.pos.y = p.y + this.follow.getWaveDelta() + 8;
+    }
+
+
+    // Increase the attack index
+    public increaseAttackIndex() {
+
+        ++ this.attackIndex;
+    }
+
+
+    // Getters
+    public getAttackIndex = () => this.attackIndex;
+}
+
+
+
 // An "AI" for the player, which is not
 // an AI at all, really
 class PlayerAI extends AIComponent {
@@ -11,18 +65,21 @@ class PlayerAI extends AIComponent {
     private readonly renderComp : PlayerRenderComponent;
     private dustTimer : number;
     private disappear : number;
+    private readonly blade : Blade;
 
     private bulletCB : (pos : Vector2, speed: Vector2, power : number) => any;
 
 
     constructor(base : EntityBase, 
-        renderComp? : PlayerRenderComponent) {
+        renderComp : PlayerRenderComponent,
+        blade : Blade) {
 
         super(base);
 
         this.renderComp = renderComp;
         this.dustTimer = 0.0;
         this.disappear = 0;
+        this.blade = blade;
     }
 
 
@@ -80,7 +137,11 @@ class PlayerAI extends AIComponent {
         // Sword attack
         if (ev.gamepad.getButtonState("fire3") == State.Pressed) {
 
-            this.renderComp.animateShooting(1);
+            if (!this.renderComp.isSwordActive()) {
+
+                this.blade.increaseAttackIndex();
+                this.renderComp.animateShooting(1);
+            }
         }
         // Shoot a bullet
         else if (!this.renderComp.isShooting() &&
@@ -96,7 +157,7 @@ class PlayerAI extends AIComponent {
                     new Vector2(
                         BULLET_SPEED + this.base.speed.x/4, 
                         this.base.speed.y/4),
-                        10);
+                        5);
             }
         }
 
@@ -353,8 +414,8 @@ class PlayerRenderComponent extends RenderComponent {
     // Override draw
     public draw(c : Canvas, bmp? : Bitmap) {
 
-        let x = Math.round(this.base.pos.x - this.spr.width/2);
-        let y = Math.round(this.base.pos.y - this.spr.width/2);
+        let x = Math.round(this.base.pos.x - 16);
+        let y = Math.round(this.base.pos.y - 16);
 
         y += this.waveDelta | 0;
 
@@ -470,6 +531,13 @@ class PlayerRenderComponent extends RenderComponent {
     public getDisappearPhase = () => this.disappear;
     public getWaveDelta = () => this.waveDelta;
     public isDisappering = () => this.disappear != 0;
+
+    public isSwordActive() : boolean {
+
+        return this.shooting &&
+               this.shootMode == 1 &&
+               this.spr.getFrame() <= 5;
+    }
 }
 
 
@@ -480,15 +548,19 @@ class Player extends Entity {
     private aiRef : PlayerAI;
     private rendRef : PlayerRenderComponent;
     private readonly lstate : LocalState;
+    private blade : Blade;
 
 
     constructor(x : number, y : number, lstate : LocalState) {
 
         super(x, y);
 
+        this.blade = new Blade(this, lstate);
+
         this.rendRef = new PlayerRenderComponent(this.base);
         this.renderComp = this.rendRef;
-        this.ai = (this.aiRef = new PlayerAI(this.base, this.rendRef));
+        this.ai = 
+            (this.aiRef = new PlayerAI(this.base, this.rendRef, this.blade));
 
         this.base.acc.x = 0.25;
         this.base.acc.y = 0.25;
@@ -523,9 +595,26 @@ class Player extends Entity {
     }
 
 
-    // Refresh local state
+    // Refresh
     protected refresh(ev : CoreEvent) {
 
         this.lstate.updateHealth(this.base.health);
+
+        if (this.doesExist() && !this.isDying())
+            this.blade.refresh(ev);
     }
+
+
+    // Get blade
+    public getBlade() : Blade {
+
+        if (this.rendRef.isSwordActive())
+            return this.blade;
+
+        return null;
+    }
+
+
+    // Getters
+    public getWaveDelta = () => this.rendRef.getWaveDelta();
 }

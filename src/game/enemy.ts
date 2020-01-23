@@ -173,6 +173,7 @@ class Enemy extends Entity {
 
 
     protected rendRef : EnemyRenderer;
+    protected hurtIndex : number; // For the sword attack
 
 
     constructor() {
@@ -186,6 +187,8 @@ class Enemy extends Entity {
 
         this.rendRef = new EnemyRenderer(this.base);
         this.renderComp = this.rendRef;
+
+        this.hurtIndex = 0;
     }
 
 
@@ -207,10 +210,11 @@ class Enemy extends Entity {
         this.base.pos = pos.clone();
         this.base.startPos = pos.clone();
         this.offset = new Vector2();
+        this.hurtIndex = 0;
 
         this.renderComp.reset();
 
-        // TODO: Please don't do it this way, I beg you!
+
         switch(index) {
 
             case EnemyType.Fly:
@@ -220,8 +224,9 @@ class Enemy extends Entity {
                 this.renderComp.reset(
                     0, 4
                 );
-                this.offset.y = -2;
-    
+
+                this.offset.y = 3;
+
                 break;
     
             default:
@@ -234,13 +239,22 @@ class Enemy extends Entity {
 
 
     // Hostile (read: bullet) collision
-    protected hostileCollision(e : Entity) {
+    protected hostileCollision(e : Entity, kill = true) {
 
         this.flicker(30);
         this.base.speed.x = e.getSpeed().x;
         this.reduceHealth(e.getPower());
 
-        e.kill();
+        if (kill)
+            e.kill();
     }
 
+
+    // Get & set hurt index
+    public getHurtIndex = () => this.hurtIndex;
+    public setHurtIndex(i : number) {
+
+        if (this.hurtIndex < i)
+            this.hurtIndex = i;
+    }
 }

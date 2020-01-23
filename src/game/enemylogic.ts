@@ -117,5 +117,9 @@ class FlyAI extends BaseEnemyAI {
         this.base.setInitialHealth(15);
         this.base.power = 50;
         this.base.xp = 20;
+
+        this.base.hitbox = new Vector2(
+            16, 16
+        );
     }
 }
