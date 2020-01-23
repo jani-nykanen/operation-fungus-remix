@@ -29,10 +29,18 @@ class Entity {
     }
 
 
+    protected refresh?(ev : CoreEvent) : any;
+
+
     // Update the entity
     update(ev : CoreEvent) {
 
         if (!this.base.exist) return;
+
+        if (this.refresh != undefined) {
+
+            this.refresh(ev);
+        }
 
         // Check death
         if (this.base.dying) {

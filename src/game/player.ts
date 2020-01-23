@@ -12,8 +12,7 @@ class PlayerAI extends AIComponent {
     private dustTimer : number;
     private disappear : number;
 
-    private bulletCB : ((row : number,
-        pos : Vector2, speed : Vector2, friendly : boolean) => any);
+    private bulletCB : (pos : Vector2, speed: Vector2, power : number) => any;
 
 
     constructor(base : EntityBase, 
@@ -88,14 +87,14 @@ class PlayerAI extends AIComponent {
             if (this.renderComp.animateShooting() &&
                 this.bulletCB != undefined) {
 
-                this.bulletCB(0, 
+                this.bulletCB(
                     new Vector2(
                         this.base.pos.x+20, 
                         this.base.pos.y +this.renderComp.getWaveDelta()-2),
                     new Vector2(
                         BULLET_SPEED + this.base.speed.x/4, 
                         this.base.speed.y/4),
-                    true);
+                        5);
             }
         }
 
@@ -131,8 +130,8 @@ class PlayerAI extends AIComponent {
 
 
     // Set bullet callback
-    public setBulletCallback(cb : ((row : number,
-        pos : Vector2, speed : Vector2, friendly : boolean) => any)) {
+    public setBulletCallback(cb : 
+        (pos : Vector2, speed: Vector2, power : number) => any) {
 
         this.bulletCB = cb;
     }
@@ -476,9 +475,10 @@ class Player extends Entity {
 
 
     private aiRef : PlayerAI;
+    private readonly lstate : LocalState;
 
 
-    constructor(x : number, y : number) {
+    constructor(x : number, y : number, lstate : LocalState) {
 
         super(x, y);
 
@@ -490,12 +490,16 @@ class Player extends Entity {
         this.base.acc.y = 0.25;
         this.base.exist = true;
         this.base.hitbox = new Vector2(16, 16);
+
+        this.lstate = lstate;
+
+        this.maxHealth = lstate.getMaxHealth();
+        this.health = this.maxHealth;
     }
 
 
     // Set bullet callback
-    public setBulletCallback(cb : ((row : number,
-        pos : Vector2, speed : Vector2, friendly : boolean) => any)  ) {
+    public setBulletCallback(cb : (pos : Vector2, speed: Vector2, power : number) => any)   {
 
         this.aiRef.setBulletCallback(cb);
     }
@@ -507,8 +511,15 @@ class Player extends Entity {
         if (this.renderComp.flickerTime > 0) return;
 
         this.flicker(60);
-
-        // TODO: Check for bullets...
+        this.reduceHealth(e.getPower());
+        
         e.kill();
+    }
+
+
+    // Refresh local state
+    protected refresh(ev : CoreEvent) {
+
+        this.lstate.updateHealth(this.health);
     }
 }

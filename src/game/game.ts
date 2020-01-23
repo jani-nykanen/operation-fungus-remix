@@ -38,6 +38,9 @@ class GameScene implements Scene {
 
         // Update objects
         this.objm.update(ev);
+
+        // Update HUD
+        this.hud.update(ev);
     }
 
 

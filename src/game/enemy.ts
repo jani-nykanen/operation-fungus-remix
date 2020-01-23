@@ -28,13 +28,13 @@ class ShootingLogic {
 
     protected base : EntityBase;
     protected animCB : (() => any);
-    protected shootCB : ((pos : Vector2, speed : Vector2) => any);
+    protected shootCB : (pos : Vector2, speed: Vector2, power : number) => any; 
     protected timer : number;
 
 
     constructor(base : EntityBase,
         animCB? : (() => any),
-        shootCB? : ((pos: Vector2, speed : Vector2) => any)) {
+        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
 
         this.base = base;
         this.timer = 0;
@@ -63,6 +63,7 @@ class EnemyRenderer extends RenderComponent {
 
         this.spr.setFrame(row+1, (Math.random()*4) | 0);
         this.animSpeed = speed;
+        this.flickerTime = 0.0;
     }
 
 
@@ -190,17 +191,18 @@ class Enemy extends Entity {
 
     protected spawnEvent? (params? : Array<number>, 
         follow? : Entity,
-        shootCB? : (pos : Vector2, speed: Vector2) => any) : any;
+        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) 
+        : any;
 
     
     // Spawn
     public spawn(pos : Vector2, index : EnemyType, 
         params? : Array<number>,
-        shootCB? : (pos : Vector2, speed: Vector2) => any) {
+        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
 
         const BASE_SPEED = 1.40;
         const ENEMY_HEALTH = [
-            3 // Fly
+            15 // Fly
         ];
 
         this.base.exist = true;

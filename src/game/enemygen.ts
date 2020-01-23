@@ -9,13 +9,14 @@ class EnemyGenerator {
 
 
     private enemies : Array<Enemy>;
-    private shootCB : (pos : Vector2, speed: Vector2) => any;
+    private shootCB : (pos : Vector2, speed: Vector2, power : number) => any;
 
     // TODO: Moar timers?
     private enemyTimer : number;
 
 
-    constructor(shootCB? : (pos : Vector2, speed: Vector2) => any) {
+    constructor(shootCB? : 
+        (pos : Vector2, speed: Vector2, power : number) => any) {
 
         this.enemies = new Array<Enemy> ();
         this.shootCB = shootCB;

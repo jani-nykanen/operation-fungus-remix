@@ -15,18 +15,19 @@ class ObjectManager {
 
     constructor(lstate? : LocalState) {
 
-        this.player = new Player(48, 88);
+        this.player = new Player(48, 88, lstate);
         this.player.setBulletCallback(
-            (row : number,
-            pos : Vector2, speed : Vector2, friendly : boolean) => 
-            this.spawnBullet(row, pos, speed, friendly)
+            (pos : Vector2, speed: Vector2, power : number) => {
+
+                this.spawnBullet(0, pos, speed, true, power);
+            }
         );
 
         this.bullets = new Array<Bullet> ();
         this.enemyGen = new EnemyGenerator(
-            (pos : Vector2, speed: Vector2) => {
+            (pos : Vector2, speed: Vector2, power : number) => {
 
-                this.spawnBullet(1, pos, speed, false);
+                this.spawnBullet(1, pos, speed, false, power);
             }
         );
 

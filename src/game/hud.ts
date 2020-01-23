@@ -9,15 +9,17 @@ class HUDRenderer {
 
     // Bar values for rendering
     private healthBar : number;
+    private healthTarget : number;
 
-    private readonly state : LocalState;
+    private readonly lstate : LocalState;
 
 
     constructor(state : LocalState) {
 
         this.healthBar = 1.0;
+        this.healthTarget = this.healthBar;
 
-        this.state = state;
+        this.lstate = state;
     }
 
 
@@ -26,7 +28,6 @@ class HUDRenderer {
         sx : number, sy : number, sw : number, sh : number,
         dx : number, dy : number, fill : number, 
         iconOff? : number, text? : string) {
-
 
         let bmp = c.getBitmap("hud");     
 
@@ -102,9 +103,18 @@ class HUDRenderer {
 
 
     // Update
-    public update() {
+    public update(ev : CoreEvent) {
 
-        // TODO: Update health
+        const DELTA_SPEED = 0.01;
+
+        this.healthTarget = 
+            this.lstate.getHealth() / this.lstate.getMaxHealth();
+
+        this.healthBar = updateSpeedAxis(
+            this.healthBar,
+            this.healthTarget,
+            DELTA_SPEED * ev.step
+        );
     }
 
 
@@ -116,18 +126,18 @@ class HUDRenderer {
         // Draw health & exp bars
         this.drawBar(c, 16, 16, 64, 16,
             4, 4, 
-            this.state.getHealth() / this.state.getMaxHealth(), 1,
-            String(this.state.getHealth()) + 
+            this.healthBar, 1,
+            String(this.lstate.getHealth()) + 
             "/" + 
-            String(this.state.getMaxHealth()));
+            String(this.lstate.getMaxHealth()));
 
         this.drawBar(c, 16, 32, 64, 16,
             136, 4, 
-            this.state.getXpPercentage(), 1,
-            String("LEVEL ") + String(this.state.getLevel()));
+            this.lstate.getXpPercentage(), 1,
+            String("LEVEL ") + String(this.lstate.getLevel()));
 
         // Draw the multiplier
-        let mul = this.state.getMultiplier() + 10;
+        let mul = this.lstate.getMultiplier() + 10;
         let mulStr = "\2" + String((mul/10) | 0) + "." + 
             String(mul - 10*((mul/10)|0));
 
@@ -137,10 +147,10 @@ class HUDRenderer {
         // Draw the multiplier time bar
         this.drawBar(c, 80, 6, 32, 6,
             220, 13, 
-            this.state.getMulTimer());
+            this.lstate.getMulTimer());
 
         // Draw the power bar
-        this.drawPowerBar(c, c.height-11, this.state.getPower());
+        this.drawPowerBar(c, c.height-11, this.lstate.getPower());
     }
 
 }

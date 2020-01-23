@@ -56,7 +56,7 @@ class SingleShot extends ShootingLogic {
             delay : number,
             speed : number,
             animCB? : (() => any),
-            shootCB? : ((pos: Vector2, speed : Vector2) => any)) {
+            shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
 
         super(base, animCB, shootCB);
 
@@ -83,7 +83,7 @@ class SingleShot extends ShootingLogic {
 
                 this.shootCB(
                     new Vector2(this.base.pos.x-8, this.base.pos.y+4),
-                    new Vector2(this.speed, 0.0)
+                    new Vector2(this.speed, 0.0), 30
                     );
             }
         }
@@ -98,7 +98,7 @@ class FlyAI extends BaseEnemyAI {
     constructor(base : EntityBase,
         rendComp? : EnemyRenderer,
         params? : Array<number>,
-        shootCB? : (pos : Vector2, speed: Vector2) => any) {
+        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
 
         super(base, rendComp);
 

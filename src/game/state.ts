@@ -45,9 +45,9 @@ class LocalState {
 
 
     // Update health
-    public updateHealth(delta : number) {
+    public updateHealth(amount : number) {
 
-        this.health = clamp(this.health + delta, 0, this.maxHealth);
+        this.health = clamp(amount, 0, this.maxHealth);
     }
 
 }
