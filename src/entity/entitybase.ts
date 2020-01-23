@@ -18,6 +18,10 @@ class EntityBase {
     public exist : boolean;
     public dying : boolean;
     public hitbox : Vector2;
+    public health : number;
+    public maxHealth : number;
+    public power : number;
+    public xp : number;
 
 
     constructor(x? : number, y? : number) {
@@ -32,6 +36,12 @@ class EntityBase {
 
         this.dying = false;
         this.exist = false;
+
+        this.power = 1;
+        this.xp = 0;
+
+        this.maxHealth = 1;
+        this.health = this.maxHealth;
     }
 
 
@@ -62,5 +72,13 @@ class EntityBase {
     
         this.speed.zeroes();
         this.target.zeroes();
+    }
+
+
+    // Set the initial health
+    public setInitialHealth(amount : number) {
+
+        this.maxHealth = amount;
+        this.health = amount;
     }
 }

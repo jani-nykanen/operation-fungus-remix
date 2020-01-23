@@ -12,20 +12,12 @@ class Entity {
     protected ai? : AIComponent;
     protected offset : Vector2;
 
-    protected health : number;
-    protected maxHealth : number;
-    protected power : number;
-
 
     constructor(x? : number, y? : number) {
 
         this.base = new EntityBase(x, y);
 
         this.offset = new Vector2();
-        this.power = 1;
-
-        this.maxHealth = 1;
-        this.health = this.maxHealth;
     }
 
 
@@ -112,10 +104,10 @@ class Entity {
     }
 
 
-    protected hostileCollision?(e : Entity) : any;
+    protected hostileCollision?(e : Entity, kill? : boolean) : any;
 
     // Collision with another entity
-    public entityCollision(e : Entity, hostile? : boolean) : number {
+    public entityCollision(e : Entity, hostile? : boolean, kill = true) : number {
 
         if (!e.doesExist() || !this.base.exist ||
              e.isDying() || this.base.dying) return;
@@ -140,7 +132,7 @@ class Entity {
         if (hostile && collide && 
             this.hostileCollision != undefined) {
 
-            this.hostileCollision(e);
+            this.hostileCollision(e, kill);
             return e.getPower();
         }
 
@@ -167,8 +159,8 @@ class Entity {
     // Reduce health
     public reduceHealth(delta : number) {
 
-        this.health -= delta;
-        if (this.health <= 0) {
+        this.base.health -= delta;
+        if (this.base.health <= 0) {
 
             this.kill();
         }
@@ -177,12 +169,13 @@ class Entity {
 
     // Getters
     public doesExist = () => this.base.exist;
-    public getPower = () => this.power;
+    public getPower = () => this.base.power;
     public getPos = () => this.base.pos.clone();
     public getSpeed = () => this.base.speed.clone();
     public getHitbox = () => this.base.hitbox.clone();
     public isDying = () => this.base.dying;
     public getOffset = () => this.offset.clone();
-    public getHealth = () => this.health;
-
+    public getHealth = () => this.base.health;
+    public getXP = () => this.base.xp;
+    
 }

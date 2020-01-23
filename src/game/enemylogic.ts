@@ -112,5 +112,10 @@ class FlyAI extends BaseEnemyAI {
                 () => {
                     this.animateShooting();
                 }, shootCB);
+
+        
+        this.base.setInitialHealth(15);
+        this.base.power = 50;
+        this.base.xp = 20;
     }
 }

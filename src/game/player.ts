@@ -29,34 +29,36 @@ class PlayerAI extends AIComponent {
     // Restrict player movements
     private restrict() {
 
-        const GROUND_HEIGHT = 24;
-        const TOP_OFF = 24;
+        const WIDTH = 24;
+        const HEIGHT = 24;
+        const GROUND_HEIGHT = 20;
+        const TOP_OFF = 20;
 
         if (this.base.speed.x < 0 &&
-            this.base.pos.x-this.base.hitbox.x/2 < 0) {
+            this.base.pos.x-WIDTH/2 < 0) {
 
             this.base.speed.x = 0;
-            this.base.pos.x = this.base.hitbox.x/2;
+            this.base.pos.x = WIDTH/2;
         }
         else if (this.base.speed.x > 0 &&
-            this.base.pos.x+this.base.hitbox.x/2 >= 256) {
+            this.base.pos.x+WIDTH/2 >= 256) {
 
             this.base.speed.x = 0;
-            this.base.pos.x = 256 - this.base.hitbox.x/2;
+            this.base.pos.x = 256 - WIDTH/2;
         }
 
         if (this.base.speed.y < 0 &&
-            this.base.pos.y-this.base.hitbox.y/2 < TOP_OFF) {
+            this.base.pos.y-HEIGHT/2 < TOP_OFF) {
 
             this.base.speed.y = 0;
-            this.base.pos.y = TOP_OFF + this.base.hitbox.y/2;
+            this.base.pos.y = TOP_OFF + HEIGHT/2;
         }
         else if (this.base.speed.y > 0 &&
-            this.base.pos.y+this.base.hitbox.y/2 >= 192-GROUND_HEIGHT) {
+            this.base.pos.y+HEIGHT/2 >= 192-GROUND_HEIGHT) {
 
             this.base.speed.y = 0;
             this.base.pos.y = 192-GROUND_HEIGHT 
-                - this.base.hitbox.y/2;
+                - HEIGHT/2;
         }
     }
 
@@ -94,7 +96,7 @@ class PlayerAI extends AIComponent {
                     new Vector2(
                         BULLET_SPEED + this.base.speed.x/4, 
                         this.base.speed.y/4),
-                        5);
+                        10);
             }
         }
 
@@ -467,6 +469,7 @@ class PlayerRenderComponent extends RenderComponent {
     public getBodyFrame = () => this.spr.getFrame();
     public getDisappearPhase = () => this.disappear;
     public getWaveDelta = () => this.waveDelta;
+    public isDisappering = () => this.disappear != 0;
 }
 
 
@@ -475,6 +478,7 @@ class Player extends Entity {
 
 
     private aiRef : PlayerAI;
+    private rendRef : PlayerRenderComponent;
     private readonly lstate : LocalState;
 
 
@@ -482,19 +486,19 @@ class Player extends Entity {
 
         super(x, y);
 
-        let plrend = new PlayerRenderComponent(this.base);
-        this.renderComp = plrend;
-        this.ai = (this.aiRef = new PlayerAI(this.base, plrend));
+        this.rendRef = new PlayerRenderComponent(this.base);
+        this.renderComp = this.rendRef;
+        this.ai = (this.aiRef = new PlayerAI(this.base, this.rendRef));
 
         this.base.acc.x = 0.25;
         this.base.acc.y = 0.25;
         this.base.exist = true;
-        this.base.hitbox = new Vector2(16, 16);
+        this.base.hitbox = new Vector2(12, 12);
 
         this.lstate = lstate;
 
-        this.maxHealth = lstate.getMaxHealth();
-        this.health = this.maxHealth;
+        this.base.maxHealth = lstate.getMaxHealth();
+        this.base.health = this.base.maxHealth;
     }
 
 
@@ -506,20 +510,22 @@ class Player extends Entity {
 
 
     // Hostile collision
-    protected hostileCollision(e : Entity) {
+    protected hostileCollision(e : Entity, kill = true) {
 
-        if (this.renderComp.flickerTime > 0) return;
+        if (this.renderComp.flickerTime > 0 ||
+            this.rendRef.isDisappering()) return;
 
         this.flicker(60);
         this.reduceHealth(e.getPower());
         
-        e.kill();
+        if (kill)
+            e.kill();
     }
 
 
     // Refresh local state
     protected refresh(ev : CoreEvent) {
 
-        this.lstate.updateHealth(this.health);
+        this.lstate.updateHealth(this.base.health);
     }
 }

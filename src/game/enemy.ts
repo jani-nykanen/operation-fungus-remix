@@ -201,9 +201,6 @@ class Enemy extends Entity {
         shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
 
         const BASE_SPEED = 1.40;
-        const ENEMY_HEALTH = [
-            15 // Fly
-        ];
 
         this.base.exist = true;
         this.base.dying = false;
@@ -213,8 +210,7 @@ class Enemy extends Entity {
 
         this.renderComp.reset();
 
-        // This would look better with generics, but apparently
-        // TypeScript does not support it in a way I want
+        // TODO: Please don't do it this way, I beg you!
         switch(index) {
 
             case EnemyType.Fly:
@@ -224,17 +220,13 @@ class Enemy extends Entity {
                 this.renderComp.reset(
                     0, 4
                 );
-                this.offset.y = -4;
+                this.offset.y = -2;
     
                 break;
     
             default:
                 break;
         }
-
-        this.maxHealth = ENEMY_HEALTH[
-            clamp(index, 0, ENEMY_HEALTH.length)];
-        this.health = this.maxHealth;
 
         this.base.speed.x *= -BASE_SPEED;
         this.base.target.x *= -BASE_SPEED;

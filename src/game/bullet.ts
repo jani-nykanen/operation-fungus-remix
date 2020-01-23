@@ -101,7 +101,7 @@ class Bullet extends Entity {
         this.base.exist = false;
 
         this.base.hitbox = new Vector2(
-            4, 4
+            6, 6
         );
     }
 
@@ -119,7 +119,7 @@ class Bullet extends Entity {
 
         this.friendly = friendly;
 
-        this.power = power;
+        this.base.power = power;
     }
 
 

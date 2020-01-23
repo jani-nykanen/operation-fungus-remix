@@ -10,6 +10,8 @@ class HUDRenderer {
     // Bar values for rendering
     private healthBar : number;
     private healthTarget : number;
+    private expBar : number;
+    private expTarget : number;
 
     private readonly lstate : LocalState;
 
@@ -18,6 +20,9 @@ class HUDRenderer {
 
         this.healthBar = 1.0;
         this.healthTarget = this.healthBar;
+
+        this.expBar = 0;
+        this.expTarget = 0;
 
         this.lstate = state;
     }
@@ -92,8 +97,8 @@ class HUDRenderer {
         // Draw the filling (temporary, no animation)
         let w = ((WIDTH-4) * fill) | 0;
         if (w == WIDTH-5) w = WIDTH-4;
-        c.drawBitmapRegion(bmp, 16+2, 64, w, HEIGHT,
-            x, y);
+        c.drawBitmapRegion(bmp, 16+2, 56, w, HEIGHT,
+            x+2, y);
 
         // Draw the icon
         c.drawBitmapRegion(bmp, 0, 48, 16, 16,
@@ -107,12 +112,15 @@ class HUDRenderer {
 
         const DELTA_SPEED = 0.01;
 
-        this.healthTarget = 
-            this.lstate.getHealth() / this.lstate.getMaxHealth();
-
         this.healthBar = updateSpeedAxis(
             this.healthBar,
-            this.healthTarget,
+            this.lstate.getHealth() / this.lstate.getMaxHealth(),
+            DELTA_SPEED * ev.step
+        );
+
+        this.expBar = updateSpeedAxis(
+            this.expBar,
+            this.lstate.getXpPercentage(),
             DELTA_SPEED * ev.step
         );
     }
@@ -133,7 +141,7 @@ class HUDRenderer {
 
         this.drawBar(c, 16, 32, 64, 16,
             136, 4, 
-            this.lstate.getXpPercentage(), 1,
+            this.expBar, 1,
             String("LEVEL ") + String(this.lstate.getLevel()));
 
         // Draw the multiplier

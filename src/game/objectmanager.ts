@@ -63,7 +63,7 @@ class ObjectManager {
 
 
     // Update
-    update(ev : CoreEvent) {
+    update(lstate : LocalState, ev : CoreEvent) {
 
         // Update bullets
         for (let b of this.bullets) {
@@ -72,8 +72,12 @@ class ObjectManager {
         }
 
         // Update enemies
-        this.enemyGen.update(this.bullets,
-            this.flyingText, ev);
+        this.enemyGen.update(
+            this.bullets,
+            this.flyingText,
+            this.player, 
+            lstate,
+            ev);
 
         // Update player
         this.player.update(ev);
@@ -81,7 +85,10 @@ class ObjectManager {
 
             if (b.isFriendly()) continue;
 
-            this.player.entityCollision(b, true);
+            if (this.player.entityCollision(b, true) > 0) {
+
+                lstate.resetMultiplier();
+            }
         }
 
         // Update the flying text

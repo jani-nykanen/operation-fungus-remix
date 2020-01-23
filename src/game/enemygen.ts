@@ -127,7 +127,10 @@ class EnemyGenerator {
 
     // Update
     public update(bullets : Array<Bullet>, 
-        text : Array<FlyingText>, ev : CoreEvent) {
+        text : Array<FlyingText>, 
+        player : Player,
+        lstate : LocalState,
+        ev : CoreEvent) {
 
         const WAIT_TIME_MIN = 30;
         const WAIT_MOD = 45;
@@ -145,8 +148,13 @@ class EnemyGenerator {
 
             e.update(ev);
 
-            // Bullet collisions
+            // Bullet  & player collisions
             if (e.doesExist() && !e.isDying()) {
+
+                if (player.entityCollision(e, true, false) > 0) {
+
+                    lstate.resetMultiplier();
+                }
 
                 for (let b of bullets) {
 
@@ -157,6 +165,13 @@ class EnemyGenerator {
 
                         this.spawnDamageText(text, dmg, b.getPos());
                     }
+                }
+
+                // If killed, gain experience
+                if (e.isDying()) {
+
+                    lstate.addExperience(e.getXP());
+                    lstate.increaseMultiplier();
                 }
             }
         }
