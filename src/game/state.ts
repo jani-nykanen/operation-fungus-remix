@@ -3,6 +3,21 @@
  * (c) 2020 Jani Nykänen
  */
 
+
+// Skill indices
+enum Skill {
+
+    Accuracy     = 0, // Bullet power
+    Agility      = 1, // Reload & bullet speed
+    Dexterity    = 2, // Movement & invisibility time
+    Strength     = 3, // Sword power
+    Vitality     = 4, // Total health
+    Growth       = 5, // More EXP
+    Regeneration = 6, // Health regen
+    Diversity    = 7, // Bullet count
+}
+
+
 // Local game state for the current "session". Has 
 // a direct access to the variables
 class LocalState {
@@ -13,6 +28,10 @@ class LocalState {
     private multiplier : number;
     private mulTimer : number;
     private power : number;
+
+    // Skill levels (this is an array
+    // to make shopping easier!)
+    private skillLevels : Array<number>;
 
     // Gameplay stats
     private maxHealth : number;
@@ -38,6 +57,12 @@ class LocalState {
         this.mulTimer = 0;
         this.power = 0;
 
+        this.skillLevels = new Array<number> (8);
+        for (let i = 0; i < this.skillLevels.length; ++ i) {
+
+            this.skillLevels[i] = 5;
+        }
+
         this.recomputeStats();
     }
 
@@ -47,12 +72,12 @@ class LocalState {
 
         let x = this.level - 1;
 
-        this.bulletPower = 5 + x;
-        this.bulletSpeed = 3 + x/10.0;
-        this.reloadSpeed = x;
-        this.swordPower = 5 + x;
-        this.moveSpeed = 1 + x/40.0;
-        this.maxHealth = 100 + 10 * x;
+        this.bulletPower = 5 + x + this.skillLevels[Skill.Accuracy]*2;
+        this.bulletSpeed = 3 + x/10.0 + this.skillLevels[Skill.Agility]/10.0;
+        this.reloadSpeed = x + this.skillLevels[Skill.Agility];
+        this.swordPower = 5 + x + this.skillLevels[Skill.Strength]*3;
+        this.moveSpeed = 1 + x/40.0 + this.skillLevels[Skill.Dexterity]/20.0;
+        this.maxHealth = 100 + 10 * x + + this.skillLevels[Skill.Vitality]*20;
     }
 
 
@@ -66,13 +91,16 @@ class LocalState {
     public getXpPercentage = () => (this.xp / this.getXpRequired(this.level));
     public getPower = () => this.power;
 
-    public getMaxHealth = () => this.maxHealth;
+    public getMaxHealth   = () => this.maxHealth;
     public getBulletPower = () => this.bulletPower;
     public getReloadSpeed = () => this.reloadSpeed;
     public getBulletSpeed = () => this.bulletSpeed;
     public getSwordSpeed  = () => this.swordSpeed;
     public getSwordPower  = () => this.swordPower;
     public getMoveSpeed   = () => this.moveSpeed;
+
+    public getSkillLevel = (index : number) => 
+        this.skillLevels[clamp(index, 0, this.skillLevels.length)]; // Sorry
 
 
     // Update
