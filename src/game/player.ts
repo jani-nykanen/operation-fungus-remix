@@ -67,6 +67,8 @@ class PlayerAI extends AIComponent {
     private readonly blade : Blade;
     private readonly lstate : LocalState;
     private regenTimer : number;
+    private extraBulletTimer : number;
+    private extraBulletDir : boolean;
 
     private bulletCB : (pos : Vector2, speed: Vector2, power : number) => any;
 
@@ -86,6 +88,8 @@ class PlayerAI extends AIComponent {
         this.lstate = lstate;
 
         this.regenTimer = 0;
+        this.extraBulletTimer = 0;
+        this.extraBulletDir = false;
     }
 
 
@@ -126,8 +130,54 @@ class PlayerAI extends AIComponent {
     }
 
 
+    // Shoot bullet(s)
+    private shootBullets() {
+
+        const SHOOT_ANGLE = Math.PI / 6.0;
+
+        let min = 0;
+        let max = 0;
+
+        let wait = this.lstate.getBulletWait();
+        if (wait >= 0) {
+
+            if ((++ this.extraBulletTimer) >= wait) {
+
+                this.extraBulletTimer -= wait;
+                if (this.extraBulletDir) {
+
+                    max = 1;
+                }
+                else {
+
+                    min = -1;
+                }
+                this.extraBulletDir = !this.extraBulletDir;
+            }
+        }
+
+        let angle : number;
+        for (let i = min; i <= max; ++ i) {
+
+            angle = i * SHOOT_ANGLE;
+
+            this.bulletCB(
+                new Vector2(
+                    this.base.pos.x+20, 
+                    this.base.pos.y + this.renderComp.getWaveDelta()-2),
+                new Vector2(
+                    this.lstate.getBulletSpeed()* Math.cos(angle) + 
+                        this.base.speed.x/4, 
+                    this.lstate.getBulletSpeed()* Math.sin(angle) + 
+                        this.base.speed.y/4),
+                    this.lstate.getBulletPower());
+
+        }
+    }
+
+
     // Handle controls
-    control(ev : CoreEvent) {
+    public control(ev : CoreEvent) {
 
         const BASE_SPEED = 2;
 
@@ -161,15 +211,8 @@ class PlayerAI extends AIComponent {
 
             if (this.renderComp.animateShooting() &&
                 this.bulletCB != undefined) {
-
-                this.bulletCB(
-                    new Vector2(
-                        this.base.pos.x+20, 
-                        this.base.pos.y +this.renderComp.getWaveDelta()-2),
-                    new Vector2(
-                        this.lstate.getBulletSpeed() + this.base.speed.x/4, 
-                        this.base.speed.y/4),
-                        this.lstate.getBulletPower());
+                    
+                this.shootBullets();
             }
         }
 

@@ -43,6 +43,7 @@ class LocalState {
     private moveSpeed : number;
     private regenSpeed : number;
     private flickerTime : number;
+    private bulletWait : number;
 
 
     constructor() {
@@ -54,7 +55,7 @@ class LocalState {
         this.health = this.maxHealth;
         
         this.xp = 0;
-        this.level = 20;
+        this.level = 1;
         this.multiplier = 0;
         this.mulTimer = 0;
         this.power = 0;
@@ -82,7 +83,10 @@ class LocalState {
         this.maxHealth = 100 + 10 * x + this.skillLevels[Skill.Vitality]*20;
         this.flickerTime = 1.0 + this.skillLevels[Skill.Dexterity]/5.0;
 
-        let l = this.skillLevels[Skill.Regeneration];
+        let l = this.skillLevels[Skill.Diversity];
+        this.bulletWait = l == 0 ? -1 : (5 - this.skillLevels[Skill.Diversity]);
+
+        l = this.skillLevels[Skill.Regeneration];
         this.regenSpeed = l == 0 ? 0 : (60 - l*10);
     }
 
@@ -106,6 +110,7 @@ class LocalState {
     public getMoveSpeed   = () => this.moveSpeed;
     public getRegenSpeed  = () => this.regenSpeed;
     public getFlickerTime = () => this.flickerTime;
+    public getBulletWait  = () => this.bulletWait;
 
     public getSkillLevel = (index : number) => 
         this.skillLevels[clamp(index, 0, this.skillLevels.length)]; // Sorry
