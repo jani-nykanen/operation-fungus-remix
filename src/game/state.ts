@@ -41,6 +41,8 @@ class LocalState {
     private swordSpeed : number;
     private swordPower : number;
     private moveSpeed : number;
+    private regenSpeed : number;
+    private flickerTime : number;
 
 
     constructor() {
@@ -74,10 +76,14 @@ class LocalState {
 
         this.bulletPower = 5 + x + this.skillLevels[Skill.Accuracy]*2;
         this.bulletSpeed = 3 + x/10.0 + this.skillLevels[Skill.Agility]/10.0;
-        this.reloadSpeed = x + this.skillLevels[Skill.Agility];
+        this.reloadSpeed = x + this.skillLevels[Skill.Agility]*2;
         this.swordPower = 5 + x + this.skillLevels[Skill.Strength]*3;
         this.moveSpeed = 1 + x/40.0 + this.skillLevels[Skill.Dexterity]/20.0;
-        this.maxHealth = 100 + 10 * x + + this.skillLevels[Skill.Vitality]*20;
+        this.maxHealth = 100 + 10 * x + this.skillLevels[Skill.Vitality]*20;
+        this.flickerTime = 1.0 + this.skillLevels[Skill.Dexterity]/5.0;
+
+        let l = this.skillLevels[Skill.Regeneration];
+        this.regenSpeed = l == 0 ? 0 : (60 - l*10);
     }
 
 
@@ -87,7 +93,7 @@ class LocalState {
     public getExp = () => this.xp;
     public getMultiplier = () => this.multiplier;
     public getMulTimer = () => this.mulTimer;
-    public getXpRequired = (lvl : number) =>  1000 * lvl;
+    public getXpRequired = (lvl : number) =>  1000 * lvl * lvl;
     public getXpPercentage = () => (this.xp / this.getXpRequired(this.level));
     public getPower = () => this.power;
 
@@ -98,6 +104,8 @@ class LocalState {
     public getSwordSpeed  = () => this.swordSpeed;
     public getSwordPower  = () => this.swordPower;
     public getMoveSpeed   = () => this.moveSpeed;
+    public getRegenSpeed  = () => this.regenSpeed;
+    public getFlickerTime = () => this.flickerTime;
 
     public getSkillLevel = (index : number) => 
         this.skillLevels[clamp(index, 0, this.skillLevels.length)]; // Sorry
@@ -132,7 +140,8 @@ class LocalState {
 
         let inc =  amount * (10 + this.multiplier);
 
-        this.xp += inc;
+        this.xp += inc * (1 + this.skillLevels[Skill.Growth]/10.0);
+
         let limit = this.getXpRequired(this.level);
         if (this.xp >= limit) {
 

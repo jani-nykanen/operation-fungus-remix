@@ -66,6 +66,7 @@ class PlayerAI extends AIComponent {
     private disappear : number;
     private readonly blade : Blade;
     private readonly lstate : LocalState;
+    private regenTimer : number;
 
     private bulletCB : (pos : Vector2, speed: Vector2, power : number) => any;
 
@@ -83,6 +84,8 @@ class PlayerAI extends AIComponent {
         this.blade = blade;
 
         this.lstate = lstate;
+
+        this.regenTimer = 0;
     }
 
 
@@ -175,6 +178,20 @@ class PlayerAI extends AIComponent {
 
             this.renderComp.startDisappearing();
             this.disappear = 1;
+        }
+
+        // Regen
+        if (this.base.health < this.base.maxHealth &&
+            this.lstate.getRegenSpeed() > 0) {
+
+            if ((++ this.regenTimer) >= this.lstate.getRegenSpeed()) {
+
+                this.regenTimer -= this.lstate.getRegenSpeed();
+                
+                ++ this.base.health;
+
+                this.lstate.updateHealth(this.base.health);
+            }
         }
 
     }
@@ -614,7 +631,7 @@ class Player extends Entity {
         if (this.renderComp.flickerTime > 0 ||
             this.rendRef.isDisappering()) return;
 
-        this.flicker(60);
+        this.flicker((60 * this.lstate.getFlickerTime()) | 0);
         this.reduceHealth(e.getPower());
         
         if (kill)
