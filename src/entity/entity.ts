@@ -97,9 +97,9 @@ class Entity {
         
         if (this.renderComp != undefined) {
 
-            c.move(this.offset.x | 0, this.offset.y | 0);
+            //c.move(this.offset.x | 0, this.offset.y | 0);
             this.renderComp.draw(c, bmp);
-            c.move(-this.offset.x | 0, -this.offset.y | 0);
+            //c.move(-this.offset.x | 0, -this.offset.y | 0);
         }
     }
 

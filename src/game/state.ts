@@ -33,7 +33,7 @@ class LocalState {
         this.health = this.maxHealth;
         
         this.xp = 0;
-        this.level = 10;
+        this.level = 20;
         this.multiplier = 0;
         this.mulTimer = 0;
         this.power = 0;
@@ -48,10 +48,10 @@ class LocalState {
         let x = this.level - 1;
 
         this.bulletPower = 5 + x;
-        this.bulletSpeed = 3 + x/20.0;
-        this.reloadSpeed = 1 + 0.5 * x;
+        this.bulletSpeed = 3 + x/10.0;
+        this.reloadSpeed = x;
         this.swordPower = 5 + x;
-        this.moveSpeed = 1 + x/20.0;
+        this.moveSpeed = 1 + x/40.0;
         this.maxHealth = 100 + 10 * x;
     }
 

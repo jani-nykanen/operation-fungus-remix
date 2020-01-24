@@ -130,8 +130,14 @@ class PlayerAI extends AIComponent {
 
         let stick = ev.gamepad.getStick();
 
-        this.base.target.x = stick.x * BASE_SPEED * this.lstate.getMoveSpeed();
-        this.base.target.y = stick.y * BASE_SPEED * this.lstate.getMoveSpeed();
+        // Compute acceleration
+        let s =  this.lstate.getMoveSpeed();
+        this.base.acc.x = 0.25 * s;
+        this.base.acc.y = 0.25 * s;
+
+        // Compute target speed
+        this.base.target.x = stick.x * BASE_SPEED * s;
+        this.base.target.y = stick.y * BASE_SPEED * s;
 
         if (this.disappear) return;
 
@@ -170,6 +176,7 @@ class PlayerAI extends AIComponent {
             this.renderComp.startDisappearing();
             this.disappear = 1;
         }
+
     }
 
 
@@ -303,7 +310,7 @@ class PlayerRenderComponent extends RenderComponent {
     // Animate arms
     private animateArms(ev : CoreEvent) {
 
-        const SHOOT_SPEED = [4, 4] ;
+        const SHOOT_SPEED_BASE = [4, 4] ;
         const SHOOT_WAIT_TIME_BASE = 10; // This will be computed from stats later
 
         let index = clamp(this.shootMode, 0, 1);
@@ -312,13 +319,20 @@ class PlayerRenderComponent extends RenderComponent {
         let end = [6, 6] [index];
         let start = [1, 0] [index];
 
-        let shootWait = Math.max(0, SHOOT_WAIT_TIME_BASE-this.lstate.getReloadSpeed()) | 0;
+        let timeReduce = SHOOT_WAIT_TIME_BASE-this.lstate.getReloadSpeed();
+        let shootWait = Math.max(0, timeReduce) | 0;
+
+        let shotSpeed =  SHOOT_SPEED_BASE[index];
+        if (index == 0) {
+
+            shotSpeed -= Math.max(0, -timeReduce) / 4;
+        }
 
         // Animate arm
         if (this.shooting && this.shootWait <= 0.0) {
 
             this.sprArm.animate(row, start, end+1, 
-                SHOOT_SPEED[index], ev.step);
+               shotSpeed, ev.step);
             if (this.sprArm.getFrame() == end+1) {
 
                 // In the case we continue shooting
@@ -544,9 +558,11 @@ class PlayerRenderComponent extends RenderComponent {
 
     public isSwordActive() : boolean {
 
+        const BLADE_LAST_ACTIVE_FRAME = 4;
+
         return this.shooting &&
                this.shootMode == 1 &&
-               this.spr.getFrame() <= 5;
+               this.sprArm.getFrame() <= BLADE_LAST_ACTIVE_FRAME;
     }
 }
 
@@ -572,8 +588,6 @@ class Player extends Entity {
         this.ai = 
             (this.aiRef = new PlayerAI(this.base, this.rendRef, this.blade, lstate));
 
-        this.base.acc.x = 0.25;
-        this.base.acc.y = 0.25;
         this.base.exist = true;
         this.base.hitbox = new Vector2(12, 12);
 
@@ -581,6 +595,8 @@ class Player extends Entity {
 
         this.base.maxHealth = lstate.getMaxHealth();
         this.base.health = this.base.maxHealth;
+
+        this.offset.y = -4;
     }
 
 
