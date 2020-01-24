@@ -8,12 +8,20 @@
 class LocalState {
 
     private health : number;
-    private maxHealth : number;
     private xp : number;
     private level : number;
     private multiplier : number;
     private mulTimer : number;
     private power : number;
+
+    // Gameplay stats
+    private maxHealth : number;
+    private bulletPower : number;
+    private reloadSpeed : number;
+    private bulletSpeed : number;
+    private swordSpeed : number;
+    private swordPower : number;
+    private moveSpeed : number;
 
 
     constructor() {
@@ -25,16 +33,31 @@ class LocalState {
         this.health = this.maxHealth;
         
         this.xp = 0;
-        this.level = 1;
+        this.level = 10;
         this.multiplier = 0;
         this.mulTimer = 0;
         this.power = 0;
+
+        this.recomputeStats();
+    }
+
+
+    // Recompute stats
+    private recomputeStats() {
+
+        let x = this.level - 1;
+
+        this.bulletPower = 5 + x;
+        this.bulletSpeed = 3 + x/20.0;
+        this.reloadSpeed = 1 + 0.5 * x;
+        this.swordPower = 5 + x;
+        this.moveSpeed = 1 + x/20.0;
+        this.maxHealth = 100 + 10 * x;
     }
 
 
     // Getters
     public getHealth = () => this.health;
-    public getMaxHealth = () => this.maxHealth;
     public getLevel = () => this.level;
     public getExp = () => this.xp;
     public getMultiplier = () => this.multiplier;
@@ -42,6 +65,14 @@ class LocalState {
     public getXpRequired = (lvl : number) =>  1000 * lvl;
     public getXpPercentage = () => (this.xp / this.getXpRequired(this.level));
     public getPower = () => this.power;
+
+    public getMaxHealth = () => this.maxHealth;
+    public getBulletPower = () => this.bulletPower;
+    public getReloadSpeed = () => this.reloadSpeed;
+    public getBulletSpeed = () => this.bulletSpeed;
+    public getSwordSpeed  = () => this.swordSpeed;
+    public getSwordPower  = () => this.swordPower;
+    public getMoveSpeed   = () => this.moveSpeed;
 
 
     // Update
@@ -79,6 +110,8 @@ class LocalState {
 
             this.xp -= limit;
             ++ this.level;
+
+            this.recomputeStats();
         }
 
         // Also increase the star bar

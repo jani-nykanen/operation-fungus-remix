@@ -203,8 +203,6 @@ class Enemy extends Entity {
         params? : Array<number>,
         shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
 
-        const BASE_SPEED = 1.40;
-
         this.base.exist = true;
         this.base.dying = false;
         this.base.pos = pos.clone();
@@ -233,8 +231,8 @@ class Enemy extends Entity {
                 break;
         }
 
-        this.base.speed.x *= -BASE_SPEED;
-        this.base.target.x *= -BASE_SPEED;
+        this.base.speed.x *= -1;
+        this.base.target.x *= -1;
     }
 
 

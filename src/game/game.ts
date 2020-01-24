@@ -33,8 +33,12 @@ class GameScene implements Scene {
 
     update(ev : CoreEvent) {
 
+        // This gives the unit speed for the
+        // middle point of the ground
+        const BACKGROUND_SPEED = 1.0 / 1.40;
+
         // Update stage
-        this.stage.update(ev);
+        this.stage.update(BACKGROUND_SPEED, ev);
 
         // Update objects
         this.objm.update(this.lstate, ev);

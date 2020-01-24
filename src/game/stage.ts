@@ -42,7 +42,7 @@ class Stage {
 
 
     // Update
-    public update(ev : CoreEvent) {
+    public update(globalSpeed : number,  ev : CoreEvent) {
 
         const TIMER_SPEEDS = [
             1.0, 0.5, 0.25, 0.2, 0.125, 0.1
@@ -51,7 +51,7 @@ class Stage {
         // Update timers
         for (let i = 0; i < this.timers.length; ++ i) {
 
-            this.timers[i] += TIMER_SPEEDS[i] * ev.step;
+            this.timers[i] += globalSpeed * TIMER_SPEEDS[i] * ev.step;
             this.timers[i] %= 256; 
         }
     }

@@ -28,7 +28,7 @@ class Blade extends Entity {
 
         this.attackIndex = 0;
 
-        this.base.speed.x = 4.0;
+        this.base.speed.x = 5.0;
     }
 
 
@@ -37,8 +37,7 @@ class Blade extends Entity {
 
         let p = this.follow.getPos();
 
-        // TODO: Get this from local state
-        this.base.power = 10;
+        this.base.power = this.lstate.getSwordPower();;
 
         this.base.pos.x = p.x + 16;
         this.base.pos.y = p.y + this.follow.getWaveDelta() + 8;
@@ -66,13 +65,15 @@ class PlayerAI extends AIComponent {
     private dustTimer : number;
     private disappear : number;
     private readonly blade : Blade;
+    private readonly lstate : LocalState;
 
     private bulletCB : (pos : Vector2, speed: Vector2, power : number) => any;
 
 
     constructor(base : EntityBase, 
         renderComp : PlayerRenderComponent,
-        blade : Blade) {
+        blade : Blade,
+        lstate : LocalState) {
 
         super(base);
 
@@ -80,6 +81,8 @@ class PlayerAI extends AIComponent {
         this.dustTimer = 0.0;
         this.disappear = 0;
         this.blade = blade;
+
+        this.lstate = lstate;
     }
 
 
@@ -123,12 +126,12 @@ class PlayerAI extends AIComponent {
     // Handle controls
     control(ev : CoreEvent) {
 
-        const BULLET_SPEED = 3;
+        const BASE_SPEED = 2;
 
         let stick = ev.gamepad.getStick();
 
-        this.base.target.x = stick.x * 2;
-        this.base.target.y = stick.y * 2;
+        this.base.target.x = stick.x * BASE_SPEED * this.lstate.getMoveSpeed();
+        this.base.target.y = stick.y * BASE_SPEED * this.lstate.getMoveSpeed();
 
         if (this.disappear) return;
 
@@ -155,9 +158,9 @@ class PlayerAI extends AIComponent {
                         this.base.pos.x+20, 
                         this.base.pos.y +this.renderComp.getWaveDelta()-2),
                     new Vector2(
-                        BULLET_SPEED + this.base.speed.x/4, 
+                        this.lstate.getBulletSpeed() + this.base.speed.x/4, 
                         this.base.speed.y/4),
-                        5);
+                        this.lstate.getBulletPower());
             }
         }
 
@@ -247,8 +250,11 @@ class PlayerRenderComponent extends RenderComponent {
 
     private disappear : number;
 
+    private readonly lstate : LocalState;
 
-    constructor(base : EntityBase) {
+
+    constructor(base : EntityBase,
+        lstate : LocalState) {
 
         super(base, 32, 32);
 
@@ -264,6 +270,8 @@ class PlayerRenderComponent extends RenderComponent {
         this.waveDelta = 0.0;
 
         this.dust = new Array<Dust> ();
+
+        this.lstate = lstate;
     }
 
 
@@ -296,13 +304,15 @@ class PlayerRenderComponent extends RenderComponent {
     private animateArms(ev : CoreEvent) {
 
         const SHOOT_SPEED = [4, 4] ;
-        const SHOOT_WAIT_TIME = 10; // This will be computed from stats later
+        const SHOOT_WAIT_TIME_BASE = 10; // This will be computed from stats later
 
         let index = clamp(this.shootMode, 0, 1);
 
         let row = 3 + this.shootMode*3;
         let end = [6, 6] [index];
         let start = [1, 0] [index];
+
+        let shootWait = Math.max(0, SHOOT_WAIT_TIME_BASE-this.lstate.getReloadSpeed()) | 0;
 
         // Animate arm
         if (this.shooting && this.shootWait <= 0.0) {
@@ -321,7 +331,7 @@ class PlayerRenderComponent extends RenderComponent {
                 this.shooting = false;
 
                 if (this.shootMode == 0)
-                    this.shootWait = SHOOT_WAIT_TIME;
+                    this.shootWait = shootWait;
             }    
         }
         else {
@@ -557,10 +567,10 @@ class Player extends Entity {
 
         this.blade = new Blade(this, lstate);
 
-        this.rendRef = new PlayerRenderComponent(this.base);
+        this.rendRef = new PlayerRenderComponent(this.base, lstate);
         this.renderComp = this.rendRef;
         this.ai = 
-            (this.aiRef = new PlayerAI(this.base, this.rendRef, this.blade));
+            (this.aiRef = new PlayerAI(this.base, this.rendRef, this.blade, lstate));
 
         this.base.acc.x = 0.25;
         this.base.acc.y = 0.25;
@@ -575,7 +585,8 @@ class Player extends Entity {
 
 
     // Set bullet callback
-    public setBulletCallback(cb : (pos : Vector2, speed: Vector2, power : number) => any)   {
+    public setBulletCallback(cb : 
+        (pos : Vector2, speed: Vector2, power : number) => any)   {
 
         this.aiRef.setBulletCallback(cb);
     }
@@ -599,6 +610,8 @@ class Player extends Entity {
     protected refresh(ev : CoreEvent) {
 
         this.lstate.updateHealth(this.base.health);
+
+        this.base.maxHealth = this.lstate.getMaxHealth();
 
         if (this.doesExist() && !this.isDying())
             this.blade.refresh(ev);

@@ -30,10 +30,10 @@ class EnemyGenerator {
 
         const MIN_Y = 32;
         const MAX_Y = 160;
-        const AMPLITUDE_MIN = 8.0;
+        const AMPLITUDE_MIN = 12.0;
         const AMPLITUDE_MAX = 32.0;
         const COUNT_MODIF = 1.0;
-        const LATITUDE_BASE = 0.05;
+        const LATITUDE_BASE = 0.033;
         const BODY_OFF = 32;
 
         let maxAmpl = AMPLITUDE_MAX - COUNT_MODIF;
