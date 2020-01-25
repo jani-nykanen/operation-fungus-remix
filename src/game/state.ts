@@ -55,7 +55,7 @@ class LocalState {
         this.health = this.maxHealth;
         
         this.xp = 0;
-        this.level = 1;
+        this.level = 10;
         this.multiplier = 0;
         this.mulTimer = 0;
         this.power = 0;

@@ -29,7 +29,7 @@ class Sprite {
     animate(row : number, start : number, end : number, 
         speed : number, step : number) {
 
-        speed = Math.max(1, speed);
+        // speed = Math.max(1, speed);
 
         // Nothing to animate
         if (start == end) {
@@ -72,6 +72,10 @@ class Sprite {
     
                     this.frame = start;
                 }
+                if (speed < 0) {
+
+                    this.frame = Math.min(this.frame-speed, end);
+                }   
             }
             else {
     
@@ -79,6 +83,10 @@ class Sprite {
     
                     this.frame = start;
                 }
+                if (speed < 0) {
+
+                    this.frame = Math.max(this.frame+speed, start);
+                } 
             }
     
             this.count -= speed;

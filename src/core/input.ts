@@ -22,6 +22,8 @@ class InputManager {
     private prevent : any;
     private anyPressed : boolean;
 
+    private gamepad : GamePad;
+
 
     constructor() {
 
@@ -57,6 +59,9 @@ class InputManager {
 
             e.preventDefault();
         });
+
+        // Create a gamepad listener
+        this.gamepad = new GamePad();
     }
 
 
@@ -95,6 +100,9 @@ class InputManager {
                 this.keyStates[k] = State.Up;
         }
         this.anyPressed = false;
+
+        // Update gamepad
+        this.gamepad.update();
     }
 
 
@@ -109,5 +117,9 @@ class InputManager {
     public isAnyPressed = () => this.anyPressed;
     public getKeyState = (key : string) => 
         this.keyStates[key] | State.Up;
+    public getButtonState = (button : number) => {
 
+        return this.gamepad.getButtonState(button);
+    }
+    public getGamepadStick = () => this.gamepad.getStick();
 }

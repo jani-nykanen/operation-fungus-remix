@@ -71,3 +71,10 @@ class KeyValuePair<T> {
         this.value = value;
     }
 }
+
+
+// Since Math.hypot is not defined...
+let hypot = (x : number, y : number) => {
+
+    return Math.sqrt(x*x + y*y);
+}

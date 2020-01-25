@@ -65,45 +65,61 @@ class Controller {
 
             input.preventDefault(b.key);
         }
-
-        // Also prevent arrow keys
-        input.preventDefault("ArrowLeft");
-        input.preventDefault("ArrowRight");
-        input.preventDefault("ArrowUp");
-        input.preventDefault("ArrowDown");
     }
 
 
     // Update buttons
     public updateButtons(input : InputManager) {
 
+        const EPS = 0.01;
+
+        // Update buttons
         for (let b of this.buttons) {
 
             b.state = input.getKeyState(b.key);
+            // Nice pyramid
+            if (b.state == State.Up) {
+
+                b.state = input.getButtonState(b.jbutton);
+                if (b.jbutton2 != undefined && b.state == State.Up) {
+
+                    b.state = input.getButtonState(b.jbutton2);
+                }
+            }
         }
 
         // Update stick
         this.stick = new Vector2();
-        if (input.getKeyState("ArrowLeft") == State.Down) {
+        if (this.getButtonState("left") == State.Down) {
 
             this.stick.x = -1.0;
         }
-        else if (input.getKeyState("ArrowRight") == State.Down) {
+        else if (this.getButtonState("right") == State.Down) {
 
             this.stick.x = 1.0;
         }
 
-        if (input.getKeyState("ArrowUp") == State.Down) {
+        if (this.getButtonState("up") == State.Down) {
 
             this.stick.y = -1.0;
         }
-        else if (input.getKeyState("ArrowDown") == State.Down) {
+        else if (this.getButtonState("down") == State.Down) {
 
             this.stick.y = 1.0;
         }
+
         // Normalize to get emulated "analogue stick"
         // behavior
         this.stick.normalize();
+
+        let padStick = input.getGamepadStick();
+        if (hypot(this.stick.x, this.stick.y) < EPS &&
+            hypot(padStick.x, padStick.y) > EPS) {
+
+            this.stick.x = padStick.x;
+            this.stick.y = padStick.y;
+        }
+        
     }
 
 
