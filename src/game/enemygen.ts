@@ -65,7 +65,7 @@ class EnemyGenerator {
 
 
     // Spawn slimes
-    private spawnSlimes(count : number) {
+    private spawnSlimes(count : number, flip = false) {
 
         const BODY_OFF = 32;
         const JUMP_MIN = 2.5;
@@ -76,7 +76,7 @@ class EnemyGenerator {
         let x = 256+12;
         let y = 192 -16;
 
-        let jumpWait = JUMP_WAIT_MIN + Math.random()*JUMP_WAIT_VARY;
+        let jumpWait = JUMP_WAIT_MIN + (Math.random()*JUMP_WAIT_VARY) | 0;
         let initialWait = (Math.random() * jumpWait) | 0;
         for (let i = 0; i < count; ++ i) {
 
@@ -85,7 +85,7 @@ class EnemyGenerator {
                 EnemyType.Slime,
                 [jumpWait, 
                  JUMP_MIN + Math.random()*JUMP_VARY, 
-                initialWait, 1],
+                initialWait, 1, flip ? 1 : 0],
                 this.shootCB
                 );
         }
@@ -129,7 +129,7 @@ class EnemyGenerator {
             break;
 
         case EnemyType.Slime:
-            this.spawnSlimes(count);
+            this.spawnSlimes(count, Math.random() <= 0.5);
             break;
 
         default:

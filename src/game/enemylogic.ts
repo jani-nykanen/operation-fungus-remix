@@ -64,7 +64,7 @@ class JumpMovement extends MovementLogic {
         super(base);
 
         this.waitTime = initialWait;
-        this.baseWaitTime = this.waitTime;
+        this.baseWaitTime = waitTime;
         this.jumpHeight = jumpHeight;
 
         this.base.speed.y = 0.0;
@@ -81,8 +81,10 @@ class JumpMovement extends MovementLogic {
 
         const GRAVITY = 3.0;
         const BOTTOM = 192-16 - 10;
-        const JUMP_SPEED_X = 1.5;
-        const JUMP_MUL = 1.25;
+        const JUMP_SPEED_X_FORWARDS = -0.5;
+        const JUMP_SPEED_X_BACKWARDS = 0.5;
+        const JUMP_MUL_FORWARDS = 1.25;
+        const JUMP_MUL_BACKWARDS = 1.05;
 
         this.base.target.y = GRAVITY;
         if (this.canJump)
@@ -96,9 +98,20 @@ class JumpMovement extends MovementLogic {
                 this.waitTime += this.baseWaitTime;
 
                 this.base.speed.y = -this.jumpHeight;
-                this.base.target.x = -this.initialSpeed * JUMP_SPEED_X;
-            
-                this.jumpHeight *= JUMP_MUL;
+
+                if (this.base.flip) {
+
+                    this.base.target.x = -this.initialSpeed + 
+                        JUMP_SPEED_X_BACKWARDS;
+                    this.jumpHeight *= JUMP_MUL_BACKWARDS;
+                }
+                else {
+
+                    this.base.target.x = -this.initialSpeed + 
+                        JUMP_SPEED_X_FORWARDS;
+
+                    this.jumpHeight *= JUMP_MUL_FORWARDS;    
+                }
             }
         }
 
@@ -233,7 +246,7 @@ class SlimeAI extends BaseEnemyAI {
 
         this.moveComp = new JumpMovement(base,
             params[0], params[1], params[2], params[3]);
-
+        
         this.shootComp = undefined;
         
         this.base.setInitialHealth(10);
@@ -243,5 +256,7 @@ class SlimeAI extends BaseEnemyAI {
         this.base.hitbox = new Vector2(
             16, 16
         );
+
+        this.base.flip = params[4] == 1;
     }
 }

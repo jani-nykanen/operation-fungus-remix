@@ -88,6 +88,8 @@ class RenderComponent {
     // Update
     public update(ev : CoreEvent) {
 
+        this.flip = this.base.flip;
+
         if (this.flickerTime > 0.0) {
 
             this.flickerTime -= ev.step;

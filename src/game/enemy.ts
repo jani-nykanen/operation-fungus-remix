@@ -208,6 +208,7 @@ class Enemy extends Entity {
         this.base.dying = false;
         this.base.pos = pos.clone();
         this.base.startPos = pos.clone();
+        this.base.flip = false;
         this.offset = new Vector2();
         this.hurtIndex = 0;
 

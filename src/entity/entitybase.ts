@@ -22,6 +22,7 @@ class EntityBase {
     public maxHealth : number;
     public power : number;
     public xp : number;
+    public flip : boolean; // Should not be here, sorry
 
 
     constructor(x? : number, y? : number) {
@@ -42,6 +43,8 @@ class EntityBase {
 
         this.maxHealth = 1;
         this.health = this.maxHealth;
+
+        this.flip = false;
     }
 
 

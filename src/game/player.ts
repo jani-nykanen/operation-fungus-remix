@@ -24,7 +24,7 @@ class Blade extends Entity {
 
         // this.renderComp = new RenderComponent(this.base, 32,  16);
 
-        this.base.hitbox = new Vector2(32, 16);
+        this.base.hitbox = new Vector2(28, 16);
 
         this.attackIndex = 0;
 
@@ -622,6 +622,7 @@ class PlayerRenderComponent extends RenderComponent {
 
         return this.shooting &&
                this.shootMode == 1 &&
+               this.sprArm.getFrame() >= 1 &&
                this.sprArm.getFrame() <= BLADE_LAST_ACTIVE_FRAME;
     }
 }
