@@ -26,7 +26,7 @@ class EnemyGenerator {
 
 
     // Spawn flies
-    private spawnFlies(count : number) {
+    private spawnFlies(count : number, fleeing = false) {
 
         const MIN_Y = 32;
         const MAX_Y = 160;
@@ -35,6 +35,7 @@ class EnemyGenerator {
         const COUNT_MODIF = 1.0;
         const LATITUDE_BASE = 0.033;
         const BODY_OFF = 32;
+        const FLEEING_SPEED = 0.5;
 
         let maxAmpl = AMPLITUDE_MAX - COUNT_MODIF;
 
@@ -55,8 +56,9 @@ class EnemyGenerator {
 
             this.getNextEnemy().spawn(
                 new Vector2(x + i*BODY_OFF, y),
-                EnemyType.Fly,
-                [ampl, lat, 1, 
+                fleeing ?  EnemyType.FleeingFly : EnemyType.Fly,
+                [ampl, lat, 
+                fleeing ? FLEEING_SPEED : 1, 
                 start + Math.PI/count * i],
                 this.shootCB
                 );
@@ -125,7 +127,7 @@ class EnemyGenerator {
         switch(type) {
         
         case EnemyType.Fly:
-            this.spawnFlies(count);
+            this.spawnFlies(count, Math.random() <= 0.5);
             break;
 
         case EnemyType.Slime:

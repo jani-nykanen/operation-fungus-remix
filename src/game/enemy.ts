@@ -7,6 +7,7 @@
 enum EnemyType {
     Fly = 0,
     Slime = 1,
+    FleeingFly = 2,
 }
 
 
@@ -217,6 +218,7 @@ class Enemy extends Entity {
             case EnemyType.Fly:
 
                 this.rendRef = new EnemyRenderer(this.base);
+                
                 this.ai = new FlyAI(this.base, this.rendRef, 
                     params, shootCB);
 
@@ -238,9 +240,22 @@ class Enemy extends Entity {
                 this.rendRef.shadowSize = new Vector2(
                     24, 6
                 );
-
                 break;
     
+            case EnemyType.FleeingFly:
+
+                this.rendRef = new EnemyRenderer(this.base);
+                
+                this.ai = new FleeingFlyAI(this.base, this.rendRef, 
+                    params, shootCB);
+
+                this.rendRef.reset(
+                    2, 4
+                );
+                this.offset.y = 3;
+
+                break;
+
             default:
                 break;
         }

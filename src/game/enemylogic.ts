@@ -260,3 +260,30 @@ class SlimeAI extends BaseEnemyAI {
         this.base.flip = params[4] == 1;
     }
 }
+
+
+class FleeingFlyAI extends BaseEnemyAI {
+
+    constructor(base : EntityBase,
+        rendComp? : EnemyRenderer,
+        params? : Array<number>,
+        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+
+        super(base, rendComp);
+
+        this.moveComp = new WaveMovement(base,
+            params[0], params[1], params[2], params[3]);
+            
+        this.shootComp = undefined;
+        
+        this.base.setInitialHealth(15);
+        this.base.power = 50;
+        this.base.xp = 20;
+
+        this.base.hitbox = new Vector2(
+            16, 16
+        );
+
+        this.base.flip = true;
+    }
+}
