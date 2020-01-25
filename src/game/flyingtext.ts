@@ -14,6 +14,7 @@ class FlyingText {
     private output : string;
 
     private exist : boolean;
+    private red : boolean;
 
 
     constructor() {
@@ -25,13 +26,15 @@ class FlyingText {
     // Spawn
     public spawn(output : string,
         pos : Vector2, speed : number,
-        stopTime : number, waitTime : number)  {
+        stopTime : number, waitTime : number,
+        isRed = true)  {
 
         this.pos = pos;
         this.speed = speed;
         this.stopTime = stopTime;
         this.output = output;
         this.waitTime = waitTime;
+        this.red = isRed;
 
         this.exist = true;
     }
@@ -62,7 +65,7 @@ class FlyingText {
 
         if (!this.exist) return;
 
-        c.drawText(c.getBitmap("fontRed"),
+        c.drawText(c.getBitmap(this.red ? "fontRed" : "font"),
             this.output, this.pos.x | 0, (this.pos.y | 0) -8, 
             -1, 0, true);
     }

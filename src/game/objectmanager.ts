@@ -35,8 +35,34 @@ class ObjectManager {
     }
 
 
+    // Spawn a flying text
+    private spawnFlyingText(msg : string,
+        x : number, y : number) {
+
+        let text : FlyingText;
+
+        for (let t of this.flyingText) {
+    
+            if (!t.doesExist()) {
+    
+                text = t;
+                break;
+            }
+        }
+    
+        if (text == null) {
+            
+            text = new FlyingText();
+            this.flyingText.push(text);
+        }
+
+        text.spawn(msg, new Vector2(x, y), 2,
+            10, 90, false);
+    }
+
+
     // Spawn a bullet
-    spawnBullet(row : number,
+    private spawnBullet(row : number,
         pos : Vector2, 
         speed : Vector2, 
         friendly : boolean,
@@ -63,7 +89,9 @@ class ObjectManager {
 
 
     // Update
-    update(lstate : LocalState, ev : CoreEvent) {
+    public update(lstate : LocalState, ev : CoreEvent) {
+
+        let oldLevel = lstate.getLevel();
 
         // Update bullets
         for (let b of this.bullets) {
@@ -95,6 +123,16 @@ class ObjectManager {
 
                 lstate.resetMultiplier();
             }
+        }
+
+        // Spawn level up text
+        let p : Vector2;
+        if (oldLevel != lstate.getLevel()) {
+
+            p = this.player.getPos();
+            this.spawnFlyingText("LEVEL UP!",
+                p.x, p.y-12
+                );
         }
 
         // Update the flying text
