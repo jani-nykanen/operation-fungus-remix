@@ -47,48 +47,58 @@ class WaveMovement extends MovementLogic {
 // Jumping movement
 class JumpMovement extends MovementLogic {
 
-    private initialWaitTime : number;
+    private baseWaitTime : number;
     private waitTime : number;
     private canJump : boolean;
     private jumpHeight : number;
+
+    private initialSpeed : number;
 
 
     constructor(base : EntityBase,
         waitTime : number,
         jumpHeight : number,
+        initialWait : number,
         speed : number) {
 
         super(base);
 
-        this.waitTime = waitTime;
-        this.initialWaitTime = this.waitTime;
+        this.waitTime = initialWait;
+        this.baseWaitTime = this.waitTime;
         this.jumpHeight = jumpHeight;
 
         this.base.speed.y = 0.0;
 
         this.base.speed.x = speed;
         this.base.target.x = speed;
+        this.initialSpeed = speed;
 
-        this.base.acc.x = 1.0;
-        this.base.acc.y = 0.15;
+        this.base.acc.y = 0.10;
     }
 
 
     public move(ev : CoreEvent) {
 
-        const GRAVITY = 4.0;
+        const GRAVITY = 3.0;
         const BOTTOM = 192-16 - 10;
+        const JUMP_SPEED_X = 1.5;
+        const JUMP_MUL = 1.25;
 
         this.base.target.y = GRAVITY;
+        if (this.canJump)
+            this.base.target.x = -this.initialSpeed; 
 
         if (this.canJump && this.base.pos.x < 256-12) {
 
             this.waitTime -= ev.step;
             if (this.waitTime <= 0) {
 
-                this.waitTime += this.initialWaitTime;
+                this.waitTime += this.baseWaitTime;
 
                 this.base.speed.y = -this.jumpHeight;
+                this.base.target.x = -this.initialSpeed * JUMP_SPEED_X;
+            
+                this.jumpHeight *= JUMP_MUL;
             }
         }
 
@@ -109,6 +119,7 @@ class JumpMovement extends MovementLogic {
 
 // Renders enemies
 class SlimeRenderer extends EnemyRenderer {
+
 
     public animate(ev : CoreEvent) {
 
@@ -221,11 +232,13 @@ class SlimeAI extends BaseEnemyAI {
         super(base, rendComp);
 
         this.moveComp = new JumpMovement(base,
-            params[0], params[1], params[2]);
+            params[0], params[1], params[2], params[3]);
+
+        this.shootComp = undefined;
         
-        this.base.setInitialHealth(15);
+        this.base.setInitialHealth(10);
         this.base.power = 60;
-        this.base.xp = 20;
+        this.base.xp = 15;
 
         this.base.hitbox = new Vector2(
             16, 16

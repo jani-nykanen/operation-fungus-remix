@@ -214,12 +214,12 @@ class Enemy extends Entity {
         switch(index) {
 
             case EnemyType.Fly:
-    
+
+                this.rendRef = new EnemyRenderer(this.base);
                 this.ai = new FlyAI(this.base, this.rendRef, 
                     params, shootCB);
 
-                this.renderComp = new EnemyRenderer(this.base);
-                this.renderComp.reset(
+                this.rendRef.reset(
                     0, 4
                 );
                 this.offset.y = 3;
@@ -230,14 +230,20 @@ class Enemy extends Entity {
     
                 this.ai = new SlimeAI(this.base, this.rendRef, 
                     params, shootCB);
-                this.renderComp = new SlimeRenderer(this.base);
-                this.renderComp.reset(1);
+
+                this.rendRef = new SlimeRenderer(this.base);
+                this.rendRef.reset(1)
+
+                this.rendRef.shadowSize = new Vector2(
+                    24, 6
+                );
 
                 break;
     
             default:
                 break;
         }
+        this.renderComp = this.rendRef;
 
         // Reminder to self
         if (this.renderComp == undefined) {

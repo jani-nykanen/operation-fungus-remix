@@ -68,16 +68,24 @@ class EnemyGenerator {
     private spawnSlimes(count : number) {
 
         const BODY_OFF = 32;
+        const JUMP_MIN = 2.5;
+        const JUMP_VARY = 2.0;
+        const JUMP_WAIT_MIN = 30;
+        const JUMP_WAIT_VARY = 60; 
 
         let x = 256+12;
         let y = 192 -16;
 
+        let jumpWait = JUMP_WAIT_MIN + Math.random()*JUMP_WAIT_VARY;
+        let initialWait = (Math.random() * jumpWait) | 0;
         for (let i = 0; i < count; ++ i) {
 
             this.getNextEnemy().spawn(
                 new Vector2(x + i*BODY_OFF, y),
-                EnemyType.Fly,
-                [60, 1.5, 1],
+                EnemyType.Slime,
+                [jumpWait, 
+                 JUMP_MIN + Math.random()*JUMP_VARY, 
+                initialWait, 1],
                 this.shootCB
                 );
         }

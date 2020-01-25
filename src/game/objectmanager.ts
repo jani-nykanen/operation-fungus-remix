@@ -57,7 +57,7 @@ class ObjectManager {
         }
 
         text.spawn(msg, new Vector2(x, y), 2,
-            10, 90, false);
+            10, 60, false);
     }
 
 
