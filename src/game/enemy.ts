@@ -6,6 +6,7 @@
  
 enum EnemyType {
     Fly = 0,
+    Slime = 1,
 }
 
 
@@ -210,25 +211,38 @@ class Enemy extends Entity {
         this.offset = new Vector2();
         this.hurtIndex = 0;
 
-        this.renderComp.reset();
-
-
         switch(index) {
 
             case EnemyType.Fly:
     
                 this.ai = new FlyAI(this.base, this.rendRef, 
                     params, shootCB);
+
+                this.renderComp = new EnemyRenderer(this.base);
                 this.renderComp.reset(
                     0, 4
                 );
-
                 this.offset.y = 3;
+
+                break;
+
+            case EnemyType.Slime:
+    
+                this.ai = new SlimeAI(this.base, this.rendRef, 
+                    params, shootCB);
+                this.renderComp = new SlimeRenderer(this.base);
+                this.renderComp.reset(1);
 
                 break;
     
             default:
                 break;
+        }
+
+        // Reminder to self
+        if (this.renderComp == undefined) {
+
+            throw "Forgot something?"
         }
 
         this.base.speed.x *= -1;

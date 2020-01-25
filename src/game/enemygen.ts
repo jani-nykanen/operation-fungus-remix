@@ -64,6 +64,26 @@ class EnemyGenerator {
     }
 
 
+    // Spawn slimes
+    private spawnSlimes(count : number) {
+
+        const BODY_OFF = 32;
+
+        let x = 256+12;
+        let y = 192 -16;
+
+        for (let i = 0; i < count; ++ i) {
+
+            this.getNextEnemy().spawn(
+                new Vector2(x + i*BODY_OFF, y),
+                EnemyType.Fly,
+                [60, 1.5, 1],
+                this.shootCB
+                );
+        }
+    }
+
+
     // Get the next "non-existent" enemy in an array
     private getNextEnemy() : Enemy {
 
@@ -92,7 +112,21 @@ class EnemyGenerator {
 
         let count = 1 + Math.floor(Math.random()*4);
 
-        this.spawnFlies(count);
+        let type = (Math.random() * 2) | 0;
+
+        switch(type) {
+        
+        case EnemyType.Fly:
+            this.spawnFlies(count);
+            break;
+
+        case EnemyType.Slime:
+            this.spawnSlimes(count);
+            break;
+
+        default:
+            break;
+        }
 
         return count;
     }
