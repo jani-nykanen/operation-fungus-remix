@@ -8,20 +8,27 @@
 class EnemyGenerator {
 
 
+    private timers : Array<number>;
+    private lastIndices : Array<number>;
     private enemies : Array<Enemy>;
     private shootCB : (pos : Vector2, speed: Vector2, power : number) => any;
-
-    // TODO: Moar timers?
-    private enemyTimer : number;
 
 
     constructor(shootCB? : 
         (pos : Vector2, speed: Vector2, power : number) => any) {
 
+        const TIMER_COUNT = 3;
+
         this.enemies = new Array<Enemy> ();
         this.shootCB = shootCB;
 
-        this.enemyTimer = 120;
+        this.timers = new Array<number> (TIMER_COUNT);
+        this.lastIndices = new Array<number> (TIMER_COUNT);
+        for (let i = 0; i < this.timers.length; ++ i) {
+
+            this.timers[i] = 60.0 + i*30.0;
+            this.lastIndices[i] = -1;
+        }
     }
 
 
@@ -84,7 +91,7 @@ class EnemyGenerator {
 
             this.getNextEnemy().spawn(
                 new Vector2(x + i*BODY_OFF, y),
-                EnemyType.Slime,
+                flip ? EnemyType.FleeingSlime : EnemyType.Slime,
                 [jumpWait, 
                  JUMP_MIN + Math.random()*JUMP_VARY, 
                 initialWait, 1.0, 
@@ -234,20 +241,32 @@ class EnemyGenerator {
 
 
     // Spawn an enemy
-    private spawnEnemy() : number {
+    private spawnEnemy(index : number) : number {
+
+        const MAX = 5;
 
         let count = 1 + Math.floor(Math.random()*4);
 
-        let type = (Math.random() * 5) | 0;
+        let type = (Math.random() * MAX) | 0;
+        if (type == this.lastIndices[index]) {
 
+            type = (type + 1) % MAX;
+        }
+        this.lastIndices[index] = type;
+
+        let flip = Math.random() <= 0.5;
+        
         switch(type) {
         
         case EnemyType.Fly:
-            this.spawnFlies(count, Math.random() <= 0.5);
+            this.spawnFlies(count, flip);
             break;
 
         case EnemyType.Slime:
-            this.spawnSlimes(count, count == 1);
+
+            if (flip) count = 1;
+
+            this.spawnSlimes(count, flip);
             break;
 
         case EnemyType.Cloud:
@@ -298,6 +317,24 @@ class EnemyGenerator {
     }
 
 
+    // Update timers
+    public updateTimers(ev : CoreEvent) {
+
+        const WAIT_TIME_MIN = 30;
+        const WAIT_MOD = 45;
+
+        for (let i = 0; i < this.timers.length; ++ i) {
+
+            // Update timer
+            if ((this.timers[i] -= ev.step) <= 0.0) {
+
+                this.timers[i] += WAIT_TIME_MIN +
+                    this.spawnEnemy(i) * WAIT_MOD;
+            }
+        }
+    }
+
+
     // Update
     public update(bullets : Array<Bullet>, 
         text : Array<FlyingText>, 
@@ -305,15 +342,8 @@ class EnemyGenerator {
         lstate : LocalState,
         ev : CoreEvent) {
 
-        const WAIT_TIME_MIN = 30;
-        const WAIT_MOD = 45;
-
         // Update timer
-        if ((this.enemyTimer -= ev.step) <= 0.0) {
-
-            this.enemyTimer += WAIT_TIME_MIN +
-                this.spawnEnemy() * WAIT_MOD;
-        }
+        this.updateTimers(ev);
 
         // Update enemies
         let dmg : number;

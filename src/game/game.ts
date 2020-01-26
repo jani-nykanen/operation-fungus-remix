@@ -13,6 +13,8 @@ class GameScene implements Scene {
     private hud : HUDRenderer;
     private objm : ObjectManager;
 
+    private paused : boolean;
+
 
     constructor() {
 
@@ -28,6 +30,8 @@ class GameScene implements Scene {
         this.hud = new HUDRenderer(this.lstate);
         
         this.objm = new ObjectManager(this.lstate);
+
+        this.paused = false;
     }
 
 
@@ -36,6 +40,16 @@ class GameScene implements Scene {
         // This gives the unit speed for the
         // middle point of the ground
         const BACKGROUND_SPEED = 1.0 / 1.40;
+
+        if (ev.gamepad.getButtonState("start") == State.Pressed) {
+
+            this.paused = !this.paused;
+        }
+
+        if (this.paused) {
+
+            return;
+        }
 
         // Update stage
         this.stage.update(BACKGROUND_SPEED, ev);
@@ -65,6 +79,15 @@ class GameScene implements Scene {
 
         // Draw HUD
         this.hud.draw(c);
+
+        if (this.paused) {
+
+            c.setColor(0, 0, 0, 0.5);
+            c.fillRect(0, 0, 256, 192);
+
+            c.drawText(c.getBitmap("font"), "GAME PAUSED",
+                c.width/2, c.height/2 - 4, 0, 0, true);
+        }
     }
 
 

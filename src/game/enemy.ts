@@ -12,6 +12,7 @@ enum EnemyType {
     Kamikaze = 4,
 
     FleeingFly = -1,
+    FleeingSlime = -2,
 }
 
 
@@ -59,6 +60,7 @@ class EnemyRenderer extends RenderComponent {
     private animSpeed : number;
     private speedMod : number;
     private shootTimer : number;
+
 
     constructor(base : EntityBase) {
 
@@ -246,13 +248,16 @@ class Enemy extends Entity {
 
                 break;
 
+            
+            case EnemyType.FleeingSlime:
             case EnemyType.Slime:
     
                 this.ai = new SlimeAI(this.base, this.rendRef, 
                     params, shootCB);
 
                 this.rendRef = new SlimeRenderer(this.base);
-                this.rendRef.reset(1)
+                this.rendRef.reset(1, 
+                    index == EnemyType.FleeingSlime ? 4 : 0);
 
                 this.rendRef.shadowSize = new Vector2(
                     24, 6

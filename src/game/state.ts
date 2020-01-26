@@ -55,7 +55,7 @@ class LocalState {
         this.health = this.maxHealth;
         
         this.xp = 0;
-        this.level = 1;
+        this.level = 10;
         this.multiplier = 0;
         this.mulTimer = 0;
         this.power = 0;
@@ -63,7 +63,7 @@ class LocalState {
         this.skillLevels = new Array<number> (8);
         for (let i = 0; i < this.skillLevels.length; ++ i) {
 
-            this.skillLevels[i] = 0; // 5;
+            this.skillLevels[i] = 5;
         }
 
         this.recomputeStats();
@@ -160,7 +160,7 @@ class LocalState {
         if (increaseStar) {
 
             // Just some random number for now
-            this.power += inc / 24000; 
+            this.power += inc / 36000; 
         }
     }
 

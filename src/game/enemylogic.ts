@@ -283,18 +283,28 @@ class CircleMovement extends MovementLogic {
 class SlimeRenderer extends EnemyRenderer {
 
 
+    private skip : number;
+
+
+    public reset(row = 0, skip = 0) {
+
+        this.skip = skip;
+        this.spr.setFrame(row+1, skip);
+    }
+
+
     public animate(ev : CoreEvent) {
 
         const EPS = 0.5;
 
-        this.spr.setFrame(this.spr.getRow(), 0);
+        this.spr.setFrame(this.spr.getRow(), this.skip);
         if (this.base.speed.y < -EPS) {
 
-            this.spr.setFrame(this.spr.getRow(), 1);
+            this.spr.setFrame(this.spr.getRow(), this.skip+1);
         }
         else if (this.base.speed.y > EPS) {
 
-            this.spr.setFrame(this.spr.getRow(), 2);
+            this.spr.setFrame(this.spr.getRow(), this.skip+2);
         }
     }   
 
