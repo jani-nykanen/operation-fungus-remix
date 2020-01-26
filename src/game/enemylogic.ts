@@ -44,6 +44,58 @@ class WaveMovement extends MovementLogic {
 }
 
 
+// Direct movement
+class DirectMovement extends MovementLogic {
+
+
+    private initialSpeed : number;
+    private launchSpeed : number;
+    private speedReset : boolean;
+
+
+    constructor(base : EntityBase,
+        acc : number,
+        speed : number,
+        initialSpeed : number) {
+
+        super(base);
+
+        this.base.acc.x = acc;
+        
+        this.launchSpeed = speed;
+        this.initialSpeed = initialSpeed;
+
+        this.base.speed.x = initialSpeed;
+        this.base.speed.y = 0;
+
+        this.base.target.x = initialSpeed;
+        this.base.target.y = 0;
+
+        this.speedReset = false;
+    }
+
+
+    public move(ev : CoreEvent) {
+
+        if (this.base.pos.x > 256-12) {
+
+            this.base.target.x = this.initialSpeed;
+            this.base.speed.x = this.initialSpeed;
+        }
+        else {
+
+            this.base.target.x = this.launchSpeed;
+
+            if (!this.speedReset) {
+
+                this.base.speed.x = 0;
+                this.speedReset = true;
+            }
+        }
+    }
+}
+
+
 // Jumping movement
 class JumpMovement extends MovementLogic {
 
@@ -469,5 +521,54 @@ class BeeAI extends BaseEnemyAI {
         this.base.hitbox = new Vector2(
             16, 16
         );
+    }
+}
+
+
+
+class KamikazeAI extends BaseEnemyAI {
+
+
+    constructor(base : EntityBase,
+        rendComp? : EnemyRenderer,
+        params? : Array<number>,
+        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+
+        super(base, rendComp);
+
+        this.moveComp = new DirectMovement(base,
+            params[0], -params[1], -params[2]);
+        
+        this.shootComp = undefined;
+        
+        this.base.setInitialHealth(5);
+        this.base.power = 80;
+        this.base.xp = 10;
+
+        this.base.hitbox = new Vector2(
+            20, 16
+        );
+
+        this.base.killCB = () => {
+
+            const COUNT = 8;
+            const BULLET_SPEED = 3;
+
+            let angle : number;
+            let pos = this.base.pos.clone();
+            for (let i = 0 ; i < COUNT; ++ i) {
+
+                angle = Math.PI*2 / COUNT * i;
+
+                shootCB(
+                    pos,
+                    new Vector2(
+                        Math.cos(angle) * BULLET_SPEED,
+                        Math.sin(angle) * BULLET_SPEED
+                    ),
+                    30
+                );
+            }
+        };
     }
 }

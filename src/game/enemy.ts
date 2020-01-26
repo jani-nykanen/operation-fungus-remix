@@ -9,6 +9,7 @@ enum EnemyType {
     Slime = 1,
     Cloud = 2,
     Bee = 3,
+    Kamikaze = 4,
 
     FleeingFly = -1,
 }
@@ -56,6 +57,7 @@ class ShootingLogic {
 class EnemyRenderer extends RenderComponent {
 
     private animSpeed : number;
+    private speedMod : number;
     private shootTimer : number;
 
     constructor(base : EntityBase) {
@@ -64,10 +66,11 @@ class EnemyRenderer extends RenderComponent {
     }
 
 
-    public reset(row? : number, speed? : number) {
+    public reset(row = 0, speed = 0, speedMod = 0) {
 
         this.spr.setFrame(row+1, (Math.random()*4) | 0);
         this.animSpeed = speed;
+        this.speedMod = speedMod;
         this.flickerTime = 0.0;
     }
 
@@ -88,9 +91,15 @@ class EnemyRenderer extends RenderComponent {
                 start += 4;
             }
         }
+
+        let speed = this.animSpeed;
+        if (this.speedMod > 0) {
+
+            speed = this.animSpeed - Math.abs(this.base.speed.x) / this.speedMod;
+        }
         
         this.spr.animate(this.spr.getRow(), start, start+3, 
-            this.animSpeed, ev.step);
+            speed, ev.step);
     }
 
 
@@ -216,6 +225,7 @@ class Enemy extends Entity {
         this.base.moveStartPos = false;
         this.offset = new Vector2();
         this.hurtIndex = 0;
+        this.base.killCB = undefined;
 
         if (index != EnemyType.Slime) {
 
@@ -277,6 +287,16 @@ class Enemy extends Entity {
                     params, shootCB);
                 this.rendRef.reset(
                     4, 4
+                );
+
+                break;
+
+            case EnemyType.Kamikaze:
+
+                this.ai = new KamikazeAI(this.base, this.rendRef, 
+                    params, shootCB);
+                this.rendRef.reset(
+                    5, 10, 0.5
                 );
 
                 break;

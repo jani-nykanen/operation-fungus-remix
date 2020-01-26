@@ -18,6 +18,7 @@ class Entity {
         this.base = new EntityBase(x, y);
 
         this.offset = new Vector2();
+
     }
 
 

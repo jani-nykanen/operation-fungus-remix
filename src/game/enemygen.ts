@@ -171,6 +171,45 @@ class EnemyGenerator {
     }
 
 
+    // Spawn kamikaze bullets
+    private spawnKamikaze(count : number) {
+
+        const ACC = 0.1;
+        const TARGET_SPEED = 4.0;
+        const INITIAL_SPEED = 0.5;
+        const BODY_OFF = 32;
+
+        const MIN_Y = 20+12;
+        const MAX_Y = 192-16-12;
+
+        const DELTA_MIN = 32;
+        const DELTA_VARY = 64;
+
+        let delta = DELTA_MIN + DELTA_VARY * Math.random();
+        delta *= (Math.random() <= 0.5 ? -1 : 1);
+
+        let x = 256+12;
+        let y = MIN_Y + ((Math.random()*(MAX_Y-MIN_Y)) | 0);
+
+        for (let i = 0; i < count; ++ i) {
+
+            this.getNextEnemy().spawn(
+                new Vector2(x + i*BODY_OFF, y),
+                EnemyType.Kamikaze,
+                [ACC, TARGET_SPEED, INITIAL_SPEED],
+                this.shootCB
+                );
+
+            y += delta;
+            if (y < MIN_Y)
+                y = MAX_Y - (MIN_Y-y);
+
+            else if (y > MAX_Y)
+                y = MIN_Y + (y-MAX_Y);
+        }
+    }
+
+
     // Get the next "non-existent" enemy in an array
     private getNextEnemy() : Enemy {
 
@@ -199,7 +238,7 @@ class EnemyGenerator {
 
         let count = 1 + Math.floor(Math.random()*4);
 
-        let type = (Math.random() * 4) | 0;
+        let type = (Math.random() * 5) | 0;
 
         switch(type) {
         
@@ -218,6 +257,10 @@ class EnemyGenerator {
         case EnemyType.Bee:
             this.spawnBees();
             count = 4;
+            break;
+
+        case EnemyType.Kamikaze:
+            this.spawnKamikaze(count);
             break;
 
         default:

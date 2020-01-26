@@ -25,6 +25,8 @@ class EntityBase {
     public flip : boolean; // Should not be here, sorry
     public moveStartPos : boolean;
 
+    public killCB? : (() => any);
+
 
     constructor(x? : number, y? : number) {
 
@@ -77,6 +79,11 @@ class EntityBase {
 
         if (!this.exist && this.dying)
             return;
+
+        if (this.killCB != undefined) {
+
+            this.killCB();
+        }
 
         this.dying = true;
     

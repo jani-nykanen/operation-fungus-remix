@@ -32,7 +32,7 @@ class RenderComponent {
 
     // Optional methods
     public animate?(ev : CoreEvent) : any;
-    public reset?(row? : number, speed? : number) : any;
+    public reset?(row? : number, speed? : number, speedMod? : number) : any;
     public drawBefore?(c : Canvas) : any;
 
 
