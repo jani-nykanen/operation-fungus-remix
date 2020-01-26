@@ -23,6 +23,7 @@ class EntityBase {
     public power : number;
     public xp : number;
     public flip : boolean; // Should not be here, sorry
+    public moveStartPos : boolean;
 
 
     constructor(x? : number, y? : number) {
@@ -45,11 +46,17 @@ class EntityBase {
         this.health = this.maxHealth;
 
         this.flip = false;
+
+        this.moveStartPos = false;
     }
 
 
     // Update
     update(ev : CoreEvent) {
+
+        let p = this.pos;
+        if (this.moveStartPos)
+            p = this.startPos;
 
         this.speed.x = updateSpeedAxis(
             this.speed.x, this.target.x,
@@ -60,8 +67,8 @@ class EntityBase {
             this.acc.y
         );
 
-        this.pos.x += this.speed.x * ev.step;
-        this.pos.y += this.speed.y * ev.step;
+        p.x += this.speed.x * ev.step;
+        p.y += this.speed.y * ev.step;
     }
 
 

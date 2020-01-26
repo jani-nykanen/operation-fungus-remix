@@ -179,6 +179,54 @@ class UpDownMovement extends MovementLogic {
 }
 
 
+// Circle movement
+class CircleMovement extends MovementLogic {
+
+    private distance : number;
+    private angle : number;
+
+    private angleSpeed : number;
+
+    private baseSpeed : number;
+
+
+    constructor(base : EntityBase,
+        distance : number,
+        angleSpeed : number,
+        speed : number,
+        angle = 0) {
+
+        super(base);
+
+        this.baseSpeed = speed;
+
+        this.angleSpeed = angleSpeed;
+
+        this.distance = distance;
+        this.angle = angle;
+
+        this.base.speed.x = 0.0;
+        this.base.speed.y = 0.0;
+        this.base.target = this.base.speed.clone();
+        this.base.moveStartPos = true;
+    }
+
+
+    public move(ev : CoreEvent) {
+
+        this.angle = (this.angle + this.angleSpeed*ev.step) % (Math.PI*2);
+
+        this.base.pos.x = this.base.startPos.x +
+            Math.cos(this.angle) * this.distance;
+        this.base.pos.y = this.base.startPos.y +
+            Math.sin(this.angle) * this.distance;    
+
+        this.base.startPos.x += this.baseSpeed * ev.step;
+    }
+}
+
+
+
 // Renders enemies
 class SlimeRenderer extends EnemyRenderer {
 
@@ -395,5 +443,31 @@ class CloudAI extends BaseEnemyAI {
         );
 
         this.base.flip = false;
+    }
+}
+
+
+class BeeAI extends BaseEnemyAI {
+
+
+    constructor(base : EntityBase,
+        rendComp? : EnemyRenderer,
+        params? : Array<number>,
+        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+
+        super(base, rendComp);
+
+        this.moveComp = new CircleMovement(base,
+            params[0], params[1], -params[2], params[3]);
+        
+        this.shootComp = undefined;
+        
+        this.base.setInitialHealth(10);
+        this.base.power = 50;
+        this.base.xp = 15;
+
+        this.base.hitbox = new Vector2(
+            16, 16
+        );
     }
 }

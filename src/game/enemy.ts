@@ -8,7 +8,7 @@ enum EnemyType {
     Fly = 0,
     Slime = 1,
     Cloud = 2,
-
+    Bee = 3,
 
     FleeingFly = -1,
 }
@@ -180,7 +180,7 @@ class Enemy extends Entity {
     protected rendRef : EnemyRenderer;
     protected hurtIndex : number; // For the sword attack
 
-
+    
     constructor() {
 
         super();
@@ -213,6 +213,7 @@ class Enemy extends Entity {
         this.base.pos = pos.clone();
         this.base.startPos = pos.clone();
         this.base.flip = false;
+        this.base.moveStartPos = false;
         this.offset = new Vector2();
         this.hurtIndex = 0;
 
@@ -266,6 +267,16 @@ class Enemy extends Entity {
                     params, shootCB);
                 this.rendRef.reset(
                     3, 8
+                );
+
+                break;
+
+            case EnemyType.Bee:
+
+                this.ai = new BeeAI(this.base, this.rendRef, 
+                    params, shootCB);
+                this.rendRef.reset(
+                    4, 4
                 );
 
                 break;

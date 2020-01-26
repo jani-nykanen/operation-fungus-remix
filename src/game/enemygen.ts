@@ -134,6 +134,43 @@ class EnemyGenerator {
     }
 
 
+    // Spawn bees
+    private spawnBees(count = 4) {
+
+        const DIST_MIN = 32;
+        const DIST_VARY = 32;
+        const ANGLE_SPEED_BASE = 0.033;
+        const ANGLE_SPEED_COMPARE = DIST_MIN;
+
+        let startAngle = Math.random() * (Math.PI * 2);
+        let angleStep = Math.PI*2 / count;
+
+        let dist = DIST_MIN + Math.random() * DIST_VARY;
+
+        let midx = 256 + 12 + dist;
+        let midy = 32 + (128 - dist) * Math.random();
+
+        let angleSpeed = ANGLE_SPEED_BASE / (dist/ANGLE_SPEED_COMPARE);
+        let dir = Math.random() <= 0.5 ? 1 : -1;
+
+        let angle : number;
+        for (let i = 0; i < count; ++ i) {
+
+            angle = startAngle + i * angleStep;
+            angle %= (Math.PI * 2);
+
+            this.getNextEnemy().spawn(
+                new Vector2(
+                    midx, 
+                    midy),
+                EnemyType.Bee,
+                [dist, angleSpeed*dir, 1.0, angle],
+                this.shootCB
+                );
+        }
+    }
+
+
     // Get the next "non-existent" enemy in an array
     private getNextEnemy() : Enemy {
 
@@ -162,7 +199,7 @@ class EnemyGenerator {
 
         let count = 1 + Math.floor(Math.random()*4);
 
-        let type = (Math.random() * 3) | 0;
+        let type = (Math.random() * 4) | 0;
 
         switch(type) {
         
@@ -171,11 +208,16 @@ class EnemyGenerator {
             break;
 
         case EnemyType.Slime:
-            this.spawnSlimes(count, Math.random() <= 0.5);
+            this.spawnSlimes(count, count == 1);
             break;
 
         case EnemyType.Cloud:
             this.spawnClouds(count);
+            break;
+
+        case EnemyType.Bee:
+            this.spawnBees();
+            count = 4;
             break;
 
         default:
