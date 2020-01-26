@@ -132,10 +132,11 @@ class HUDRenderer {
         c.moveTo();
 
         // Draw health & exp bars
+        let currentHealth = this.lstate.getHealth() * this.healthBar;
         this.drawBar(c, 16, 16, 64, 16,
             4, 4, 
             this.healthBar, 1,
-            String(this.lstate.getHealth()) + 
+            String(currentHealth | 0) + 
             "/" + 
             String(this.lstate.getMaxHealth()));
 

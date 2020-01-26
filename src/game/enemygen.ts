@@ -94,6 +94,36 @@ class EnemyGenerator {
     }
 
 
+     // Spawn clouds
+     private spawnClouds(count : number) {
+
+        const MIN_Y = 48;
+        const MAX_Y = 192 - 48;
+        const SPEED_X = 0.75;
+        const SPEED_Y = 1.0;
+        const BODY_OFF = 48;
+
+        let x = 256+12;
+        let y = (MIN_Y + Math.random()*(MAX_Y-MIN_Y)) | 0;
+
+        let dir = Math.random() <= 0.5 ? 1 : -1;
+        let speedx = SPEED_X;
+        let speedy = SPEED_Y;
+
+        for (let i = 0; i < count; ++ i) {
+
+            this.getNextEnemy().spawn(
+                new Vector2(x + i*BODY_OFF, y),
+                EnemyType.Cloud,
+                [speedx, speedy*dir],
+                this.shootCB
+                );
+
+            dir = dir == 1 ? -1 : 1;
+        }
+    }
+
+
     // Get the next "non-existent" enemy in an array
     private getNextEnemy() : Enemy {
 
@@ -122,7 +152,7 @@ class EnemyGenerator {
 
         let count = 1 + Math.floor(Math.random()*4);
 
-        let type = (Math.random() * 2) | 0;
+        let type = (Math.random() * 3) | 0;
 
         switch(type) {
         
@@ -132,6 +162,10 @@ class EnemyGenerator {
 
         case EnemyType.Slime:
             this.spawnSlimes(count, Math.random() <= 0.5);
+            break;
+
+        case EnemyType.Cloud:
+            this.spawnClouds(count);
             break;
 
         default:

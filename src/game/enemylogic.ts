@@ -130,6 +130,39 @@ class JumpMovement extends MovementLogic {
 }
 
 
+// Up-and-down like movement
+class UpDownMovement extends MovementLogic {
+
+
+    constructor(base : EntityBase,
+        speedx : number,
+        speedy : number) {
+
+        super(base);
+
+        this.base.speed.x = speedx;
+        this.base.speed.y = speedy;
+        
+        this.base.target = this.base.speed.clone();
+
+        this.base.acc.y = 0.025;
+    }
+
+
+    public move(ev : CoreEvent) {
+
+        const TOP = 20 + 40;
+        const BOTTOM = 192 - 16 - 48;
+
+        if ( (this.base.target.y > 0 && this.base.pos.y > BOTTOM) ||
+             (this.base.target.y < 0 && this.base.pos.y < TOP)) {
+
+            this.base.target.y *= -1;
+        }
+    }
+}
+
+
 // Renders enemies
 class SlimeRenderer extends EnemyRenderer {
 
@@ -285,5 +318,32 @@ class FleeingFlyAI extends BaseEnemyAI {
         );
 
         this.base.flip = true;
+    }
+}
+
+
+class CloudAI extends BaseEnemyAI {
+
+    constructor(base : EntityBase,
+        rendComp? : EnemyRenderer,
+        params? : Array<number>,
+        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+
+        super(base, rendComp);
+
+        this.moveComp = new UpDownMovement(base,
+            params[0], params[1]);
+            
+        this.shootComp = undefined;
+        
+        this.base.setInitialHealth(25);
+        this.base.power = 60;
+        this.base.xp = 30;
+
+        this.base.hitbox = new Vector2(
+            16, 16
+        );
+
+        this.base.flip = false;
     }
 }

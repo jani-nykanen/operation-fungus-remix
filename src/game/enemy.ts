@@ -7,7 +7,10 @@
 enum EnemyType {
     Fly = 0,
     Slime = 1,
-    FleeingFly = 2,
+    Cloud = 2,
+
+
+    FleeingFly = -1,
 }
 
 
@@ -213,12 +216,15 @@ class Enemy extends Entity {
         this.offset = new Vector2();
         this.hurtIndex = 0;
 
+        if (index != EnemyType.Slime) {
+
+            this.rendRef = new EnemyRenderer(this.base);
+        }
+
         switch(index) {
 
             case EnemyType.Fly:
 
-                this.rendRef = new EnemyRenderer(this.base);
-                
                 this.ai = new FlyAI(this.base, this.rendRef, 
                     params, shootCB);
 
@@ -244,8 +250,6 @@ class Enemy extends Entity {
     
             case EnemyType.FleeingFly:
 
-                this.rendRef = new EnemyRenderer(this.base);
-                
                 this.ai = new FleeingFlyAI(this.base, this.rendRef, 
                     params, shootCB);
 
@@ -256,16 +260,20 @@ class Enemy extends Entity {
 
                 break;
 
+            case EnemyType.Cloud:
+
+                this.ai = new CloudAI(this.base, this.rendRef, 
+                    params, shootCB);
+                this.rendRef.reset(
+                    3, 8
+                );
+
+                break;
+
             default:
                 break;
         }
         this.renderComp = this.rendRef;
-
-        // Reminder to self
-        if (this.renderComp == undefined) {
-
-            throw "Forgot something?"
-        }
 
         this.base.speed.x *= -1;
         this.base.target.x *= -1;
