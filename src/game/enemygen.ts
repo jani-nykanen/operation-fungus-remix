@@ -58,7 +58,7 @@ class EnemyGenerator {
                 new Vector2(x + i*BODY_OFF, y),
                 fleeing ?  EnemyType.FleeingFly : EnemyType.Fly,
                 [ampl, lat, 
-                fleeing ? FLEEING_SPEED : 1, 
+                fleeing ? FLEEING_SPEED : 1.0, 
                 start + Math.PI/count * i],
                 this.shootCB
                 );
@@ -87,7 +87,8 @@ class EnemyGenerator {
                 EnemyType.Slime,
                 [jumpWait, 
                  JUMP_MIN + Math.random()*JUMP_VARY, 
-                initialWait, 1, flip ? 1 : 0],
+                initialWait, 1.0, 
+                flip ? 1 : 0],
                 this.shootCB
                 );
         }
@@ -99,23 +100,32 @@ class EnemyGenerator {
 
         const MIN_Y = 48;
         const MAX_Y = 192 - 48;
-        const SPEED_X = 0.75;
-        const SPEED_Y = 1.0;
-        const BODY_OFF = 48;
+        const SPEED_X_MIN = 0.25;
+        const SPEED_X_VARY = 0.25;
+        const SPEED_Y_MIN = 0.5;
+        const SPEED_Y_VARY = 0.5;
+        const BODY_OFF = 32;
+
+        const LATITUDE_MIN = 0.025;
+        const LATITUDE_VARY = 0.025;
 
         let x = 256+12;
         let y = (MIN_Y + Math.random()*(MAX_Y-MIN_Y)) | 0;
 
         let dir = Math.random() <= 0.5 ? 1 : -1;
-        let speedx = SPEED_X;
-        let speedy = SPEED_Y;
+        let speedx, speedy, lat : number;
 
         for (let i = 0; i < count; ++ i) {
+
+            speedx = SPEED_X_MIN + Math.random()*SPEED_X_VARY;
+            speedy = SPEED_Y_MIN + Math.random()*SPEED_Y_VARY;
+
+            lat = LATITUDE_MIN + Math.random() * LATITUDE_VARY;
 
             this.getNextEnemy().spawn(
                 new Vector2(x + i*BODY_OFF, y),
                 EnemyType.Cloud,
-                [speedx, speedy*dir],
+                [speedx, speedy*dir, lat],
                 this.shootCB
                 );
 

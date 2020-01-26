@@ -224,7 +224,8 @@ class PlayerAI extends AIComponent {
         }
 
         // Regen
-        if (this.base.health < this.base.maxHealth &&
+        if (this.base.health > 0 &&
+            this.base.health < this.base.maxHealth &&
             this.lstate.getRegenSpeed() > 0) {
 
             if ((++ this.regenTimer) >= this.lstate.getRegenSpeed()) {

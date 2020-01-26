@@ -88,7 +88,7 @@ class JumpMovement extends MovementLogic {
 
         this.base.target.y = GRAVITY;
         if (this.canJump)
-            this.base.target.x = -this.initialSpeed; 
+            this.base.target.x = this.initialSpeed; 
 
         if (this.canJump && this.base.pos.x < 256-12) {
 
@@ -101,13 +101,13 @@ class JumpMovement extends MovementLogic {
 
                 if (this.base.flip) {
 
-                    this.base.target.x = -this.initialSpeed + 
+                    this.base.target.x = this.initialSpeed + 
                         JUMP_SPEED_X_BACKWARDS;
                     this.jumpHeight *= JUMP_MUL_BACKWARDS;
                 }
                 else {
 
-                    this.base.target.x = -this.initialSpeed + 
+                    this.base.target.x = this.initialSpeed + 
                         JUMP_SPEED_X_FORWARDS;
 
                     this.jumpHeight *= JUMP_MUL_FORWARDS;    
@@ -130,18 +130,29 @@ class JumpMovement extends MovementLogic {
 }
 
 
-// Up-and-down like movement
+// Up-and-down like movement with horizontal
+// wave movement
 class UpDownMovement extends MovementLogic {
+
+
+    private lat : number;
+    private ampl : number;
+    private wave : number;
 
 
     constructor(base : EntityBase,
         speedx : number,
-        speedy : number) {
+        speedy : number,
+        lat : number) {
 
         super(base);
 
-        this.base.speed.x = speedx;
+        this.base.speed.x = -1.0;
         this.base.speed.y = speedy;
+
+        this.ampl = speedx;
+        this.lat = lat;
+        this.wave = 0.0;
         
         this.base.target = this.base.speed.clone();
 
@@ -154,6 +165,11 @@ class UpDownMovement extends MovementLogic {
         const TOP = 20 + 40;
         const BOTTOM = 192 - 16 - 48;
 
+        // Horizontal speed
+        this.wave = (this.wave + this.lat*ev.step) % (Math.PI*2);
+        this.base.target.x = -1.0 + Math.sin(this.wave) * this.ampl;
+
+        // Vertical speed
         if ( (this.base.target.y > 0 && this.base.pos.y > BOTTOM) ||
              (this.base.target.y < 0 && this.base.pos.y < TOP)) {
 
@@ -185,18 +201,23 @@ class SlimeRenderer extends EnemyRenderer {
 }
 
 
-
-// Shoots a single bullet
-class SingleShot extends ShootingLogic {
+// Shoots multiple bullets in fixed periods
+class PeriodicShot extends ShootingLogic {
 
     private period : number;
     private speed : number;
+    private angleStart : number;
+    private angleStep : number;
+    private count : number;
 
 
     constructor(base : EntityBase,
             period : number,
             delay : number,
             speed : number,
+            angleStart : number,
+            angleStep : number,
+            count : number,
             animCB? : (() => any),
             shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
 
@@ -204,8 +225,29 @@ class SingleShot extends ShootingLogic {
 
         this.period = period;
         this.speed = speed;
+
+        this.angleStart = angleStart;
+        this.angleStep = angleStep;
+        this.count = count;
                 
         this.timer = period * (1-delay);
+    }
+
+
+    // Shoot
+    private shoot() {
+
+        let angle : number;
+        for (let i = 0; i < this.count; ++ i) {
+
+            angle = this.angleStart + i * this.angleStep;
+
+            this.shootCB(
+                new Vector2(this.base.pos.x-8, this.base.pos.y+4),
+                new Vector2(-Math.cos(angle)*this.speed,
+                            -Math.sin(angle)*this.speed), 30
+                );
+        }
     }
 
 
@@ -223,10 +265,7 @@ class SingleShot extends ShootingLogic {
             }
             if (this.shootCB != undefined) {
 
-                this.shootCB(
-                    new Vector2(this.base.pos.x-8, this.base.pos.y+4),
-                    new Vector2(this.speed, 0.0), 30
-                    );
+                this.shoot();
             }
         }
     }
@@ -245,17 +284,17 @@ class FlyAI extends BaseEnemyAI {
         super(base, rendComp);
 
         this.moveComp = new WaveMovement(base,
-            params[0], params[1], params[2], params[3]);
+            params[0], params[1], -params[2], params[3]);
             
-        this.shootComp = new SingleShot(base,
+        this.shootComp = new PeriodicShot(base,
                 Math.PI*2 / params[1],
                 params[3] / (Math.PI*2),
-                -3.0, 
+                3.0, 
+                0, 0, 1,
                 () => {
                     this.animateShooting();
                 }, shootCB);
 
-        
         this.base.setInitialHealth(15);
         this.base.power = 50;
         this.base.xp = 20;
@@ -278,7 +317,7 @@ class SlimeAI extends BaseEnemyAI {
         super(base, rendComp);
 
         this.moveComp = new JumpMovement(base,
-            params[0], params[1], params[2], params[3]);
+            params[0], params[1], params[2], -params[3]);
         
         this.shootComp = undefined;
         
@@ -305,7 +344,7 @@ class FleeingFlyAI extends BaseEnemyAI {
         super(base, rendComp);
 
         this.moveComp = new WaveMovement(base,
-            params[0], params[1], params[2], params[3]);
+            params[0], params[1], -params[2], params[3]);
             
         this.shootComp = undefined;
         
@@ -331,10 +370,21 @@ class CloudAI extends BaseEnemyAI {
 
         super(base, rendComp);
 
+        const SHOOT_PERIOD = 120.0;
+
         this.moveComp = new UpDownMovement(base,
-            params[0], params[1]);
+            -params[0], params[1], params[2]);
             
-        this.shootComp = undefined;
+        this.shootComp = new PeriodicShot(base,
+            SHOOT_PERIOD,
+            Math.random(),
+            3.0, 
+            -Math.PI/6.0,
+            Math.PI/6.0,
+            3,
+            () => {
+                this.animateShooting();
+            }, shootCB);
         
         this.base.setInitialHealth(25);
         this.base.power = 60;

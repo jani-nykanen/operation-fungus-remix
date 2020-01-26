@@ -275,8 +275,8 @@ class Enemy extends Entity {
         }
         this.renderComp = this.rendRef;
 
-        this.base.speed.x *= -1;
-        this.base.target.x *= -1;
+        //this.base.speed.x *= -1;
+        //this.base.target.x *= -1;
     }
 
 
