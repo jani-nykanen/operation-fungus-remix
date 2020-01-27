@@ -95,7 +95,13 @@ class Sprite {
 
 
     // Set frame
-    setFrame(row : number, frame : number) {
+    setFrame(row : number, frame? : number) {
+
+        if (frame == undefined) {
+
+            this.frame = row; // Lol
+            return;
+        }
 
         this.row = row;
         this.frame = frame;

@@ -496,19 +496,25 @@ class PlayerRenderComponent extends RenderComponent {
     }
 
 
-    // Override draw
-    public draw(c : Canvas, bmp? : Bitmap) {
+    // Draw base body
+    private drawBase(c : Canvas, jump1 = 0, jump2 = 0) {
 
         let x = Math.round(this.base.pos.x - 16);
         let y = Math.round(this.base.pos.y - 16);
 
         y += this.waveDelta | 0;
 
+        jump1 = jump1 | 0;
+        jump2 = jump2 | 0;
+
+        let bmp = c.getBitmap("player");
+
         if (this.disappear == 0) {
 
             // Draw propeller
-            c.drawSprite(this.sprPropeller, 
-                c.getBitmap("player"),
+            c.drawSpriteFrame(this.sprPropeller, bmp,
+                this.sprPropeller.getFrame(),
+                this.sprPropeller.getRow() + jump1,
                 x-6, y-3, this.flip);
         }
         else {
@@ -517,26 +523,38 @@ class PlayerRenderComponent extends RenderComponent {
         }
 
         // Draw body
-        c.drawSprite(this.spr, 
-            c.getBitmap("player"),
+        c.drawSpriteFrame(this.spr, bmp,
+            this.spr.getFrame(),
+            this.spr.getRow() + jump2,
             x, y, this.flip);
 
         if (this.disappear > 0) return;
 
         // Draw arm
-        c.drawSprite(this.sprArm, 
-            c.getBitmap("player"),
+        c.drawSpriteFrame(this.sprArm, bmp,
+            this.sprArm.getFrame(),
+            this.sprArm.getRow() + jump1,
             x+12, y+9, this.flip);
 
         // Draw head
-        c.drawSprite(this.sprHead,
-            c.getBitmap("player"),
+        c.drawSpriteFrame(this.sprHead, bmp,
+            this.sprHead.getFrame(),
+            this.sprHead.getRow() + jump1,
             x, y+2, this.flip);
 
         // Draw legs
-        c.drawSprite(this.sprLegs,
-            c.getBitmap("player"),
+        c.drawSpriteFrame(this.sprLegs, bmp,
+            this.sprLegs.getFrame(),
+            this.sprLegs.getRow() + jump1,
             x, y+16, this.flip);
+    }
+
+
+    // Override draw
+    public draw(c : Canvas, bmp? : Bitmap) {
+
+        this.drawBase(c, 8, 4);
+        this.drawBase(c);
     }
 
 
