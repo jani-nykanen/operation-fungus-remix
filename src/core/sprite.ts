@@ -95,7 +95,7 @@ class Sprite {
 
 
     // Set frame
-    setFrame(row : number, frame? : number) {
+    public setFrame(row : number, frame? : number) {
 
         if (frame == undefined) {
 
@@ -110,8 +110,15 @@ class Sprite {
     }
 
 
+    // Set row
+    public setRow(row : number) {
+
+        this.row = row;
+    }
+
+
     // Draw a frame
-    drawFrame(c : Canvas, bmp : Bitmap, 
+    public drawFrame(c : Canvas, bmp : Bitmap, 
         frame : number, row : number, 
         dx : number, dy : number, 
         flip? : boolean) {
@@ -124,7 +131,7 @@ class Sprite {
 
 
     // Draw the current frame
-    draw(c : Canvas, bmp : Bitmap, 
+    public draw(c : Canvas, bmp : Bitmap, 
         dx : number, dy : number, flip? : boolean) {
 
         this.drawFrame(c, bmp, 

@@ -8,12 +8,17 @@
 class PickUpAI extends AIComponent {
 
 
+    private id : number;
+
+
     constructor(base : EntityBase) {
 
         super(base);
 
         this.base.acc.x = 0.05;
         this.base.acc.y = 0.05;
+
+        this.id = 0;
     }   
 
 
@@ -30,7 +35,7 @@ class PickUpAI extends AIComponent {
 
         const BOTTOM = 192-16 - 6;
         const GRAVITY = 4.0;
-        const JUMP_MUL = 0.90;
+        const JUMP_MUL = 0.95;
 
         this.base.target.y = GRAVITY;
 
@@ -42,6 +47,9 @@ class PickUpAI extends AIComponent {
             if (this.base.speed.y > 0) {
 
                 this.base.speed.y *= -JUMP_MUL;
+
+                if (this.id < 4)
+                    this.id = (this.id + 1) % 4;
             }
         }
 
@@ -50,6 +58,13 @@ class PickUpAI extends AIComponent {
             this.base.exist = false;
         }
     }
+
+
+    // Getters & setters
+    public setId(id : number) {
+        this.id = id;
+    }
+    public getId = () => this.id;
 }
 
 
@@ -58,6 +73,7 @@ class PickUpAI extends AIComponent {
 class PickUpRenderer extends RenderComponent {
 
     private animSpeed : number;
+    private length : number;
 
 
     constructor(base : EntityBase) {
@@ -66,7 +82,9 @@ class PickUpRenderer extends RenderComponent {
     }
 
 
-    public reset(row = 0, speed = 0, speedMod? : number) {
+    public reset(row = 0, speed = 0, length = 4) {
+
+        this.length = length;
 
         this.spr.setFrame(row, 0);
         this.animSpeed = speed;
@@ -75,9 +93,18 @@ class PickUpRenderer extends RenderComponent {
 
     public animate(ev : CoreEvent) {
         
-        this.spr.animate(this.spr.getRow(), 0, 3, 
+        this.spr.animate(this.spr.getRow(), 0, this.length-1, 
             this.animSpeed, ev.step);
     }
+
+
+    public changeRow(row : number) {
+
+        this.spr.setRow(row);
+    }
+
+
+    public getRow = () => this.spr.getRow();
 }
 
 
@@ -87,6 +114,7 @@ class PickUp extends Entity {
 
     private lstate : LocalState;
     private renderRef : PickUpRenderer;
+    private aiRef : PickUpAI;
 
 
     constructor(lstate : LocalState) {
@@ -95,7 +123,9 @@ class PickUp extends Entity {
 
         this.renderRef = new PickUpRenderer(this.base);
         this.renderComp = this.renderRef;
-        this.ai = new PickUpAI(this.base);
+
+        this.aiRef = new PickUpAI(this.base);
+        this.ai = this.aiRef;
 
         this.base.exist = false;
         this.base.hitbox = new Vector2(
@@ -116,8 +146,20 @@ class PickUp extends Entity {
 
         this.base.pos = pos.clone();
         this.ai.reset(speed);
+
+        this.aiRef.setId(id);
         
-        this.renderRef.reset(0, SPIN_SPEED);
+        this.renderRef.reset(id, SPIN_SPEED, id == 4 ? 8 : 4);
+    }
+
+
+    // Refresh
+    public refresh() {
+
+        if (this.base.dying || !this.base.exist)
+            return;
+
+        this.renderRef.changeRow(this.aiRef.getId());
     }
 
 
@@ -126,6 +168,16 @@ class PickUp extends Entity {
 
         this.kill();
 
-        // TODO: Effect?
+        switch(this.aiRef.getId()) {
+
+        // Heart
+        case 4:
+
+            e.addHealth(e.getMaxHealth() / 2);
+            break;
+
+        default:
+            break;
+        }
     }
 }

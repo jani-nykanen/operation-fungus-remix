@@ -169,6 +169,17 @@ class Entity {
     }
 
 
+    // Add health (TODO: Merge with the above method)
+    public addHealth(amount : number) {
+
+        this.base.health = Math.min(
+            this.base.maxHealth,
+            this.base.health + amount
+        );
+    }
+
+
+
     // Getters
     public doesExist = () => this.base.exist;
     public getPower = () => this.base.power;
@@ -179,5 +190,5 @@ class Entity {
     public getOffset = () => this.offset.clone();
     public getHealth = () => this.base.health;
     public getXP = () => this.base.xp;
-
+    public getMaxHealth = () => this.base.maxHealth;
 }

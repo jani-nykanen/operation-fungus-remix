@@ -321,12 +321,19 @@ class EnemyGenerator {
     private spawnPickUp(lstate : LocalState, 
         pickups : Array<PickUp>, pos : Vector2) {
 
-        const CHANCE = 0.25;
+        const LIFE_CHANCE = 0.125;
+        const COIN_CHANCE = 0.25; // Assuming life did not happen
         const SPEED_X = 1.0;
         const SPEED_Y = -1.0;
 
-        if (Math.random() > CHANCE)
-            return;
+        let id = 4;
+        if (Math.random() > LIFE_CHANCE) {
+
+            if (Math.random() <= COIN_CHANCE)
+                id = (Math.random() * 4) | 0;
+            else
+                return;
+        }
 
         let pickup : PickUp;
         for (let p of pickups) {
@@ -346,7 +353,7 @@ class EnemyGenerator {
         pickup.spawn(pos,
             new Vector2(
                 SPEED_X, SPEED_Y
-            ), 0);
+            ), id);
 
     }
 
