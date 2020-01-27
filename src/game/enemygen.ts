@@ -317,6 +317,40 @@ class EnemyGenerator {
     }
 
 
+    // Spawn a pickup item
+    private spawnPickUp(lstate : LocalState, 
+        pickups : Array<PickUp>, pos : Vector2) {
+
+        const CHANCE = 0.25;
+        const SPEED_X = 1.0;
+        const SPEED_Y = -1.0;
+
+        if (Math.random() > CHANCE)
+            return;
+
+        let pickup : PickUp;
+        for (let p of pickups) {
+
+            if (!p.doesExist()) {
+
+                pickup = p;
+                break;
+            }
+        }
+        if (pickup == null) {
+            
+            pickup = new PickUp(lstate);
+            pickups.push(pickup);
+        }
+
+        pickup.spawn(pos,
+            new Vector2(
+                SPEED_X, SPEED_Y
+            ), 0);
+
+    }
+
+
     // Update timers
     public updateTimers(ev : CoreEvent) {
 
@@ -337,7 +371,8 @@ class EnemyGenerator {
 
     // Update
     public update(bullets : Array<Bullet>, 
-        text : Array<FlyingText>, 
+        text : Array<FlyingText>,
+        pickups : Array<PickUp>, 
         player : Player,
         lstate : LocalState,
         ev : CoreEvent) {
@@ -384,11 +419,14 @@ class EnemyGenerator {
                     }
                 }
 
-                // If killed, gain experience
+                // If killed, gain experience & possibly
+                // spawn an itme
                 if (e.isDying()) {
 
                     lstate.addExperience(e.getXP());
                     lstate.increaseMultiplier();
+
+                    this.spawnPickUp(lstate, pickups, e.getPos());
                 }
             }
         }

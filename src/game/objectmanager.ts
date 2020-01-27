@@ -9,6 +9,7 @@ class ObjectManager {
 
     private player : Player;
     private bullets : Array<Bullet>;
+    private pickups : Array<PickUp>;
     private enemyGen : EnemyGenerator;
     private flyingText : Array<FlyingText>;
 
@@ -31,6 +32,7 @@ class ObjectManager {
             }
         );
 
+        this.pickups = new Array<PickUp> ();
         this.flyingText = new Array<FlyingText> ();
     }
 
@@ -99,10 +101,19 @@ class ObjectManager {
             b.update(ev);
         }
 
+        // Update pick-up items
+        for (let p of this.pickups) {
+
+            p.update(ev);
+            // Player collision
+            p.entityCollision(this.player, true, false);
+        }
+
         // Update enemies
         this.enemyGen.update(
             this.bullets,
             this.flyingText,
+            this.pickups,
             this.player, 
             lstate,
             ev);
@@ -151,6 +162,10 @@ class ObjectManager {
         // Draw shadows
         this.player.drawShadow(c);
         this.enemyGen.drawShadows(c);
+        for (let p of this.pickups) {
+
+            p.drawShadow(c);
+        }
 
         // Draw objects (back layer)
         this.player.drawBackLayer(c);
@@ -167,6 +182,12 @@ class ObjectManager {
         for (let b of this.bullets) {
 
             b.draw(c, c.getBitmap("bullet"));
+        }
+
+        // Draw pick-ups
+        for (let p of this.pickups) {
+
+            p.draw(c, c.getBitmap("pickup"));
         }
 
         // Draw the flying text
