@@ -37,6 +37,8 @@ class GameScene implements Scene {
 
     public update(ev : CoreEvent) {
 
+        if (ev.tr.isActive()) return;
+
         // This gives the unit speed for the
         // middle point of the ground
         const BACKGROUND_SPEED = 1.0 / 1.40;

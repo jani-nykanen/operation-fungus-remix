@@ -158,8 +158,13 @@ class ObjectManager {
         // GAME OVER!
         if (this.player.doesExist() == false) {
 
-            this.reset(lstate, hud);
-            this.update(lstate, hud, ev); // To get animation right
+            ev.tr.activate(true, 2.0, TransitionType.Fade, 8,
+                (ev : CoreEvent) => {
+
+                    this.reset(lstate, hud);
+                    this.update(lstate, hud, ev); // To get animation right
+                });
+            return;
         }
 
         // Spawn level up text

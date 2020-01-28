@@ -13,6 +13,7 @@ class Core {
     private input : InputManager
     private gamepad : Controller
     private ev : CoreEvent
+    private tr : Transition;
     
     private initialized : boolean
     private timeSum : number
@@ -48,12 +49,16 @@ class Core {
                     window.innerHeight)
             });
 
+        // Create transition
+        this.tr = new Transition();
+
         // Create an event... thing
         this.ev = new CoreEvent(
             Number(conf.getParam("framerate", "60")),
             this.assets,
             this.input,
-            this.gamepad
+            this.gamepad,
+            this.tr
         );
 
         // Set initial values
@@ -127,6 +132,9 @@ class Core {
 
                 // Update the active scene
                 this.activeScene.update(this.ev);
+
+                // Update the transition
+                this.tr.update(this.ev);
             }
 
             // Update gamepad
@@ -153,6 +161,9 @@ class Core {
                 // Draw the loading screen
                 this.drawLoadingScreen(this.canvas);
             }
+
+            // Draw transition
+            this.tr.draw(this.canvas);
         }
 
         this.oldTime = ts;

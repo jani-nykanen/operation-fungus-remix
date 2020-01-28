@@ -12,17 +12,20 @@ class CoreEvent {
     public readonly assets : AssetPack;
     public readonly input : InputManager;
     public readonly gamepad : Controller;
+    public readonly tr : Transition;
 
 
     constructor(framerate : number, 
         ap? : AssetPack, 
         input? : InputManager,
-        gamepad? : Controller) {
+        gamepad? : Controller,
+        tr? : Transition) {
 
         this.step = 60.0 / framerate;
         
         this.assets = ap;
         this.input = input;
         this.gamepad = gamepad;
+        this.tr = tr;
     }
 }
