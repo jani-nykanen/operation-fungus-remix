@@ -100,4 +100,8 @@ class RenderComponent {
             this.animate(ev);
         }
     }
+
+
+    // Getters
+    public getSpriteRow = () => this.spr.getRow();
 }

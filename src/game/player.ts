@@ -351,6 +351,8 @@ class PlayerRenderComponent extends RenderComponent {
         this.wave = 0.0;
         this.waveDelta = 0.0;
 
+        this.base.power = 1; // For pick-up collisions
+
         this.dust = new Array<Dust> ();
 
         this.lstate = lstate;

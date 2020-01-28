@@ -312,7 +312,7 @@ class EnemyGenerator {
         }
 
         text.spawn("-" + String(dmg), pos, 2,
-            10, 30);
+            10, 30, FontColor.Red);
 
     }
 

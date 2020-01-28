@@ -3,6 +3,7 @@
     "bitmaps" : [
         {"name": "font",  "path": "font.png"},
         {"name": "fontRed",  "path": "font_red.png"},
+        {"name": "fontYellow",  "path": "font_yellow.png"},
 
         {"name": "floor",  "path": "floor.png"},
         {"name": "sky",  "path": "sky.png"},

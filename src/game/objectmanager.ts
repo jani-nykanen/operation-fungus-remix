@@ -39,7 +39,7 @@ class ObjectManager {
 
     // Spawn a flying text
     private spawnFlyingText(msg : string,
-        x : number, y : number) {
+        x : number, y : number,  color = FontColor.White, wait = 60) {
 
         let text : FlyingText;
 
@@ -59,7 +59,7 @@ class ObjectManager {
         }
 
         text.spawn(msg, new Vector2(x, y), 2,
-            10, 60, false);
+            10, wait, color);
     }
 
 
@@ -93,6 +93,11 @@ class ObjectManager {
     // Update
     public update(lstate : LocalState, ev : CoreEvent) {
 
+        const MESSAGES = [
+            "DAMAGE", "DEFENSE",
+            "SPEED", "BULLET"
+        ];
+
         let oldLevel = lstate.getLevel();
 
         // Update bullets
@@ -102,11 +107,24 @@ class ObjectManager {
         }
 
         // Update pick-up items
+        let id : number;
+        let pos : Vector2;
         for (let p of this.pickups) {
 
             p.update(ev);
             // Player collision
-            p.entityCollision(this.player, true, false);
+            id = p.getSpriteRow();
+            if (p.entityCollision(this.player, true, false) > 0) {
+
+                if (id < 4) {
+
+                    pos = this.player.getPos();
+                    this.spawnFlyingText(
+                        MESSAGES[id] + " BONUS!",
+                        pos.x, pos.y-16, FontColor.Yellow
+                    );
+                }
+            }
         }
 
         // Update enemies

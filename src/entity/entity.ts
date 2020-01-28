@@ -191,4 +191,5 @@ class Entity {
     public getHealth = () => this.base.health;
     public getXP = () => this.base.xp;
     public getMaxHealth = () => this.base.maxHealth;
+    public getSpriteRow = () => this.renderComp.getSpriteRow();
 }

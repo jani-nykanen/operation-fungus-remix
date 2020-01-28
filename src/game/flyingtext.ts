@@ -3,6 +3,13 @@
  * (c) 2020 Jani Nykänen
  */
 
+enum FontColor {
+
+    White = 0,
+    Red = 1,
+    Yellow = 2,
+};
+
 
 // A text that flies
 class FlyingText {
@@ -14,7 +21,7 @@ class FlyingText {
     private output : string;
 
     private exist : boolean;
-    private red : boolean;
+    private color : FontColor;
 
 
     constructor() {
@@ -27,14 +34,14 @@ class FlyingText {
     public spawn(output : string,
         pos : Vector2, speed : number,
         stopTime : number, waitTime : number,
-        isRed = true)  {
+        color = FontColor.White)  {
 
         this.pos = pos;
         this.speed = speed;
         this.stopTime = stopTime;
         this.output = output;
         this.waitTime = waitTime;
-        this.red = isRed;
+        this.color = color;
 
         this.exist = true;
     }
@@ -63,9 +70,13 @@ class FlyingText {
     // Draw
     public draw(c : Canvas) {
 
+        const STR = [
+            "", "Red", "Yellow"
+        ];
+
         if (!this.exist) return;
 
-        c.drawText(c.getBitmap(this.red ? "fontRed" : "font"),
+        c.drawText(c.getBitmap("font" + STR[this.color]),
             this.output, this.pos.x | 0, (this.pos.y | 0) -8, 
             -1, 0, true);
     }
