@@ -9,9 +9,9 @@ class HUDRenderer {
 
     // Bar values for rendering
     private healthBar : number;
-    private healthTarget : number;
     private expBar : number;
-    private expTarget : number;
+
+    private bonusFlicker : number;
 
     private readonly lstate : LocalState;
 
@@ -19,10 +19,9 @@ class HUDRenderer {
     constructor(state : LocalState) {
 
         this.healthBar = 1.0;
-        this.healthTarget = this.healthBar;
-
         this.expBar = 0;
-        this.expTarget = 0;
+
+        this.bonusFlicker = 0;
 
         this.lstate = state;
     }
@@ -123,6 +122,48 @@ class HUDRenderer {
             this.lstate.getXpPercentage(),
             DELTA_SPEED * ev.step
         );
+
+        // Update bonus flickering
+        this.bonusFlicker = (this.bonusFlicker + ev.step) % 8;
+    }
+
+
+    // Draw bonuses
+    private drawBonuses(c : Canvas, top : number, left : number) {
+
+        const H_OFF = 24;
+        const V_OFF = 12;
+
+        let t : number;
+        let sx, sy, dx, dy : number;
+
+        let j = 0;
+        for (let i = 0; i < 4; ++ i) {
+
+            t = this.lstate.getBonusTime(i);
+            if (t > 0) {
+
+                // Cause flickering when running out of bonus
+                if (t < 120 && Math.floor(this.bonusFlicker/4) % 2 == 0) {
+                
+                    ++ j;
+                    continue;
+                }
+                    
+
+                sx = 80 + (i % 2) * 24;
+                sy = 16 + Math.floor(i / 2)*12;
+
+                dx = left + (j % 2) * H_OFF;
+                dy = top +  Math.floor(j / 2) * V_OFF;
+                
+                c.drawBitmapRegion(c.getBitmap("hud"),
+                    sx, sy, 24, 12, 
+                    dx, dy);
+                
+                ++ j;
+            }
+        }
     }
 
 
@@ -160,6 +201,9 @@ class HUDRenderer {
 
         // Draw the power bar
         this.drawPowerBar(c, c.height-11, this.lstate.getPower());
+
+        // Draw bonuses
+        this.drawBonuses(c, 1, 86);
     }
 
 }

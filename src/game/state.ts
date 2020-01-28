@@ -45,6 +45,9 @@ class LocalState {
     private flickerTime : number;
     private bulletWait : number;
 
+    // Bonues timers
+    private bonusTimers : Array<number>;
+
 
     constructor() {
 
@@ -59,6 +62,12 @@ class LocalState {
         this.multiplier = 0;
         this.mulTimer = 0;
         this.power = 0;
+
+        this.bonusTimers = new Array<number> (4);
+        for (let i = 0; i < this.bonusTimers.length; ++ i) {
+
+            this.bonusTimers[i] = 0.0;
+        }
 
         this.skillLevels = new Array<number> (8);
         for (let i = 0; i < this.skillLevels.length; ++ i) {
@@ -91,6 +100,13 @@ class LocalState {
     }
 
 
+    // Increase bonus timer
+    public increaseBonusTimer(time : number, index : number) {
+
+        this.bonusTimers[index] += time;
+    }
+
+
     // Getters
     public getHealth = () => this.health;
     public getLevel = () => this.level;
@@ -102,15 +118,24 @@ class LocalState {
     public getPower = () => this.power;
 
     public getMaxHealth   = () => this.maxHealth;
-    public getBulletPower = () => this.bulletPower;
-    public getReloadSpeed = () => this.reloadSpeed;
+    public getBulletPower = () => 
+        this.bulletPower * (this.bonusTimers[0] > 0 ? 2 : 1);
+    public getReloadSpeed = () => 
+        (this.reloadSpeed * (this.bonusTimers[2] > 0 ? 1.5 : 1)) | 0;
     public getBulletSpeed = () => this.bulletSpeed;
     public getSwordSpeed  = () => this.swordSpeed;
-    public getSwordPower  = () => this.swordPower;
-    public getMoveSpeed   = () => this.moveSpeed;
+    public getSwordPower  = () => 
+        this.swordPower * (this.bonusTimers[0] > 0 ? 2 : 1);
+    public getMoveSpeed   = () => 
+        this.moveSpeed * (this.bonusTimers[2] > 0 ? 1.5 : 1);
     public getRegenSpeed  = () => this.regenSpeed;
     public getFlickerTime = () => this.flickerTime;
     public getBulletWait  = () => this.bulletWait;
+    public getBulletBonus = () => 
+        (this.bonusTimers[3] > 0 ? 1 : 0);
+    public getDamageReduction = () => 
+        (this.bonusTimers[1] > 0 ? 2 : 1);
+    public getBonusTime = (index : number) => this.bonusTimers[index];
 
     public getSkillLevel = (index : number) => 
         this.skillLevels[clamp(index, 0, this.skillLevels.length)]; // Sorry
@@ -121,6 +146,7 @@ class LocalState {
 
         const MUL_REDUCE_SPEED = 0.005;
 
+        // Update multiplier timer
         if (this.mulTimer > 0.0) {
 
             this.mulTimer -= MUL_REDUCE_SPEED * ev.step;
@@ -128,6 +154,16 @@ class LocalState {
 
                 this.mulTimer = 0.0;
                 this.multiplier = 0;
+            }
+        }
+
+        // Update bonus timers
+        for (let i = 0; i < this.bonusTimers.length; ++ i) {
+
+            if (this.bonusTimers[i] > 0) {
+
+                this.bonusTimers[i] = 
+                    Math.max(0, this.bonusTimers[i] - ev.step);
             }
         }
     }

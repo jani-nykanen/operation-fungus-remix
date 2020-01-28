@@ -166,18 +166,18 @@ class PickUp extends Entity {
     // Hostile collision
     protected hostileCollision(e : Entity, kill = true) {
 
+        const BONUS_TIME = 5;
+
         this.kill();
 
-        switch(this.aiRef.getId()) {
-
-        // Heart
-        case 4:
+        if (this.aiRef.getId() == 4) {
 
             e.addHealth(e.getMaxHealth() / 2);
-            break;
+        }
+        else {
 
-        default:
-            break;
+            this.lstate.increaseBonusTimer(BONUS_TIME * 60, 
+                this.aiRef.getId());
         }
     }
 }

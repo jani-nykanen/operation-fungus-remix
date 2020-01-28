@@ -138,7 +138,13 @@ class PlayerAI extends AIComponent {
         let min = 0;
         let max = 0;
 
+        let extra = false;
+
         let wait = this.lstate.getBulletWait();
+        extra = wait == 0 && this.lstate.getBulletBonus() > 0;
+        if (this.lstate.getBulletBonus() > 0)
+            wait = 0;
+
         if (wait >= 0) {
 
             if ((++ this.extraBulletTimer) >= wait) {
@@ -154,6 +160,14 @@ class PlayerAI extends AIComponent {
                 }
                 this.extraBulletDir = !this.extraBulletDir;
             }
+        }
+
+        if (extra) {
+
+            if (min == -1)
+                max = 1;
+            else if (min == 0)
+                min = -1;
         }
 
         let angle : number;
@@ -695,7 +709,7 @@ class Player extends Entity {
             this.rendRef.isDisappering()) return;
 
         this.flicker((60 * this.lstate.getFlickerTime()) | 0);
-        this.reduceHealth(e.getPower());
+        this.reduceHealth(e.getPower() / this.lstate.getDamageReduction());
         
         if (kill)
             e.kill();
