@@ -10,6 +10,7 @@ class HUDRenderer {
     // Bar values for rendering
     private healthBar : number;
     private expBar : number;
+    private powerBar : number;
 
     private bonusFlicker : number;
 
@@ -20,6 +21,7 @@ class HUDRenderer {
 
         this.healthBar = 1.0;
         this.expBar = 0;
+        this.powerBar = 0.0;
 
         this.bonusFlicker = 0;
 
@@ -81,27 +83,45 @@ class HUDRenderer {
     // I'm lazy to make a generalized method for these)
     private drawPowerBar(c : Canvas, dy : number, fill : number) {
 
-        const WIDTH = 96;
+        const WIDTH = 30;
         const HEIGHT = 8;
 
-        let x = c.width/2 - WIDTH/2;
+        let left = c.width/2 - 48 +2;
+        let x = left + 2;
         let y = dy;
 
         let bmp = c.getBitmap("hud");
 
         // Draw background bar
-        c.drawBitmapRegion(bmp, 16, 48, WIDTH, HEIGHT,
-            x, y);
+        c.drawBitmapRegion(bmp, 16, 48, 96, HEIGHT,
+            left, y);
+
+        // Draw full bars
+        let full = Math.floor(fill);
+        for (let i = 0; i < full; ++ i) {
+            
+            c.drawBitmapRegion(bmp, 16+2, 
+                this.bonusFlicker < 8 ? 56 : 64, 
+                WIDTH, HEIGHT,
+                x, y);
+
+            x += 31;
+        }
         
-        // Draw the filling (temporary, no animation)
-        let w = ((WIDTH-4) * fill) | 0;
-        if (w == WIDTH-5) w = WIDTH-4;
-        c.drawBitmapRegion(bmp, 16+2, 56, w, HEIGHT,
-            x+2, y);
+        // Draw the non-full bar
+        let w : number;
+
+        if (full < 3) {
+            
+            w = ((WIDTH-4) * (fill % 1.0)) | 0;
+
+            c.drawBitmapRegion(bmp, 16+2, 56, w, HEIGHT,
+                x, y);
+        }
 
         // Draw the icon
         c.drawBitmapRegion(bmp, 0, 48, 16, 16,
-            x-17, y-6);
+            left-17, y-6);
 
     }
 
@@ -110,6 +130,7 @@ class HUDRenderer {
     public update(ev : CoreEvent) {
 
         const DELTA_SPEED = 0.01;
+        const FLICKER_MAX = 16; // Must divide 4
 
         this.healthBar = updateSpeedAxis(
             this.healthBar,
@@ -123,8 +144,14 @@ class HUDRenderer {
             DELTA_SPEED * ev.step
         );
 
+        this.powerBar = updateSpeedAxis(
+            this.powerBar,
+            this.lstate.getPower(),
+            DELTA_SPEED * ev.step
+        );
+
         // Update bonus flickering
-        this.bonusFlicker = (this.bonusFlicker + ev.step) % 8;
+        this.bonusFlicker = (this.bonusFlicker + ev.step) % FLICKER_MAX;
     }
 
 
@@ -150,7 +177,6 @@ class HUDRenderer {
                     continue;
                 }
                     
-
                 sx = 80 + (i % 2) * 24;
                 sy = 16 + Math.floor(i / 2)*12;
 
@@ -200,7 +226,7 @@ class HUDRenderer {
             this.lstate.getMulTimer());
 
         // Draw the power bar
-        this.drawPowerBar(c, c.height-11, this.lstate.getPower());
+        this.drawPowerBar(c, c.height-11, this.powerBar);
 
         // Draw bonuses
         this.drawBonuses(c, 1, 86);
