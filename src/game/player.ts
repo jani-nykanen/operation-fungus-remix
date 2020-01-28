@@ -320,6 +320,8 @@ class PlayerRenderComponent extends RenderComponent {
     private sprLegs : Sprite;
     private sprPropeller : Sprite;
     private sprArm : Sprite;
+    private sprOrb : Sprite;
+    private sprDie : Sprite;
 
     private wave : number;
     private waveDelta : number;
@@ -331,6 +333,7 @@ class PlayerRenderComponent extends RenderComponent {
     private dust : Array<Dust>;
 
     private disappear : number;
+    private deathTimer : number;
 
     private readonly lstate : LocalState;
 
@@ -345,17 +348,40 @@ class PlayerRenderComponent extends RenderComponent {
         this.sprLegs = new Sprite(32, 16);
         this.sprPropeller = new Sprite(32, 16);
         this.sprArm = new Sprite(32, 16);
+        this.sprOrb = new Sprite(16, 16);
+        this.sprDie = new Sprite(24, 24);
 
         this.shooting = false;
         this.shootWait = 0.0;
         this.wave = 0.0;
         this.waveDelta = 0.0;
+        this.deathTimer = 0.0;
 
         this.base.power = 1; // For pick-up collisions
 
         this.dust = new Array<Dust> ();
 
         this.lstate = lstate;
+    }
+
+
+    // Animate death
+    public animateDeath(ev : CoreEvent) : boolean {
+
+        const DEATH_TIME_MAX = 192;
+        const DEATH_SPEED = 2;
+        const ORB_ANIM_SPEED = 4;
+        const BUFF_SPEED = 4;
+
+        this.sprOrb.animate(0, 8, 10, ORB_ANIM_SPEED, ev.step);
+
+        if (this.sprDie.getFrame() < 6) {
+
+            this.sprDie.animate(0, 0, 6, BUFF_SPEED, ev.step);
+        }
+
+        return (this.deathTimer += DEATH_SPEED * ev.step) 
+            >= DEATH_TIME_MAX;
     }
 
 
@@ -440,6 +466,31 @@ class PlayerRenderComponent extends RenderComponent {
                 this.shooting = false;
                 this.shootWait = 0.0;
             }
+        }
+    }
+
+
+    // Reset
+    public reset(row? : number, speed? : number, thirdParam? : number) {
+
+        this.sprHead = new Sprite(32, 16);
+        this.sprLegs = new Sprite(32, 16);
+        this.sprPropeller = new Sprite(32, 16);
+        this.sprArm = new Sprite(32, 16);
+        this.sprOrb = new Sprite(16, 16);
+        this.sprDie = new Sprite(24, 24);
+
+        this.flickerTime = 0.0;
+
+        this.shooting = false;
+        this.shootWait = 0.0;
+        this.wave = 0.0;
+        this.waveDelta = 0.0;
+        this.deathTimer = 0.0;
+
+        for (let d of this.dust) {
+
+            d.kill(true);
         }
     }
 
@@ -566,8 +617,42 @@ class PlayerRenderComponent extends RenderComponent {
     }
 
 
+    // Draw dying
+    private drawDying(c : Canvas) {
+
+        const COUNT = 8;
+        let angle = 0;
+
+        let x = Math.round(this.base.pos.x);
+        let y = Math.round(this.base.pos.y);
+
+        // Draw "buff" clouds
+        if (this.sprDie.getFrame() < 6) {
+
+            c.drawSprite(this.sprDie, c.getBitmap("enemies"),
+                x-12, y-12);
+        }
+
+        for (let i = 0; i < COUNT; ++ i) {
+
+            angle = Math.PI*2 / COUNT * i;
+
+            c.drawSprite(this.sprOrb, c.getBitmap("player"),
+                x + ((Math.cos(angle) * this.deathTimer) | 0) - 8,
+                y + ((Math.sin(angle) * this.deathTimer) | 0) - 8,
+            );
+        }
+    }
+
+
     // Override draw
     public draw(c : Canvas, bmp? : Bitmap) {
+
+        if (this.base.dying) {
+
+            this.drawDying(c);
+            return;
+        }
 
         this.drawBase(c, 8, 4);
         this.drawBase(c);
@@ -577,10 +662,13 @@ class PlayerRenderComponent extends RenderComponent {
     // Draw before other drawing
     public drawBefore(c : Canvas) {
 
+        if (this.base.dying) return;
+
         // Draw dust
+        let bmp = c.getBitmap("dust");
         for (let d of this.dust) {
 
-            d.draw(c, c.getBitmap("dust"));
+            d.draw(c, bmp);
         }
     }
 
@@ -692,8 +780,25 @@ class Player extends Entity {
         this.base.maxHealth = lstate.getMaxHealth();
         this.base.health = this.base.maxHealth;
 
-        this.offset.y = -4;
+        // this.offset.y = -4;
     }
+
+
+    // Reset
+    public reset() {
+
+        this.base.dying = false;
+        this.base.exist = true; 
+
+        this.base.pos = this.base.startPos.clone();
+
+        this.base.maxHealth = this.lstate.getMaxHealth();
+        this.base.health = this.base.maxHealth;
+
+        // Reset components
+        this.renderComp.reset();
+    }
+
 
 
     // Set bullet callback
@@ -727,6 +832,13 @@ class Player extends Entity {
 
         if (this.doesExist() && !this.isDying())
             this.blade.refresh(ev);
+    }
+
+
+    // Trigger death
+    protected triggerDeath() {
+
+        
     }
 
 

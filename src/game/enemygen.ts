@@ -24,6 +24,13 @@ class EnemyGenerator {
 
         this.timers = new Array<number> (TIMER_COUNT);
         this.lastIndices = new Array<number> (TIMER_COUNT);
+        this.initTimers();
+    }
+
+
+    // Initialize timers
+    private initTimers() {
+
         for (let i = 0; i < this.timers.length; ++ i) {
 
             this.timers[i] = 60.0 + i*30.0;
@@ -461,4 +468,15 @@ class EnemyGenerator {
         }
     }
 
+
+    // Reset everything
+    public reset() {
+
+        for (let e of this.enemies) {
+
+            e.kill(true);
+        }
+
+        this.initTimers();
+    }
 }

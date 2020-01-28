@@ -216,4 +216,17 @@ class LocalState {
         this.multiplier = 0;
         this.mulTimer = 0;
     }
+
+
+    // Reset
+    public reset() {
+
+        this.resetMultiplier();
+
+        for (let i = 0; i < this.bonusTimers.length; ++ i) {
+
+            this.bonusTimers[i] = 0.0;
+        }
+        this.power = 0;
+    }
 }

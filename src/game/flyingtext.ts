@@ -82,6 +82,13 @@ class FlyingText {
     }
 
 
+    // Kill
+    public kill() {
+
+        this.exist = false;
+    }
+
+
     // Getters
     public doesExist = () => this.exist;
 }

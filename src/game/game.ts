@@ -22,7 +22,7 @@ class GameScene implements Scene {
     }
 
 
-    activate(param : any, ev : CoreEvent) {
+    public activate(param : any, ev : CoreEvent) {
 
         this.stage = new Stage();
 
@@ -35,7 +35,7 @@ class GameScene implements Scene {
     }
 
 
-    update(ev : CoreEvent) {
+    public update(ev : CoreEvent) {
 
         // This gives the unit speed for the
         // middle point of the ground
@@ -55,7 +55,7 @@ class GameScene implements Scene {
         this.stage.update(BACKGROUND_SPEED, ev);
 
         // Update objects
-        this.objm.update(this.lstate, ev);
+        this.objm.update(this.lstate, this.hud, ev);
 
         // Update HUD
         this.hud.update(ev);
@@ -65,7 +65,7 @@ class GameScene implements Scene {
     }
 
 
-    draw(c : Canvas) {
+    public draw(c : Canvas) {
 
         c.moveTo();
 
@@ -91,8 +91,8 @@ class GameScene implements Scene {
     }
 
 
-    deactivate() : any {
+    public deactivate() : any {
 
-        
+        // ...
     }
 }

@@ -143,9 +143,16 @@ class Entity {
 
 
     // Kill
-    public kill() {
+    public kill(hardDeath = false) {
 
         if (!this.base.exist) return;
+
+        if (hardDeath) {
+
+            this.base.exist = false;
+            this.base.dying = false;
+            return;
+        }
 
         this.base.die();
     }
@@ -158,11 +165,18 @@ class Entity {
     }
 
 
+    // Death triggered
+    protected triggerDeath?() : any;
+
+
     // Reduce health
     public reduceHealth(delta : number) {
 
         this.base.health -= delta;
         if (this.base.health <= 0) {
+
+            if (this.triggerDeath != undefined)
+                this.triggerDeath();
 
             this.kill();
         }

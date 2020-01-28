@@ -112,6 +112,8 @@ class Bullet extends Entity {
         power = 1) {
 
         this.base.exist = true;
+        this.base.dying = false;
+        
         this.base.pos = pos.clone();
 
         this.ai.reset(speed);

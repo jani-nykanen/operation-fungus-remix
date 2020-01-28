@@ -232,4 +232,13 @@ class HUDRenderer {
         this.drawBonuses(c, 1, 86);
     }
 
+
+    // Reset
+    public reset() {
+
+        this.healthBar = 1.0;
+        this.powerBar = 0.0;
+
+        this.bonusFlicker = 0;
+    }
 }

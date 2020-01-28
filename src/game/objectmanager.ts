@@ -71,14 +71,15 @@ class ObjectManager {
         power = 1) {
 
         let bullet : Bullet;
-         for (let b of this.bullets) {
+        bullet = null;
+        for (let b of this.bullets) {
     
-                if (!b.doesExist()) {
+            if (!b.doesExist()) {
     
-                    bullet = b;
-                    break;
-                }
+                bullet = b;
+                break;
             }
+        }
     
         if (bullet == null) {
     
@@ -91,7 +92,7 @@ class ObjectManager {
 
 
     // Update
-    public update(lstate : LocalState, ev : CoreEvent) {
+    public update(lstate : LocalState, hud : HUDRenderer, ev : CoreEvent) {
 
         const MESSAGES = [
             "DAMAGE", "DEFENSE",
@@ -154,6 +155,13 @@ class ObjectManager {
             }
         }
 
+        // GAME OVER!
+        if (this.player.doesExist() == false) {
+
+            this.reset(lstate, hud);
+            this.update(lstate, hud, ev); // To get animation right
+        }
+
         // Spawn level up text
         let p : Vector2;
         if (oldLevel != lstate.getLevel()) {
@@ -213,5 +221,30 @@ class ObjectManager {
 
             t.draw(c);
         }
+    }
+
+
+    // Reset
+    public reset(lstate : LocalState, hud : HUDRenderer) {
+
+        this.player.reset();
+        // Destroy objects
+        for (let b of this.bullets) {
+
+            b.kill(true);
+        }
+        for (let f of this.flyingText) {
+
+            f.kill();
+        }
+        for (let p of this.pickups) {
+
+            p.kill(true);
+        }
+
+        hud.reset();
+        lstate.reset();
+
+        this.enemyGen.reset();
     }
 }
