@@ -24,6 +24,7 @@ class LocalState {
 
     private health : number;
     private xp : number;
+    private xpReq : number;
     private level : number;
     private multiplier : number;
     private mulTimer : number;
@@ -58,6 +59,7 @@ class LocalState {
         this.health = this.maxHealth;
         
         this.xp = 0;
+        this.xpReq = 0;
         this.level = 1;
         this.multiplier = 0;
         this.mulTimer = 0;
@@ -72,10 +74,17 @@ class LocalState {
         this.skillLevels = new Array<number> (8);
         for (let i = 0; i < this.skillLevels.length; ++ i) {
 
-            this.skillLevels[i] = 0; // 5;
+            this.skillLevels[i] = 0;
         }
 
         this.recomputeStats();
+    }
+
+
+    // Compute experience required for the next level
+    private computeExpRequired(level : number) : number {
+
+        return 800 * Math.sqrt(level*level*level);
     }
 
 
@@ -97,6 +106,8 @@ class LocalState {
 
         l = this.skillLevels[Skill.Regeneration];
         this.regenSpeed = l == 0 ? 0 : (60 - l*10);
+
+        this.xpReq = this.computeExpRequired(this.level);
     }
 
 
@@ -113,8 +124,8 @@ class LocalState {
     public getExp = () => this.xp;
     public getMultiplier = () => this.multiplier;
     public getMulTimer = () => this.mulTimer;
-    public getXpRequired = (lvl : number) =>  1000 * lvl * lvl;
-    public getXpPercentage = () => (this.xp / this.getXpRequired(this.level));
+    public getXpRequired = () => this.xpReq;
+    public getXpPercentage = () => (this.xp / this.xpReq);
     public getPower = () => this.power;
 
     public getMaxHealth   = () => this.maxHealth;
@@ -179,14 +190,15 @@ class LocalState {
     // Add experience
     public addExperience(amount : number, increaseStar = true) {
 
+        const STAR_AMOUNT = [3200, 9600, 19200];
+
         let inc =  amount * (10 + this.multiplier);
 
         this.xp += inc * (1 + this.skillLevels[Skill.Growth]/10.0);
 
-        let limit = this.getXpRequired(this.level);
-        if (this.xp >= limit) {
+        if (this.xp >= this.xpReq) {
 
-            this.xp -= limit;
+            this.xp -= this.xpReq;
             ++ this.level;
 
             this.recomputeStats();
@@ -196,7 +208,7 @@ class LocalState {
         if (increaseStar) {
 
             // Just some random number for now
-            this.power += inc / 16000; 
+            this.power += inc / STAR_AMOUNT[Math.floor(this.power)]; 
             this.power = Math.min(3.0, this.power);
         }
     }

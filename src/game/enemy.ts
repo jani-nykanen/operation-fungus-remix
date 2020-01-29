@@ -7,8 +7,8 @@
 enum EnemyType {
     Fly = 0,
     Slime = 1,
-    Cloud = 2,
-    Bee = 3,
+    Bee = 2,
+    Cloud = 3,
     Kamikaze = 4,
 
     FleeingFly = -1,

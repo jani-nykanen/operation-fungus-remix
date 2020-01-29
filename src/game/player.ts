@@ -28,7 +28,7 @@ class Blade extends Entity {
 
         this.attackIndex = 0;
 
-        this.base.speed.x = 5.0;
+        this.base.speed.x = 4.0;
     }
 
 
@@ -835,13 +835,6 @@ class Player extends Entity {
     }
 
 
-    // Trigger death
-    protected triggerDeath() {
-
-        
-    }
-
-
     // Get blade
     public getBlade() : Blade {
 
@@ -854,4 +847,5 @@ class Player extends Entity {
 
     // Getters
     public getWaveDelta = () => this.rendRef.getWaveDelta();
+    public isDisappearing = () => this.rendRef.isDisappering();
 }

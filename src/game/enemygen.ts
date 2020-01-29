@@ -162,7 +162,7 @@ class EnemyGenerator {
         let dist = DIST_MIN + Math.random() * DIST_VARY;
 
         let midx = 256 + 12 + dist;
-        let midy = 32 + (128 - dist) * Math.random();
+        let midy = 32 + dist + (128 - dist*2) * Math.random();
 
         let angleSpeed = ANGLE_SPEED_BASE / (dist/ANGLE_SPEED_COMPARE);
         let dir = Math.random() <= 0.5 ? 1 : -1;
@@ -247,21 +247,87 @@ class EnemyGenerator {
     }
 
 
+    // Randomize enemy type
+    private randomizeEnemyType(t : number) :
+         [number, boolean, number, number]  {
+
+        if (t >= 3.0) return [0, false, 0, 0];
+
+        const CAP = [
+            3, 4, 5, 5
+        ];
+
+        const PROBABILITIES = [
+            [0.40, 0.35, 0.25, 0.00, 0.00],
+            [0.30, 0.25, 0.20, 0.25, 0.00],
+            [0.25, 0.20, 0.15, 0.30, 0.10],
+            [0.20, 0.20, 0.15, 0.25, 0.20],
+            [0.20, 0.20, 0.15, 0.25, 0.20],
+        ];
+
+        const FLIP_PROBABILITY = [
+            [0.75, 0.5, 0, 0, 0],
+            [0.5, 0.25, 0, 0, 0],
+            [0.25, 0.1, 0, 0, 0],
+            [0.0, 0.0, 0, 0, 0],
+            [0.0, 0.0, 0, 0, 0],
+        ];
+
+        const MAX_AMOUNT = [
+            [2, 2, 1, 0, 0],
+            [3, 3, 1, 2, 0],
+            [4, 3, 1, 3, 2],
+            [4, 3, 1, 4, 4],
+            [4, 3, 1, 4, 4],
+        ];
+
+        let p = Math.random();
+        let type = EnemyType.Fly;
+
+        let totalProb = 0.0;
+        let q : number;
+        let s = t % 1.0;
+        for (let i = 0; i < 5; ++ i) {
+
+            q = (1-s) * PROBABILITIES[Math.floor(t)][i] +
+                 s * PROBABILITIES[Math.floor(t) +1][i];
+
+            totalProb += q;
+            if (p < totalProb) {
+
+                type = <EnemyType>i;
+                break;
+            }
+        }
+
+        let amount = MAX_AMOUNT[Math.round(t) | 0] [type];
+        let flip = Math.random() < 
+            (1-s) * FLIP_PROBABILITY[Math.floor(t)][type] +
+            s * FLIP_PROBABILITY[Math.floor(t) +1][type];
+
+        return [type, flip, amount, CAP[Math.floor(t)]];
+    }   
+
+
     // Spawn an enemy
-    private spawnEnemy(index : number) : number {
+    private spawnEnemy(index : number, t : number) : number {
 
-        const MAX = 5;
+        const WAIT_BASE = 30;
+        const WAIT_MOD = [
+            45, 45, 75, 60, 60
+        ];
 
-        let count = 1 + Math.floor(Math.random()*4);
+        let out = this.randomizeEnemyType(t);
 
-        let type = (Math.random() * MAX) | 0;
+        let count = 1 + Math.floor(Math.random() * out[2]);
+        let type = out[0]
         if (type == this.lastIndices[index]) {
 
-            type = (type + 1) % MAX;
+            type = (type + 1) % out[3];
         }
         this.lastIndices[index] = type;
 
-        let flip = Math.random() <= 0.5;
+        let flip = out[1];
         
         switch(type) {
         
@@ -282,7 +348,6 @@ class EnemyGenerator {
 
         case EnemyType.Bee:
             this.spawnBees();
-            count = 4;
             break;
 
         case EnemyType.Kamikaze:
@@ -293,7 +358,7 @@ class EnemyGenerator {
             break;
         }
 
-        return count;
+        return WAIT_BASE + count * WAIT_MOD[type];
     }
 
 
@@ -363,21 +428,34 @@ class EnemyGenerator {
             ), id);
 
     }
+    
 
 
     // Update timers
-    public updateTimers(ev : CoreEvent) {
+    public updateTimers(lstate : LocalState, ev : CoreEvent) {
 
-        const WAIT_TIME_MIN = 30;
-        const WAIT_MOD = 45;
+        const TIMER_SPEEDS = [
+            [1.0, 0.0, 0.0],
+            [1.0, 0.5, 0.0],
+            [1.0, 1.0, 0.5],
+            [1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0]
+        ];
 
+        // No more enemies if the power is full
+        let t = lstate.getPower();
+        if (t >= 3.0) return;
+
+        let s = t % 1.0;
+        let speed = 0.0;
         for (let i = 0; i < this.timers.length; ++ i) {
 
             // Update timer
-            if ((this.timers[i] -= ev.step) <= 0.0) {
+            speed = (1-s) * TIMER_SPEEDS[Math.floor(t)][i]
+                    + s*TIMER_SPEEDS[Math.floor(t) +1][i];
+            if ((this.timers[i] -= speed * ev.step) <= 0.0) {
 
-                this.timers[i] += WAIT_TIME_MIN +
-                    this.spawnEnemy(i) * WAIT_MOD;
+                this.timers[i] += this.spawnEnemy(i, t);
             }
         }
     }
@@ -392,7 +470,7 @@ class EnemyGenerator {
         ev : CoreEvent) {
 
         // Update timer
-        this.updateTimers(ev);
+        this.updateTimers(lstate, ev);
 
         // Update enemies
         let dmg : number;
