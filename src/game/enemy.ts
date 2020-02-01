@@ -188,13 +188,15 @@ class BaseEnemyAI extends AIComponent {
 class Enemy extends Entity {
 
 
-    protected rendRef : EnemyRenderer;
+    protected rendRef : any; // Sorry
     protected hurtIndex : number; // For the sword attack
 
-    
-    constructor() {
+    protected isStatic : boolean;
 
-        super();
+    
+    constructor(x? : number, y?: number) {
+
+        super(x, y);
 
         this.base.acc.x = 0.25;
         this.base.acc.y = 0.25;
@@ -205,6 +207,7 @@ class Enemy extends Entity {
         this.renderComp = this.rendRef;
 
         this.hurtIndex = 0;
+        this.isStatic = false;
     }
 
 
@@ -320,7 +323,8 @@ class Enemy extends Entity {
     protected hostileCollision(e : Entity, kill = true) {
 
         this.flicker(30);
-        this.base.speed.x = e.getSpeed().x;
+        if (!this.isStatic)
+            this.base.speed.x = e.getSpeed().x;
         this.reduceHealth(e.getPower());
 
         if (kill)

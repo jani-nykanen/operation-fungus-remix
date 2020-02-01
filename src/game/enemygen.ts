@@ -12,6 +12,7 @@ class EnemyGenerator {
     private lastIndices : Array<number>;
     private enemies : Array<Enemy>;
     private shootCB : (pos : Vector2, speed: Vector2, power : number) => any;
+    private disabled : boolean;
 
 
     constructor(shootCB? : 
@@ -25,6 +26,8 @@ class EnemyGenerator {
         this.timers = new Array<number> (TIMER_COUNT);
         this.lastIndices = new Array<number> (TIMER_COUNT);
         this.initTimers();
+
+        this.disabled = false;
     }
 
 
@@ -363,7 +366,8 @@ class EnemyGenerator {
 
 
     // Spawn the damage text
-    private spawnDamageText(texts : Array<FlyingText>,
+    // (wait why is this public shut up)
+    public spawnDamageText(texts : Array<FlyingText>,
             dmg : number, pos : Vector2) {
 
         let text : FlyingText;
@@ -439,12 +443,11 @@ class EnemyGenerator {
             [1.0, 0.5, 0.0],
             [1.0, 1.0, 0.5],
             [1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0]
         ];
 
         // No more enemies if the power is full
         let t = lstate.getPower();
-        if (t >= 3.0) return;
+        if (Math.floor(t) +1 >= TIMER_SPEEDS.length) return;
 
         let s = t % 1.0;
         let speed = 0.0;
@@ -470,7 +473,8 @@ class EnemyGenerator {
         ev : CoreEvent) {
 
         // Update timer
-        this.updateTimers(lstate, ev);
+        if (!this.disabled)
+            this.updateTimers(lstate, ev);
 
         // Update enemies
         let dmg : number;
@@ -556,5 +560,20 @@ class EnemyGenerator {
         }
 
         this.initTimers();
+        this.disabled = false;
+    }
+
+
+    // Disable
+    public disable() {
+
+        if (this.disabled) return;
+
+        // Kill all
+        for (let e of this.enemies) {
+
+            e.kill();
+        }
+        this.disabled = true;
     }
 }
