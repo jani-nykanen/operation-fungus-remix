@@ -75,12 +75,13 @@ class EntityBase {
 
 
     // Die
-    public die() {
+    public die(deathEvent = true) {
 
         if (!this.exist && this.dying)
             return;
 
-        if (this.killCB != undefined) {
+        if (deathEvent && 
+            this.killCB != undefined) {
 
             this.killCB();
         }

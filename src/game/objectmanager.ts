@@ -12,7 +12,6 @@ class ObjectManager {
     private pickups : Array<PickUp>;
     private enemyGen : EnemyGenerator;
     private flyingText : Array<FlyingText>;
-    private boss : Boss;
     
     private finished : boolean;
 
@@ -38,7 +37,6 @@ class ObjectManager {
         this.pickups = new Array<PickUp> ();
         this.flyingText = new Array<FlyingText> ();
 
-        this.boss = new Boss(256+32, 192/2);
         this.finished = false;
     }
 
@@ -97,46 +95,6 @@ class ObjectManager {
     }
 
 
-    // Update the boss
-    // TODO: Put this to the enemy generator since
-    // the code here is just copy-paste from there
-    private updateBoss(lstate : LocalState, ev : CoreEvent) {
-
-        // Update the boss
-        let blade = this.player.getBlade();
-        let dmg = 0;
-
-        this.boss.update(ev);
-
-        for (let b of this.bullets) {
-
-                dmg = this.boss.entityCollision(b, true, true);
-                if (dmg > 0) {
-
-                    this.enemyGen.spawnDamageText(
-                        this.flyingText, dmg, b.getPos());
-                }
-        }
-
-        if (blade != null &&
-                this.boss.getHurtIndex() < blade.getAttackIndex()) {
-
-                dmg = this.boss.entityCollision(blade, true, false);
-                if (dmg > 0) {
-
-                    this.boss.setHurtIndex(blade.getAttackIndex());
-                    this.enemyGen.spawnDamageText(
-                        this.flyingText, dmg, blade.getPos());
-                }
-        }
-
-        this.player.entityCollision(this.boss, true, false);
-
-        lstate.setPower(this.boss.getHealth() / 
-            this.boss.getMaxHealth() * 3.0);
-    }
-
-
     // Update
     public update(lstate : LocalState, hud : HUDRenderer, ev : CoreEvent) {
 
@@ -153,7 +111,7 @@ class ObjectManager {
             lstate.getPower() >= 3.0) {
 
             this.finished = true;
-            this.enemyGen.disable();
+            this.enemyGen.startBossBattle();
         }
 
         // Update bullets
@@ -192,12 +150,6 @@ class ObjectManager {
             this.player, 
             lstate,
             ev);
-
-        // Update the boss
-        if (this.finished) {
-
-            this.updateBoss(lstate, ev);
-        }
 
         // Update player
         this.player.update(ev);
@@ -265,12 +217,6 @@ class ObjectManager {
         // Draw enemies
         this.enemyGen.draw(c);
         
-        // Draw the boss
-        if (this.finished) {
-
-            this.boss.draw(c, c.getBitmap("boss"));
-        }
-
         // Draw objects (base layer)
         //if (this.player.getBlade() != null)
         //    this.player.getBlade().draw(c);
@@ -317,7 +263,6 @@ class ObjectManager {
         hud.reset();
         lstate.reset();
 
-        this.boss = new Boss(256+32, 192/2);
         this.finished = false;
 
         this.enemyGen.reset();

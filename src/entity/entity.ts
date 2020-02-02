@@ -64,7 +64,7 @@ class Entity {
     // Draw shadows
     drawShadow(c : Canvas) {
 
-        if (!this.base.exist) return;
+        if (!this.base.exist || this.base.dying) return;
 
         if (this.renderComp != undefined) {
 
@@ -143,7 +143,7 @@ class Entity {
 
 
     // Kill
-    public kill(hardDeath = false) {
+    public kill(hardDeath = false, deathEvent = true) {
 
         if (!this.base.exist) return;
 
@@ -154,7 +154,7 @@ class Entity {
             return;
         }
 
-        this.base.die();
+        this.base.die(deathEvent);
     }
 
 

@@ -12,7 +12,9 @@ class EnemyGenerator {
     private lastIndices : Array<number>;
     private enemies : Array<Enemy>;
     private shootCB : (pos : Vector2, speed: Vector2, power : number) => any;
-    private disabled : boolean;
+    private bossBegun : boolean;
+
+    private boss : Boss;
 
 
     constructor(shootCB? : 
@@ -27,7 +29,9 @@ class EnemyGenerator {
         this.lastIndices = new Array<number> (TIMER_COUNT);
         this.initTimers();
 
-        this.disabled = false;
+        this.bossBegun = false;
+    
+        this.boss = null;
     }
 
 
@@ -464,24 +468,20 @@ class EnemyGenerator {
     }
 
 
-    // Update
-    public update(bullets : Array<Bullet>, 
+    // Update an enemy
+    private updateEnemy(
+        e : Enemy,
+        bullets : Array<Bullet>, 
         text : Array<FlyingText>,
         pickups : Array<PickUp>, 
         player : Player,
         lstate : LocalState,
         ev : CoreEvent) {
 
-        // Update timer
-        if (!this.disabled)
-            this.updateTimers(lstate, ev);
-
-        // Update enemies
-        let dmg : number;
+        let dmg;
         let blade = player.getBlade();
-        for (let e of this.enemies) {
 
-            e.update(ev);
+        e.update(ev);
 
             // Bullet  & player collisions
             if (e.doesExist() && !e.isDying()) {
@@ -525,6 +525,36 @@ class EnemyGenerator {
                     this.spawnPickUp(lstate, pickups, e.getPos());
                 }
             }
+    }
+
+
+    // Update
+    public update(bullets : Array<Bullet>, 
+        text : Array<FlyingText>,
+        pickups : Array<PickUp>, 
+        player : Player,
+        lstate : LocalState,
+        ev : CoreEvent) {
+
+        // Update timer
+        if (!this.bossBegun)
+            this.updateTimers(lstate, ev);
+
+        else {
+
+            // Update oss
+            this.updateEnemy(this.boss, bullets, text,
+                pickups, player, lstate, ev);
+
+            lstate.setPower(this.boss.getHealth() / 
+                this.boss.getMaxHealth() * 3.0);
+        }
+
+        // Update enemies
+        for (let e of this.enemies) {
+
+            this.updateEnemy(e, bullets, text,
+                pickups, player, lstate, ev);
         }
     }
 
@@ -537,6 +567,11 @@ class EnemyGenerator {
 
             e.drawShadow(c);
         }
+        
+        if (this.bossBegun) {
+
+            this.boss.drawShadow(c);
+        }
     }
 
 
@@ -547,6 +582,11 @@ class EnemyGenerator {
         for (let e of this.enemies) {
 
             e.draw(c, c.getBitmap("enemies"));
+        }
+
+        if (this.bossBegun) {
+
+            this.boss.draw(c);
         }
     }
 
@@ -560,20 +600,24 @@ class EnemyGenerator {
         }
 
         this.initTimers();
-        this.disabled = false;
+        this.bossBegun = false;
+
+        this.boss = null;
     }
 
 
-    // Disable
-    public disable() {
+    // Start the boss battle
+    public startBossBattle() {
 
-        if (this.disabled) return;
+        if (this.bossBegun) return;
 
         // Kill all
         for (let e of this.enemies) {
 
-            e.kill();
+            e.kill(false, false);
         }
-        this.disabled = true;
+        this.bossBegun = true;
+
+        this.boss = new Boss(256+48, 96);
     }
 }
