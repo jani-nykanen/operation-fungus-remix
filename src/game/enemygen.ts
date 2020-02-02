@@ -507,6 +507,8 @@ class EnemyGenerator {
 
                         this.spawnDamageText(text, dmg, blade.getPos());
                         e.setHurtIndex(blade.getAttackIndex());
+
+                        lstate.addExperience(e.getXP(dmg));
                     }
 
                 }
@@ -519,14 +521,14 @@ class EnemyGenerator {
                     if (dmg > 0) {
 
                         this.spawnDamageText(text, dmg, b.getPos());
+                        lstate.addExperience(e.getXP(dmg));
                     }
                 }
 
-                // If killed, gain experience & possibly
-                // spawn an itme
+                // If killed, increase multiplier and
+                // spawn an item
                 if (e.isDying()) {
 
-                    lstate.addExperience(e.getXP());
                     lstate.increaseMultiplier();
 
                     this.spawnPickUp(lstate, pickups, e.getPos());

@@ -203,7 +203,17 @@ class Entity {
     public isDying = () => this.base.dying;
     public getOffset = () => this.offset.clone();
     public getHealth = () => this.base.health;
-    public getXP = () => this.base.xp;
+    public getXP(dmg = 0) : number {
+
+        let c = 0;
+        if (this.base.health >= 0)
+            c = dmg;
+        else {
+
+            c = this.base.health + dmg;
+        }
+        return c;
+    }
     public getMaxHealth = () => this.base.maxHealth;
     public getSpriteRow = () => this.renderComp.getSpriteRow();
 }

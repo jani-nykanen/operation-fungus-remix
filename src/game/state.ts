@@ -60,10 +60,10 @@ class LocalState {
         
         this.xp = 0;
         this.xpReq = 0;
-        this.level = 10;
+        this.level = 1;
         this.multiplier = 0;
         this.mulTimer = 0;
-        this.power = 2.99;
+        this.power = 0; // 2.99;
 
         this.bonusTimers = new Array<number> (4);
         for (let i = 0; i < this.bonusTimers.length; ++ i) {
