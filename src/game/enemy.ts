@@ -16,6 +16,7 @@ enum EnemyType {
 }
 
 
+type ShootCallback = (pos : Vector2, speed: Vector2, power : number, id? : number) => any;
 
  
 class MovementLogic {
@@ -35,13 +36,13 @@ class ShootingLogic {
 
     protected base : EntityBase;
     protected animCB : (() => any);
-    protected shootCB : (pos : Vector2, speed: Vector2, power : number) => any; 
+    protected shootCB : ShootCallback; 
     protected timer : number;
 
 
     constructor(base : EntityBase,
         animCB? : (() => any),
-        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+        shootCB? : ShootCallback) {
 
         this.base = base;
         this.timer = 0;
@@ -213,14 +214,14 @@ class Enemy extends Entity {
 
     protected spawnEvent? (params? : Array<number>, 
         follow? : Entity,
-        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) 
+        shootCB? : ShootCallback) 
         : any;
 
     
     // Spawn
     public spawn(pos : Vector2, index : EnemyType, 
         params? : Array<number>,
-        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+        shootCB? : ShootCallback) {
 
         this.base.exist = true;
         this.base.dying = false;

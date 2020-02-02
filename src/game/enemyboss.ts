@@ -13,14 +13,19 @@ class BossAI extends AIComponent {
     private rendComp : BossRenderer;
     private ready : boolean;
 
+    private readonly shootCB : ShootCallback;
+
 
     constructor(base : EntityBase, 
-        rendComp : BossRenderer) {
+        rendComp : BossRenderer,
+        shootCB? : ShootCallback) {
 
         super(base);
     
         this.rendComp = rendComp;
         this.ready = false;
+
+        this.shootCB = shootCB;
     }
 
 
@@ -183,7 +188,8 @@ class BossRenderer extends RenderComponent {
 class Boss extends Enemy {
 
 
-    constructor(x : number, y : number) {
+    constructor(x : number, y : number,
+        shootCB? : ShootCallback) {
 
         super(x, y);
 

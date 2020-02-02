@@ -28,9 +28,9 @@ class ObjectManager {
 
         this.bullets = new Array<Bullet> ();
         this.enemyGen = new EnemyGenerator(
-            (pos : Vector2, speed: Vector2, power : number) => {
+            (pos : Vector2, speed: Vector2, power : number, id = 1) => {
 
-                this.spawnBullet(1, pos, speed, false, power);
+                this.spawnBullet(id, pos, speed, false, power);
             }
         );
 

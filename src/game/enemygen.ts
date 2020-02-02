@@ -11,14 +11,13 @@ class EnemyGenerator {
     private timers : Array<number>;
     private lastIndices : Array<number>;
     private enemies : Array<Enemy>;
-    private shootCB : (pos : Vector2, speed: Vector2, power : number) => any;
+    private shootCB : ShootCallback;
     private bossBegun : boolean;
 
     private boss : Boss;
 
 
-    constructor(shootCB? : 
-        (pos : Vector2, speed: Vector2, power : number) => any) {
+    constructor(shootCB? : ShootCallback) {
 
         const TIMER_COUNT = 3;
 
@@ -618,6 +617,6 @@ class EnemyGenerator {
         }
         this.bossBegun = true;
 
-        this.boss = new Boss(256+48, 96);
+        this.boss = new Boss(256+48, 96, this.shootCB);
     }
 }

@@ -329,7 +329,7 @@ class PeriodicShot extends ShootingLogic {
             angleStep : number,
             count : number,
             animCB? : (() => any),
-            shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+            shootCB? : ShootCallback) {
 
         super(base, animCB, shootCB);
 
@@ -389,7 +389,7 @@ class FlyAI extends BaseEnemyAI {
     constructor(base : EntityBase,
         rendComp? : EnemyRenderer,
         params? : Array<number>,
-        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+        shootCB? : ShootCallback) {
 
         super(base, rendComp);
 
@@ -422,7 +422,7 @@ class SlimeAI extends BaseEnemyAI {
     constructor(base : EntityBase,
         rendComp? : EnemyRenderer,
         params? : Array<number>,
-        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+        shootCB? : ShootCallback) {
 
         super(base, rendComp);
 
@@ -449,7 +449,7 @@ class FleeingFlyAI extends BaseEnemyAI {
     constructor(base : EntityBase,
         rendComp? : EnemyRenderer,
         params? : Array<number>,
-        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+        shootCB? : ShootCallback) {
 
         super(base, rendComp);
 
@@ -476,7 +476,7 @@ class CloudAI extends BaseEnemyAI {
     constructor(base : EntityBase,
         rendComp? : EnemyRenderer,
         params? : Array<number>,
-        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+        shootCB? : ShootCallback) {
 
         super(base, rendComp);
 
@@ -515,7 +515,7 @@ class BeeAI extends BaseEnemyAI {
     constructor(base : EntityBase,
         rendComp? : EnemyRenderer,
         params? : Array<number>,
-        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+        shootCB? : ShootCallback) {
 
         super(base, rendComp);
 
@@ -542,7 +542,7 @@ class KamikazeAI extends BaseEnemyAI {
     constructor(base : EntityBase,
         rendComp? : EnemyRenderer,
         params? : Array<number>,
-        shootCB? : (pos : Vector2, speed: Vector2, power : number) => any) {
+        shootCB? : ShootCallback) {
 
         super(base, rendComp);
 
