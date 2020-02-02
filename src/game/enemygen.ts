@@ -441,24 +441,32 @@ class EnemyGenerator {
     // Update timers
     public updateTimers(lstate : LocalState, ev : CoreEvent) {
 
+        // The last and final columns are unused,
+        // but they are there to one bug I haven't
+        // been able to fix...
         const TIMER_SPEEDS = [
-            [1.0, 0.0, 0.0],
-            [1.0, 0.5, 0.0],
-            [1.0, 1.0, 0.5],
-            [1.0, 1.0, 1.0],
+            [1.0, 0.0, 0.0, 0.0],
+            [1.0, 0.5, 0.0, 0.0],
+            [1.0, 1.0, 0.5, 0.0],
+            [1.0, 1.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0]
         ];
 
         // No more enemies if the power is full
         let t = lstate.getPower();
-        if (Math.floor(t) +1 >= TIMER_SPEEDS.length) return;
+        // The other check should be unnecessary...
+        if (t >= 3.0 || Math.floor(t) +1 >= TIMER_SPEEDS.length) 
+            return;
+
+        let index = (t | 0);
 
         let s = t % 1.0;
         let speed = 0.0;
         for (let i = 0; i < this.timers.length; ++ i) {
 
             // Update timer
-            speed = (1-s) * TIMER_SPEEDS[Math.floor(t)][i]
-                    + s*TIMER_SPEEDS[Math.floor(t) +1][i];
+            speed = (1-s) * TIMER_SPEEDS[index][i]
+                    + s*TIMER_SPEEDS[index +1][i];
             if ((this.timers[i] -= speed * ev.step) <= 0.0) {
 
                 this.timers[i] += this.spawnEnemy(i, t);

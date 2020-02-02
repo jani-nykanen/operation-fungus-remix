@@ -111,6 +111,9 @@ class Bullet extends Entity {
         speed : Vector2, friendly : boolean,
         power = 1) {
 
+        const HITBOX_SIZE = 
+            [6, 6, 12];
+
         this.base.exist = true;
         this.base.dying = false;
         
@@ -122,6 +125,9 @@ class Bullet extends Entity {
         this.friendly = friendly;
 
         this.base.power = power;
+
+        this.base.hitbox.x = HITBOX_SIZE[row];
+        this.base.hitbox.y = this.base.hitbox.x;
     }
 
 

@@ -9,11 +9,20 @@
 
 class BossAI extends AIComponent {
     
+    private readonly MOUTH_WAIT_MIN = 180;
+    private readonly MOUTH_WAIT_VARY = 60;
+
+    private readonly EYE_WAIT_MIN = 120;
+    private readonly EYE_WAIT_VARY = 60;
+
 
     private rendComp : BossRenderer;
     private ready : boolean;
 
     private readonly shootCB : ShootCallback;
+
+    private mouthWait : number;
+    private eyeWait : number;
 
 
     constructor(base : EntityBase, 
@@ -26,6 +35,104 @@ class BossAI extends AIComponent {
         this.ready = false;
 
         this.shootCB = shootCB;
+
+        this.mouthWait = 0;
+        this.eyeWait = this.EYE_WAIT_MIN;
+
+        this.base.acc.x = 0.1;
+        this.base.acc.y = 0.1;
+    }
+
+
+    // Open mouth
+    private openMouth(ev : CoreEvent) {
+
+        const MOUTH_TIME = 30;
+        const SPEED_MIN = 2.0;
+        const SPEED_VARY = 1.0;
+        const ANGLE = Math.PI/3 / 5;
+
+        this.rendComp.animateMouth(MOUTH_TIME);
+
+        this.mouthWait = this.MOUTH_WAIT_MIN + 
+            (Math.random()*this.MOUTH_WAIT_VARY) | 0;
+
+        // Create bullets
+        let angle = 0;
+        let speed = 0;
+        for (let i = -2; i <= 2; ++ i) {
+
+            angle = i * ANGLE;
+
+            speed = SPEED_MIN + Math.random()*SPEED_VARY;
+            this.shootCB(new Vector2(
+                this.base.pos.x-8, this.base.pos.y+8
+            ),
+            new Vector2(
+                -Math.cos(angle) * speed,
+                Math.sin(angle) * speed
+            ), 60, 2);
+        }
+    }
+
+
+    // Open the eye
+    private openEye(ev : CoreEvent) {
+
+        const COUNT_1 = 4;
+
+        const EYE_TIME = 30;
+        const SPEED_1 = 4.0;
+        const SPEED_2 = 3.0;
+        const SPEED_REDUCE = 0.75;
+        const ANGLE = Math.PI / 6.0;
+
+        this.rendComp.animateEye(EYE_TIME);
+
+        this.eyeWait = this.EYE_WAIT_MIN + 
+            (Math.random()*this.EYE_WAIT_VARY) | 0;
+
+        let mode = (Math.random() * 2) | 0;
+
+        let pos = new Vector2(
+            this.base.pos.x - 8,
+            this.base.pos.y-8
+        );
+
+        let angle = 0;
+        switch(mode) {
+
+        case 0:
+
+            for (let i = 0; i < COUNT_1; ++ i) {
+
+                this.shootCB(
+                    pos, 
+                    new Vector2(-SPEED_1 + SPEED_REDUCE*i, 
+                        -this.base.speed.y/4
+                    ),
+                    30
+                );
+            }
+            break;
+
+        case 1:
+
+            for (let i = -1; i <= 1; ++ i) {
+
+                angle = ANGLE * i;
+                this.shootCB(pos,
+                    new Vector2(
+                        -Math.cos(angle) * SPEED_2,
+                        Math.sin(angle) * SPEED_2
+                    ), 30);
+            }
+
+            break;
+
+        default:
+            break;
+        }
     }
 
 
@@ -34,6 +141,10 @@ class BossAI extends AIComponent {
 
         const APPEAR_SPEED = 1.0;
         const APPEAR_LIMIT = 256-40;
+
+        const TOP = 56;
+        const BOTTOM = 192-64;
+        const VERTICAL_SPEED = 1.0;
 
         // Appear
         if (!this.ready) {
@@ -45,7 +156,32 @@ class BossAI extends AIComponent {
 
                 this.base.target.x = 0;
                 this.ready = true;
+
+                this.base.target.y = VERTICAL_SPEED;
             }
+
+            return;
+        }
+        
+        
+
+        // Update timers
+        if ((this.mouthWait -= ev.step) <= 0) {
+
+            this.openMouth(ev);
+        }
+        if ((this.eyeWait -= ev.step) <= 0) {
+
+            this.openEye(ev);
+        }
+
+        // Check vertical speed
+        if ( (this.base.target.y < 0 &&
+            this.base.pos.y < TOP) || 
+            (this.base.target.y > 0 &&
+                this.base.pos.y > BOTTOM)){
+
+            this.base.target.y *= -1;
         }
     }
 }
@@ -63,6 +199,9 @@ class BossRenderer extends RenderComponent {
     private sprEye : Sprite;
 
     private deathTimer : number;
+
+    private mouthTimer : number;
+    private eyeTimer : number;
 
 
     constructor(base : EntityBase) {
@@ -84,6 +223,9 @@ class BossRenderer extends RenderComponent {
         this.shadowSize.y = this.shadowSize.x / 4;
 
         this.deathTimer = this.DEATH_TIME1 + this.DEATH_TIME2;
+
+        this.mouthTimer = 0;
+        this.eyeTimer = 0;
     }
 
 
@@ -94,6 +236,15 @@ class BossRenderer extends RenderComponent {
 
         this.sprPropeller.animate(4, 0, 3,
             PROPELLER_SPEED, ev.step);
+
+        this.sprMouth.setFrame(this.mouthTimer > 0 ? 1 : 0, 1);
+        this.sprEye.setFrame(this.eyeTimer > 0 ? 1 : 0, 2);
+
+        if (this.mouthTimer > 0)
+            this.mouthTimer -= ev.step;
+
+        if (this.eyeTimer > 0)
+            this.eyeTimer -= ev.step;    
     }
 
 
@@ -182,6 +333,11 @@ class BossRenderer extends RenderComponent {
             return;
         }
     }
+
+
+    // Setters
+    public animateMouth = (time : number) => {this.mouthTimer = time;}
+    public animateEye = (time : number) => {this.eyeTimer = time;}
 }
 
 
@@ -201,7 +357,7 @@ class Boss extends Enemy {
         this.rendRef = new BossRenderer(this.base);
         this.renderComp = this.rendRef;
 
-        this.ai = new BossAI(this.base, this.rendRef);
+        this.ai = new BossAI(this.base, this.rendRef, shootCB);
 
         this.hurtIndex = 0;
         this.base.power = 100;

@@ -13,6 +13,7 @@ class ControllerButton {
 
     public state : State;
 
+    
     constructor(name : string, key : string, 
         jbutton? : number,
         jbutton2? : number) {
@@ -39,6 +40,8 @@ class Controller {
 
 
     constructor() {
+
+        this.stick = new Vector2();
 
         this.buttons = new Array<ControllerButton> ();
     }

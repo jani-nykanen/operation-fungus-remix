@@ -74,7 +74,7 @@ class LocalState {
         this.skillLevels = new Array<number> (8);
         for (let i = 0; i < this.skillLevels.length; ++ i) {
 
-            this.skillLevels[i] = 5;
+            this.skillLevels[i] = 0; // 5;
         }
 
         this.recomputeStats();
