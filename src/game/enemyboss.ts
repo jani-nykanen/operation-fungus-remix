@@ -15,6 +15,9 @@ class BossAI extends AIComponent {
     private readonly EYE_WAIT_MIN = 120;
     private readonly EYE_WAIT_VARY = 60;
 
+    private readonly RUSH_TIME_MIN = 180;
+    private readonly RUSH_TIME_VARY = 180;
+
 
     private rendComp : BossRenderer;
     private ready : boolean;
@@ -23,6 +26,8 @@ class BossAI extends AIComponent {
 
     private mouthWait : number;
     private eyeWait : number;
+    private rushTime : number;
+    private rushing : number;
 
 
     constructor(base : EntityBase, 
@@ -38,6 +43,9 @@ class BossAI extends AIComponent {
 
         this.mouthWait = 0;
         this.eyeWait = this.EYE_WAIT_MIN;
+
+        this.rushTime = this.RUSH_TIME_MIN + this.RUSH_TIME_VARY;
+        this.rushing = 0;
 
         this.base.acc.x = 0.1;
         this.base.acc.y = 0.1;
@@ -163,8 +171,6 @@ class BossAI extends AIComponent {
             return;
         }
         
-        
-
         // Update timers
         if ((this.mouthWait -= ev.step) <= 0) {
 
