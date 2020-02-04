@@ -28,6 +28,7 @@ class BossAI extends AIComponent {
     private eyeWait : number;
     private rushTime : number;
     private rushing : number;
+    private speedMod : number;
 
 
     constructor(base : EntityBase, 
@@ -116,7 +117,7 @@ class BossAI extends AIComponent {
 
                 this.shootCB(
                     pos, 
-                    new Vector2(-SPEED_1 + SPEED_REDUCE*i, 
+                    new Vector2(-SPEED_1 + SPEED_REDUCE*i - (this.speedMod-1.0), 
                         -this.base.speed.y/4
                     ),
                     30
@@ -152,7 +153,15 @@ class BossAI extends AIComponent {
 
         const TOP = 56;
         const BOTTOM = 192-64;
+        const LEFT = 32;
+        const RIGHT = 24;
         const VERTICAL_SPEED = 1.0;
+        const RUSH_SPEED = 2.0;
+        const RUSH_MOD = 1.0;
+        const SPEED_MOD = 1.0;
+
+        // Compute speed modifier
+        this.speedMod = 1.0 + SPEED_MOD * (1.0 - this.base.health / this.base.maxHealth);
 
         // Appear
         if (!this.ready) {
@@ -171,14 +180,47 @@ class BossAI extends AIComponent {
             return;
         }
         
-        // Update timers
-        if ((this.mouthWait -= ev.step) <= 0) {
 
-            this.openMouth(ev);
+        // Check rushing
+        if (this.rushing == 0) {
+
+            // Update shooting timers
+            if ((this.mouthWait -= ev.step * this.speedMod ) <= 0) {
+
+                this.openMouth(ev);
+            }
+            if ((this.eyeWait -= ev.step * this.speedMod ) <= 0) {
+
+                this.openEye(ev);
+            }
+
+            if ((this.rushTime -= ev.step * this.speedMod ) <= 0) {
+
+                this.base.target.x = -RUSH_SPEED -
+                    (this.speedMod-1.0) * RUSH_MOD;
+                this.rushing = 1;
+            }
         }
-        if ((this.eyeWait -= ev.step) <= 0) {
+        else {
 
-            this.openEye(ev);
+            if (this.rushing == 1 &&
+                this.base.target.x < 0 &&
+                this.base.pos.x < LEFT * this.speedMod) {
+
+                this.base.target.x *= -1;
+                this.rushing = 2;
+            }
+            else if (this.rushing == 2 &&
+                this.base.target.x > 0 &&
+                this.base.pos.x > RIGHT * this.speedMod) {
+
+                this.base.target.x = 0;
+                this.rushing = 0;
+
+                this.rushTime = this.RUSH_TIME_MIN +
+                    (Math.random() * this.RUSH_TIME_VARY) | 0;
+            }
+            
         }
 
         // Check vertical speed
@@ -367,6 +409,7 @@ class Boss extends Enemy {
 
         this.hurtIndex = 0;
         this.base.power = 100;
+        this.base.xp = 1000;
 
         this.base.maxHealth = HEALTH;
         this.base.health = HEALTH;
