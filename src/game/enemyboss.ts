@@ -73,7 +73,8 @@ class BossAI extends AIComponent {
 
             angle = i * ANGLE;
 
-            speed = SPEED_MIN + Math.random()*SPEED_VARY;
+            speed = SPEED_MIN + Math.random()*SPEED_VARY * 
+                this.speedMod;
             this.shootCB(new Vector2(
                 this.base.pos.x-8, this.base.pos.y+8
             ),
@@ -109,6 +110,7 @@ class BossAI extends AIComponent {
         );
 
         let angle = 0;
+        let speed = 0;
         switch(mode) {
 
         case 0:
@@ -127,13 +129,14 @@ class BossAI extends AIComponent {
 
         case 1:
 
+            speed = SPEED_2 + (this.speedMod-1.0);
             for (let i = -1; i <= 1; ++ i) {
 
                 angle = ANGLE * i;
                 this.shootCB(pos,
                     new Vector2(
-                        -Math.cos(angle) * SPEED_2,
-                        Math.sin(angle) * SPEED_2
+                        -Math.cos(angle) * speed,
+                        Math.sin(angle) * speed
                     ), 30);
             }
 
@@ -153,8 +156,8 @@ class BossAI extends AIComponent {
 
         const TOP = 56;
         const BOTTOM = 192-64;
-        const LEFT = 32;
-        const RIGHT = 24;
+        const LEFT = 48;
+        const RIGHT = 48;
         const VERTICAL_SPEED = 1.0;
         const RUSH_SPEED = 2.0;
         const RUSH_MOD = 1.0;
@@ -212,7 +215,7 @@ class BossAI extends AIComponent {
             }
             else if (this.rushing == 2 &&
                 this.base.target.x > 0 &&
-                this.base.pos.x > RIGHT * this.speedMod) {
+                this.base.pos.x > 256 - RIGHT * this.speedMod) {
 
                 this.base.target.x = 0;
                 this.rushing = 0;

@@ -618,6 +618,8 @@ class EnemyGenerator {
     // Start the boss battle
     public startBossBattle() {
 
+        const BOSS_X = 96;
+
         if (this.bossBegun) return;
 
         // Kill all
@@ -627,6 +629,6 @@ class EnemyGenerator {
         }
         this.bossBegun = true;
 
-        this.boss = new Boss(256+48, 96, this.shootCB);
+        this.boss = new Boss(256+BOSS_X, 96, this.shootCB);
     }
 }

@@ -16,6 +16,8 @@ class HUDRenderer {
 
     private readonly lstate : LocalState;
 
+    private bossAlertTimer : number;
+
 
     constructor(state : LocalState) {
 
@@ -24,6 +26,7 @@ class HUDRenderer {
         this.powerBar = 0.0;
 
         this.bonusFlicker = 0;
+        this.bossAlertTimer = 0.0;
 
         this.lstate = state;
     }
@@ -152,6 +155,10 @@ class HUDRenderer {
 
         // Update bonus flickering
         this.bonusFlicker = (this.bonusFlicker + ev.step) % FLICKER_MAX;
+
+        // Update boss alert
+        if (this.bossAlertTimer > 0)
+            this.bossAlertTimer -= ev.step;
     }
 
 
@@ -196,6 +203,8 @@ class HUDRenderer {
     // Draw
     public draw(c : Canvas) {
 
+        const BOSS_ALERT_Y = 72;
+
         c.moveTo();
 
         // Draw health & exp bars
@@ -230,6 +239,14 @@ class HUDRenderer {
 
         // Draw bonuses
         this.drawBonuses(c, 1, 86);
+
+        // Draw boss aleart
+        if (this.bossAlertTimer > 0 &&
+            Math.floor(this.bossAlertTimer / 15) % 2 == 0) {
+
+            c.drawText(c.getBitmap("fontBig"), "BOSS ALERT!",
+                c.width/2, BOSS_ALERT_Y, -6, 0, true);
+        }
     }
 
 
@@ -240,5 +257,12 @@ class HUDRenderer {
         this.powerBar = 0.0;
 
         this.bonusFlicker = 0;
+    }
+
+
+    // Set boss alert
+    public setBossAlert(time : number) {
+
+        this.bossAlertTimer = time;
     }
 }

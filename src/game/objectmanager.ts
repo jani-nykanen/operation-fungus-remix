@@ -98,6 +98,8 @@ class ObjectManager {
     // Update
     public update(lstate : LocalState, hud : HUDRenderer, ev : CoreEvent) {
 
+        const BOSS_ALERT_TIME = 120;
+
         const MESSAGES = [
             "DAMAGE", "DEFENSE",
             "SPEED", "BULLET"
@@ -112,6 +114,7 @@ class ObjectManager {
 
             this.finished = true;
             this.enemyGen.startBossBattle();
+            hud.setBossAlert(BOSS_ALERT_TIME);
         }
 
         // Update bullets

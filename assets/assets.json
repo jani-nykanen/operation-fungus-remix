@@ -4,7 +4,8 @@
         {"name": "font",  "path": "font.png"},
         {"name": "fontRed",  "path": "font_red.png"},
         {"name": "fontYellow",  "path": "font_yellow.png"},
-
+        {"name": "fontBig",  "path": "font_big.png"},
+        
         {"name": "floor",  "path": "floor.png"},
         {"name": "sky",  "path": "sky.png"},
         {"name": "sun",  "path": "sun.png"},
