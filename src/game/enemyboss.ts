@@ -140,6 +140,8 @@ class BossAI extends AIComponent {
 
         this.base.acc.x = 0.1;
         this.base.acc.y = 0.1;
+
+        this.speedMod = 1.0;
     }
 
 
