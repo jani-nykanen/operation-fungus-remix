@@ -540,13 +540,11 @@ class Boss extends Enemy {
         this.orbiter = new Orbiter(this.base.pos,
             ORBITER_RADIUS,
             1.0, 0.0);
-            
     }
 
 
     // Refresh
     public refresh() {
-
 
         if (!this.doesExist()) return;
 
