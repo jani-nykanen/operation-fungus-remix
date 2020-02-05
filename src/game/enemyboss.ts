@@ -36,6 +36,7 @@ class OrbiterAI extends AIComponent {
     public update(ev : CoreEvent) {
 
         const SPEED_MUL = 0.033;
+        const MIN_Y = 192-16;
 
         this.angle = (this.angle + SPEED_MUL*this.speed*ev.step) % (Math.PI*2);
 
@@ -46,6 +47,8 @@ class OrbiterAI extends AIComponent {
         this.base.pos.y = this.center.y +
             Math.sin(this.angle) * this.radius;
 
+        this.base.pos.y = Math.min(MIN_Y - this.base.hitbox.y/2, this.base.pos.y);
+
     }
 
 
@@ -53,6 +56,13 @@ class OrbiterAI extends AIComponent {
     public setSpeed(s : number) {
 
         this.speed = s;
+    }
+
+
+    // Set radius
+    public setRadius(r : number) {
+
+        this.radius = r;
     }
 }
 
@@ -81,6 +91,8 @@ class Orbiter extends Entity {
         this.renderComp = new RenderComponent(this.base, 24, 24);
 
         this.ai = this.aiRef;
+
+        this.immune = true;
     }
 
 
@@ -94,6 +106,9 @@ class Orbiter extends Entity {
 
     // Set speed
     public setSpeed = (s : number) => this.aiRef.setSpeed(s);
+
+    // Set radius
+    public setRadius = (s : number) => this.aiRef.setRadius(s);
 }
 
 
@@ -532,12 +547,17 @@ class Boss extends Enemy {
     // Refresh
     public refresh() {
 
+        const START_RADIUS = 48;
+        const RADIUS_VARY = 48;
+        
         if (!this.doesExist()) return;
 
         if (this.isDying())
             this.orbiter.kill();
 
-        this.orbiter.setSpeed(this.aiRef.getSpeedMod());
+        // this.orbiter.setSpeed(this.aiRef.getSpeedMod());
+        this.orbiter.setRadius(START_RADIUS + 
+            (this.aiRef.getSpeedMod()-1)*RADIUS_VARY);
     }
 
 

@@ -11,6 +11,7 @@ class Entity {
     protected renderComp? : RenderComponent;
     protected ai? : AIComponent;
     protected offset : Vector2;
+    protected immune : boolean;
 
 
     constructor(x? : number, y? : number) {
@@ -18,7 +19,7 @@ class Entity {
         this.base = new EntityBase(x, y);
 
         this.offset = new Vector2();
-
+        this.immune = false;
     }
 
 
@@ -135,7 +136,7 @@ class Entity {
             this.hostileCollision != undefined) {
 
             this.hostileCollision(e, kill);
-            return e.getPower();
+            return this.immune ? 0 : e.getPower();
         }
 
         return 0;
@@ -191,7 +192,6 @@ class Entity {
             this.base.health + amount
         );
     }
-
 
 
     // Getters

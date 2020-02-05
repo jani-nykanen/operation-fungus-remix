@@ -500,6 +500,7 @@ class EnemyGenerator {
 
                 // Blade collision
                 if (blade != null &&
+                    e.getHurtIndex != undefined &&
                     e.getHurtIndex() < blade.getAttackIndex()) {
 
                     dmg = e.entityCollision(blade, true, false);
