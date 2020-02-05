@@ -82,13 +82,13 @@ class Orbiter extends Entity {
 
         this.base.power = 100;
         this.base.hitbox = new Vector2(
-            16, 16
+            18, 18
         );
 
         this.base.exist = true;
         this.base.dying = false;
 
-        this.renderComp = new RenderComponent(this.base, 24, 24);
+        this.renderComp = new RenderComponent(this.base, 32, 32);
 
         this.ai = this.aiRef;
 
@@ -516,7 +516,7 @@ class Boss extends Enemy {
         super(x, y);
 
         const HEALTH = 3000;
-        const ORBITER_RADIUS = 48;
+        const ORBITER_RADIUS = 56;
 
         this.base.exist = true;
         this.base.dying = false; // Should not be needed
@@ -547,17 +547,13 @@ class Boss extends Enemy {
     // Refresh
     public refresh() {
 
-        const START_RADIUS = 48;
-        const RADIUS_VARY = 48;
-        
+
         if (!this.doesExist()) return;
 
         if (this.isDying())
             this.orbiter.kill();
 
-        // this.orbiter.setSpeed(this.aiRef.getSpeedMod());
-        this.orbiter.setRadius(START_RADIUS + 
-            (this.aiRef.getSpeedMod()-1)*RADIUS_VARY);
+        this.orbiter.setSpeed(this.aiRef.getSpeedMod());
     }
 
 

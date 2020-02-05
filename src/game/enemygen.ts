@@ -599,7 +599,7 @@ class EnemyGenerator {
 
         if (this.bossBegun) {
 
-            this.boss.getOrbiter().draw(c);
+            this.boss.getOrbiter().draw(c, c.getBitmap("spikeball"));
             this.boss.draw(c);
         }
     }
