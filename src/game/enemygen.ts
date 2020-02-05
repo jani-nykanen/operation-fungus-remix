@@ -551,8 +551,10 @@ class EnemyGenerator {
 
         else {
 
-            // Update oss
+            // Update boss & its orbiter
             this.updateEnemy(this.boss, bullets, text,
+                pickups, player, lstate, ev);
+            this.updateEnemy(<any>this.boss.getOrbiter(), bullets, text,
                 pickups, player, lstate, ev);
 
             lstate.setPower(this.boss.getHealth() / 
@@ -579,6 +581,7 @@ class EnemyGenerator {
         
         if (this.bossBegun) {
 
+            this.boss.getOrbiter().drawShadow(c);
             this.boss.drawShadow(c);
         }
     }
@@ -595,6 +598,7 @@ class EnemyGenerator {
 
         if (this.bossBegun) {
 
+            this.boss.getOrbiter().draw(c);
             this.boss.draw(c);
         }
     }

@@ -7,6 +7,96 @@
 // the Enemy class)
 
 
+// Orbiter, travels around the actual boss
+class OrbiterAI extends AIComponent {
+
+
+    private readonly center : Vector2;
+    private radius : number;
+    private angle : number;
+    private speed : number;
+
+
+    constructor(base : EntityBase, center : Vector2,  radius : number,
+        speed = 1.0, angle = 0) {
+
+        super(base);
+
+        // We do not clone this since we need the
+        // reference
+        this.center = center;
+
+        this.angle = angle;
+        this.speed = speed;
+        this.radius = radius;
+    }
+
+
+    // Update
+    public update(ev : CoreEvent) {
+
+        const SPEED_MUL = 0.033;
+
+        this.angle = (this.angle + SPEED_MUL*this.speed*ev.step) % (Math.PI*2);
+
+        // Compute position
+        this.base.pos.x = this.center.x +
+            Math.cos(this.angle) * this.radius;
+
+        this.base.pos.y = this.center.y +
+            Math.sin(this.angle) * this.radius;
+
+    }
+
+
+    // Set speed
+    public setSpeed(s : number) {
+
+        this.speed = s;
+    }
+}
+
+
+class Orbiter extends Entity {
+
+
+    private readonly aiRef : OrbiterAI;
+
+
+    constructor(center : Vector2, radius : number, speed = 1.0, angle = 0) {
+
+        super();
+
+        this.aiRef = new OrbiterAI(this.base, center, radius,
+            speed, angle);
+
+        this.base.power = 100;
+        this.base.hitbox = new Vector2(
+            16, 16
+        );
+
+        this.base.exist = true;
+        this.base.dying = false;
+
+        this.renderComp = new RenderComponent(this.base, 24, 24);
+
+        this.ai = this.aiRef;
+    }
+
+
+    // Hostile collision (for bullets only)
+    protected hostileCollision(e : Entity, kill = true) {
+
+        if (kill)
+            e.kill();
+    }
+
+
+    // Set speed
+    public setSpeed = (s : number) => this.aiRef.setSpeed(s);
+}
+
+
 class BossAI extends AIComponent {
     
     private readonly MOUTH_WAIT_MIN = 180;
@@ -235,6 +325,10 @@ class BossAI extends AIComponent {
             this.base.target.y *= -1;
         }
     }
+
+
+    // Getters
+    public getSpeedMod = () => this.speedMod;
 }
 
 
@@ -395,20 +489,27 @@ class BossRenderer extends RenderComponent {
 class Boss extends Enemy {
 
 
+    private orbiter : Orbiter;
+    private aiRef : BossAI;
+
+
     constructor(x : number, y : number,
         shootCB? : ShootCallback) {
 
         super(x, y);
 
         const HEALTH = 3000;
+        const ORBITER_RADIUS = 48;
 
         this.base.exist = true;
+        this.base.dying = false; // Should not be needed
         this.base.hitbox = new Vector2(48, 48);
 
         this.rendRef = new BossRenderer(this.base);
         this.renderComp = this.rendRef;
 
-        this.ai = new BossAI(this.base, this.rendRef, shootCB);
+        this.aiRef = new BossAI(this.base, this.rendRef, shootCB);
+        this.ai = this.aiRef;
 
         this.hurtIndex = 0;
         this.base.power = 100;
@@ -419,6 +520,29 @@ class Boss extends Enemy {
 
         this.isStatic = true;
 
+        this.orbiter = new Orbiter(this.base.pos,
+            ORBITER_RADIUS,
+            1.0, 0.0);
+            
+    }
+
+
+    // Refresh
+    public refresh() {
+
+        if (!this.doesExist()) return;
+
+        if (this.isDying())
+            this.orbiter.kill();
+
+        this.orbiter.setSpeed(this.aiRef.getSpeedMod());
+    }
+
+
+    // Get orbiter (for stuff)
+    public getOrbiter() : Orbiter {
+
+        return this.orbiter;
     }
 
 }
