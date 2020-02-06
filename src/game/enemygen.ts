@@ -621,7 +621,7 @@ class EnemyGenerator {
 
 
     // Start the boss battle
-    public startBossBattle() {
+    public startBossBattle(stage : Stage) {
 
         const BOSS_X = 96;
 
@@ -634,6 +634,11 @@ class EnemyGenerator {
         }
         this.bossBegun = true;
 
-        this.boss = new Boss(256+BOSS_X, 96, this.shootCB);
+        this.boss = new Boss(256+BOSS_X, 96, this.shootCB,
+            () => {
+
+                stage.toggleSkyShift(false);
+            });
+        
     }
 }

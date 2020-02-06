@@ -365,8 +365,10 @@ class BossRenderer extends RenderComponent {
     private mouthTimer : number;
     private eyeTimer : number;
 
+    private readonly endCB? : (() => any);
 
-    constructor(base : EntityBase) {
+
+    constructor(base : EntityBase, endCB? : (() => any)) {
 
         super(base, 64, 64);
 
@@ -388,6 +390,8 @@ class BossRenderer extends RenderComponent {
 
         this.mouthTimer = 0;
         this.eyeTimer = 0;
+
+        this.endCB = endCB;
     }
 
 
@@ -413,7 +417,15 @@ class BossRenderer extends RenderComponent {
     // Animate death
     public animateDeath(ev : CoreEvent) : boolean {
 
+        let oldTime = this.deathTimer;
         this.deathTimer -= ev.step;
+
+        if (this.endCB != undefined &&
+            oldTime > this.DEATH_TIME2 &&
+            this.deathTimer <= this.DEATH_TIME2) {
+
+            this.endCB();
+        }
 
         return this.deathTimer <= 0.0;
     }
@@ -511,7 +523,8 @@ class Boss extends Enemy {
 
 
     constructor(x : number, y : number,
-        shootCB? : ShootCallback) {
+        shootCB? : ShootCallback,
+        endCB? : (() => any)) {
 
         super(x, y);
 
@@ -522,7 +535,7 @@ class Boss extends Enemy {
         this.base.dying = false; // Should not be needed
         this.base.hitbox = new Vector2(48, 48);
 
-        this.rendRef = new BossRenderer(this.base);
+        this.rendRef = new BossRenderer(this.base, endCB);
         this.renderComp = this.rendRef;
 
         this.aiRef = new BossAI(this.base, this.rendRef, shootCB);

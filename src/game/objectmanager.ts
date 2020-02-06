@@ -114,8 +114,8 @@ class ObjectManager {
             lstate.getPower() >= 3.0) {
 
             this.finished = true;
-            this.enemyGen.startBossBattle();
-            stage.toggleSkyShift();
+            this.enemyGen.startBossBattle(stage);
+            stage.toggleSkyShift(true);
             hud.setBossAlert(BOSS_ALERT_TIME);
         }
 
@@ -176,10 +176,10 @@ class ObjectManager {
         // GAME OVER!
         if (this.player.doesExist() == false) {
 
-            ev.tr.activate(true, 2.0, TransitionType.Fade, 8,
+            ev.tr.activate(true, 2.0, TransitionType.Fade, 4,
                 (ev : CoreEvent) => {
 
-                    this.reset(lstate, hud);
+                    this.reset(lstate, stage, hud);
                     this.update(lstate, stage, hud, ev); // To get the animation right
                 });
             return;
@@ -248,7 +248,7 @@ class ObjectManager {
 
 
     // Reset
-    public reset(lstate : LocalState, hud : HUDRenderer) {
+    public reset(lstate : LocalState, stage : Stage, hud : HUDRenderer) {
 
         this.player.reset();
         // Destroy objects
@@ -267,6 +267,7 @@ class ObjectManager {
 
         hud.reset();
         lstate.reset();
+        stage.toggleSkyShift(false);
 
         this.finished = false;
 

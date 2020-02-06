@@ -108,7 +108,7 @@ class Stage {
         if (this.skyshift) {
 
             t = 1.0 - Math.floor(this.skyTimer / this.SHIFT_TIME * 4) / 4;
-            c.setAlpha(Math.max(1, t));
+            c.setAlpha(Math.min(1, t));
             c.drawBitmapRegion(c.getBitmap("sky"),
                 0, 144, 256, 144,
                 0, 0);
@@ -138,9 +138,10 @@ class Stage {
 
 
     // Toggle sky shift
-    public toggleSkyShift() {
+    public toggleSkyShift(state : boolean) {
 
-        if (this.skyshift) return;
+        this.skyshift = state;
+        if (!state) return;
 
         this.skyshift = true;
         this.skyTimer = this.SHIFT_TIME;
