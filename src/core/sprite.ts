@@ -29,7 +29,7 @@ class Sprite {
     animate(row : number, start : number, end : number, 
         speed : number, step : number) {
 
-        // speed = Math.max(1, speed);
+        speed |= 0;
 
         // Nothing to animate
         if (start == end) {

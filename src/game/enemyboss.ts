@@ -485,7 +485,7 @@ class BossRenderer extends RenderComponent {
         else {
 
             c.setColor(255, 255, 255,
-                Math.floor(this.deathTimer / this.DEATH_TIME2*8)/8);
+                Math.floor(this.deathTimer / this.DEATH_TIME2*4)/4);
             c.fillRect(0, 0, c.width, c.height);
         }
     }
@@ -528,7 +528,7 @@ class Boss extends Enemy {
 
         super(x, y);
 
-        const HEALTH = 3000;
+        const HEALTH = 2400;
         const ORBITER_RADIUS = 56;
 
         this.base.exist = true;

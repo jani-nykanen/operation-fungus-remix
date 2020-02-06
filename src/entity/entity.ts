@@ -93,7 +93,8 @@ class Entity {
         if (!this.base.exist) return;
 
         // Skip frame, if flickering
-        if (this.renderComp.flickerTime > 0 &&
+        if (!this.base.dying && 
+            this.renderComp.flickerTime > 0 &&
             Math.floor(this.renderComp.flickerTime/4) % 2 == 0)
             return;
         
