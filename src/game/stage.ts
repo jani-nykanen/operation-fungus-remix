@@ -8,9 +8,13 @@
 class Stage {
 
     private readonly LAYER_COUNT = 6;
+    private readonly SHIFT_TIME = 60;
 
     private timers : Array<number>;
     private bmpFloor : Bitmap;
+
+    private skyshift : boolean;
+    private skyTimer : number;
 
 
     constructor() {
@@ -23,6 +27,9 @@ class Stage {
         }
 
         this.bmpFloor = null;
+
+        this.skyTimer = 0;
+        this.skyshift = false;
     }
 
 
@@ -48,6 +55,13 @@ class Stage {
             1.0, 0.5, 0.25, 0.2, 0.125, 0.1
         ];
 
+        // Update sky shift
+        if (this.skyshift &&
+            this.skyTimer > 0) {
+
+            this.skyTimer -= ev.step;
+        }
+        
         // Update timers
         for (let i = 0; i < this.timers.length; ++ i) {
 
@@ -83,7 +97,23 @@ class Stage {
         }
 
         // Draw sky
-        c.drawBitmap(c.getBitmap("sky"), 0, 0);
+        let t : number;
+        if (!this.skyshift || this.skyTimer > 0) {
+
+            c.drawBitmapRegion(c.getBitmap("sky"),
+                0, 0, 256, 144,
+                0, 0);
+        }
+        
+        if (this.skyshift) {
+
+            t = 1.0 - Math.floor(this.skyTimer / this.SHIFT_TIME * 4) / 4;
+            c.setAlpha(Math.max(1, t));
+            c.drawBitmapRegion(c.getBitmap("sky"),
+                0, 144, 256, 144,
+                0, 0);
+            c.setAlpha();
+        }
 
         // Draw the sun
         b = c.getBitmap("sun");
@@ -104,5 +134,15 @@ class Stage {
             this.timers[0] % c.getBitmap("floor").width, 
             FLOOR_DRIFT, c.width, 
             FLOOR_VANISH_Y, FLOOR_OFF);
+    }
+
+
+    // Toggle sky shift
+    public toggleSkyShift() {
+
+        if (this.skyshift) return;
+
+        this.skyshift = true;
+        this.skyTimer = this.SHIFT_TIME;
     }
 }

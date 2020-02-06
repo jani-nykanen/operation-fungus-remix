@@ -57,7 +57,7 @@ class GameScene implements Scene {
         this.stage.update(BACKGROUND_SPEED, ev);
 
         // Update objects
-        this.objm.update(this.lstate, this.hud, ev);
+        this.objm.update(this.lstate, this.stage, this.hud, ev);
 
         // Update HUD
         this.hud.update(ev);

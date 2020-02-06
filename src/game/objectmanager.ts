@@ -96,7 +96,8 @@ class ObjectManager {
 
 
     // Update
-    public update(lstate : LocalState, hud : HUDRenderer, ev : CoreEvent) {
+    public update(lstate : LocalState, stage : Stage,
+        hud : HUDRenderer, ev : CoreEvent) {
 
         const BOSS_ALERT_TIME = 120;
 
@@ -114,6 +115,7 @@ class ObjectManager {
 
             this.finished = true;
             this.enemyGen.startBossBattle();
+            stage.toggleSkyShift();
             hud.setBossAlert(BOSS_ALERT_TIME);
         }
 
@@ -178,7 +180,7 @@ class ObjectManager {
                 (ev : CoreEvent) => {
 
                     this.reset(lstate, hud);
-                    this.update(lstate, hud, ev); // To get the animation right
+                    this.update(lstate, stage, hud, ev); // To get the animation right
                 });
             return;
         }
