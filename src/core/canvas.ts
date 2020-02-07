@@ -100,12 +100,11 @@ class Canvas {
 
 
     // Set global rendering color
-    public setColor(r : number, g? : number, b? : number, a? : number) {
+    public setColor(r : number, g? : number, b? : number, a = 1.0) {
 
         if (r == undefined) r = 255;
         if (g == undefined) g = r;
-        if (b = undefined) b = g;
-        if (a == undefined) a = 1.0;
+        if (b == undefined) b = g;
 
         let s = getColorString(r, g, b, a);
         this.ctx.fillStyle = s;

@@ -7,7 +7,7 @@
 // Renders the HUD.
 class HUDRenderer {
 
-    private readonly START_TIME = 180;
+    private readonly START_TIME = 150;
 
     // Bar values for rendering
     private healthBar : number;

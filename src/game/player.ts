@@ -61,6 +61,8 @@ class Blade extends Entity {
 // an AI at all, really
 class PlayerAI extends AIComponent {
 
+    private readonly START_Y = 192/2;
+
     private readonly renderComp : PlayerRenderComponent;
     private dustTimer : number;
     private disappear : number;
@@ -202,8 +204,7 @@ class PlayerAI extends AIComponent {
     // Appear
     private updateInitialAppearing(ev : CoreEvent) {
 
-        const START_Y = 192/2;
-        const SPEED = 1.0;
+        const SPEED = 1.5;
 
         this.base.target.y = SPEED;
         this.base.speed.y = SPEED;
@@ -211,7 +212,7 @@ class PlayerAI extends AIComponent {
         this.base.target.x = 0;
         this.base.speed.x = 0;
 
-        if (this.base.pos.y > START_Y) {
+        if (this.base.pos.y > this.START_Y) {
 
             this.base.target.y = 0;
             this.appearing = false;
@@ -321,8 +322,11 @@ class PlayerAI extends AIComponent {
         this.disappear = this.renderComp.getDisappearPhase();
 
         if (this.appearing) {
-
+1
             this.updateInitialAppearing(ev);
+            this.renderComp.setBeamTime(
+                (this.base.pos.y-this.base.startPos.y) / (this.START_Y-this.base.startPos.y)
+            );
         }
         else {
 
@@ -368,6 +372,7 @@ class PlayerRenderComponent extends RenderComponent {
 
     private disappear : number;
     private deathTimer : number;
+    private beamTimer : number;
 
     private readonly lstate : LocalState;
 
@@ -392,6 +397,7 @@ class PlayerRenderComponent extends RenderComponent {
         this.wave = 0.0;
         this.waveDelta = 0.0;
         this.deathTimer = 0.0;
+        this.beamTimer = 0.0;
 
         this.base.power = 1; // For pick-up collisions
 
@@ -702,6 +708,54 @@ class PlayerRenderComponent extends RenderComponent {
     }
 
 
+    // Draw appearance background
+    private drawAppearanceBackground(c : Canvas) {
+
+        const BORDER_COLORS = [
+            [0, 145, 255],
+            [109, 218, 255],
+            [218, 255, 255],
+        ];
+
+        const EPS = 0.2;
+        const BASE_WIDTH = 32;
+
+        let t = this.beamTimer;
+        if (t <= 0.0) return;
+        
+        let w = BASE_WIDTH;
+        if (t < EPS) {
+
+            w *= t / EPS;
+        }
+        else if (t > 1.0 - EPS) {
+
+            w *= 1.0 - (t - (1.0 - EPS)) / EPS;
+        }
+
+        w |= 0;
+
+        let x = Math.round(this.base.pos.x);
+
+        // Draw beam background
+        c.setColor(255);
+        c.fillRect(x- w/2, 0, w, 192-16);
+
+        // Draw borders
+        for (let i = 0; i < BORDER_COLORS.length; ++ i) {
+
+            if (w < i*2) break;
+
+            c.setColor(BORDER_COLORS[i][0], 
+                       BORDER_COLORS[i][1], 
+                       BORDER_COLORS[i][2]);
+
+            c.fillRect(x- w/2 + i, 0, 1, 192-16);
+            c.fillRect(x + w/2 -1 - i, 0, 1, 192-16);    
+        }
+    }
+
+
     // Override draw
     public draw(c : Canvas, bmp? : Bitmap) {
 
@@ -709,6 +763,11 @@ class PlayerRenderComponent extends RenderComponent {
 
             this.drawDying(c);
             return;
+        }
+
+        if (this.disappear == 3) {
+
+            this.drawAppearanceBackground(c);
         }
 
         this.drawBase(c, 8, 4);
@@ -814,6 +873,13 @@ class PlayerRenderComponent extends RenderComponent {
                this.shootMode == 1 &&
                this.sprArm.getFrame() >= 1 &&
                this.sprArm.getFrame() <= BLADE_LAST_ACTIVE_FRAME;
+    }
+
+    
+    // Set beam time
+    public setBeamTime(time : number) {
+
+        this.beamTimer = Math.min(1.0, time);
     }
 }
 
