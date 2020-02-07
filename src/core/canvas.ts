@@ -100,7 +100,7 @@ class Canvas {
 
 
     // Set global rendering color
-    public setColor(r : number, g? : number, b? : number, a = 1.0) {
+    public setColor(r = 255, g? : number, b? : number, a = 1.0) {
 
         if (r == undefined) r = 255;
         if (g == undefined) g = r;
