@@ -69,6 +69,7 @@ class PlayerAI extends AIComponent {
     private regenTimer : number;
     private extraBulletTimer : number;
     private extraBulletDir : boolean;
+    private appearing : boolean;
 
     private bulletCB : (pos : Vector2, speed: Vector2, power : number) => any;
 
@@ -83,6 +84,7 @@ class PlayerAI extends AIComponent {
         this.renderComp = renderComp;
         this.dustTimer = 0.0;
         this.disappear = 0;
+        this.appearing = true;
         this.blade = blade;
 
         this.lstate = lstate;
@@ -127,6 +129,13 @@ class PlayerAI extends AIComponent {
             this.base.pos.y = 192-GROUND_HEIGHT 
                 - HEIGHT/2;
         }
+    }
+
+
+    // Reset
+    public reset() {
+
+        this.appearing = true;
     }
 
 
@@ -186,6 +195,26 @@ class PlayerAI extends AIComponent {
                         this.base.speed.y/4),
                     this.lstate.getBulletPower());
 
+        }
+    }
+
+
+    // Appear
+    private updateInitialAppearing(ev : CoreEvent) {
+
+        const START_Y = 192/2;
+        const SPEED = 1.0;
+
+        this.base.target.y = SPEED;
+        this.base.speed.y = SPEED;
+        
+        this.base.target.x = 0;
+        this.base.speed.x = 0;
+
+        if (this.base.pos.y > START_Y) {
+
+            this.base.target.y = 0;
+            this.appearing = false;
         }
     }
 
@@ -289,9 +318,16 @@ class PlayerAI extends AIComponent {
 
         this.disappear = this.renderComp.getDisappearPhase();
 
-        this.control(ev);
-        this.updateDust(ev);
-        this.restrict();
+        if (this.appearing) {
+
+            this.updateInitialAppearing(ev);
+        }
+        else {
+
+            this.control(ev);
+            this.updateDust(ev);
+            this.restrict();    
+        }
 
         // Compute shadow scale, if disappearing
         this.renderComp.shadowSize.x = 24;
@@ -791,6 +827,7 @@ class Player extends Entity {
         this.base.exist = true; 
 
         this.base.pos = this.base.startPos.clone();
+        this.aiRef.reset();
 
         this.base.maxHealth = this.lstate.getMaxHealth();
         this.base.health = this.base.maxHealth;

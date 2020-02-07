@@ -7,6 +7,8 @@
 // Renders the HUD.
 class HUDRenderer {
 
+    private readonly START_TIME = 180;
+
     // Bar values for rendering
     private healthBar : number;
     private expBar : number;
@@ -17,6 +19,7 @@ class HUDRenderer {
     private readonly lstate : LocalState;
 
     private bossAlertTimer : number;
+    private startTimer : number;
 
 
     constructor(state : LocalState) {
@@ -27,6 +30,7 @@ class HUDRenderer {
 
         this.bonusFlicker = 0;
         this.bossAlertTimer = 0.0;
+        this.startTimer = this.START_TIME;
 
         this.lstate = state;
     }
@@ -159,6 +163,10 @@ class HUDRenderer {
         // Update boss alert
         if (this.bossAlertTimer > 0)
             this.bossAlertTimer -= ev.step;
+
+        // Update start timer
+        if (this.startTimer > 0) 
+            this.startTimer -= ev.step;
     }
 
 
@@ -197,6 +205,29 @@ class HUDRenderer {
                 ++ j;
             }
         }
+    }
+
+
+    // Draw the start timer
+    private drawStart(c : Canvas) {
+
+        const DISAPPEAR_TIME = 30;
+        const BIG_Y = 56;
+        const BIG_OFF = 16;
+        const MOVE = 192;
+
+        let x = 0;
+        if (this.startTimer < DISAPPEAR_TIME) {
+
+            x = (MOVE * (1.0 - this.startTimer / DISAPPEAR_TIME)) | 0;
+        }
+
+        // Draw mission info
+        c.drawText(c.getBitmap("fontBig"), "MISSION 1",
+            c.width/2 + x, BIG_Y, -6, 0, true);
+        
+        c.drawText(c.getBitmap("font"), "Green Plains",
+            c.width/2 - x, BIG_Y+BIG_OFF, -1, 0, true);
     }
 
 
@@ -247,6 +278,12 @@ class HUDRenderer {
             c.drawText(c.getBitmap("fontBig"), "BOSS ALERT!",
                 c.width/2, BOSS_ALERT_Y, -6, 0, true);
         }
+
+        // Draw the start timer
+        if (this.startTimer > 0) {
+
+            this.drawStart(c);
+        }
     }
 
 
@@ -255,6 +292,7 @@ class HUDRenderer {
 
         this.healthBar = 1.0;
         this.powerBar = 0.0;
+        this.startTimer = this.START_TIME;
 
         this.bonusFlicker = 0;
     }
@@ -265,4 +303,8 @@ class HUDRenderer {
 
         this.bossAlertTimer = time;
     }
+
+
+    // Getters
+    public getStartTime = () => this.startTimer;
 }

@@ -18,7 +18,7 @@ class ObjectManager {
 
     constructor(lstate? : LocalState) {
 
-        this.player = new Player(48, 88, lstate);
+        this.player = new Player(48, -16, lstate);
         this.player.setBulletCallback(
             (pos : Vector2, speed: Vector2, power : number) => {
 
@@ -147,14 +147,17 @@ class ObjectManager {
             }
         }
 
-        // Update enemies
-        this.enemyGen.update(
-            this.bullets,
-            this.flyingText,
-            this.pickups,
-            this.player, 
-            lstate,
-            ev);
+        if (hud.getStartTime() <= 0) {
+
+            // Update enemies
+            this.enemyGen.update(
+                this.bullets,
+                this.flyingText,
+                this.pickups,
+                this.player, 
+                lstate,
+                ev);
+        }
 
         // Update player
         this.player.update(ev);
