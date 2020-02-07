@@ -565,6 +565,10 @@ class PlayerRenderComponent extends RenderComponent {
             if (this.disappear < 3)
                 return;
         }
+        else {
+
+            this.spr.setFrame(0, 0);
+        }
 
         // Animate head
         this.sprHead.setFrame(0, 1);
@@ -774,7 +778,7 @@ class PlayerRenderComponent extends RenderComponent {
 
         if (this.disappear != 0) return;
 
-        this.disappear = 0;
+        this.disappear = 1;
         this.spr.setFrame(2, 0);
 
         this.sprPropeller.setFrame(2, 0);
