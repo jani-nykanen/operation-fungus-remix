@@ -83,7 +83,7 @@ class PlayerAI extends AIComponent {
 
         this.renderComp = renderComp;
         this.dustTimer = 0.0;
-        this.disappear = 0;
+        this.disappear = 3;
         this.appearing = true;
         this.blade = blade;
 
@@ -215,6 +215,8 @@ class PlayerAI extends AIComponent {
 
             this.base.target.y = 0;
             this.appearing = false;
+
+            this.renderComp.forceReappear();
         }
     }
 
@@ -341,10 +343,6 @@ class PlayerAI extends AIComponent {
             this.renderComp.shadowSize.x/4;
     }
 
-
-    public animate (spr : Sprite, ev : CoreEvent) {
-        
-    }
 }
 
 
@@ -386,6 +384,8 @@ class PlayerRenderComponent extends RenderComponent {
         this.sprArm = new Sprite(32, 16);
         this.sprOrb = new Sprite(16, 16);
         this.sprDie = new Sprite(24, 24);
+
+        this.spr.setFrame(2, 4);
 
         this.shooting = false;
         this.shootWait = 0.0;
@@ -434,7 +434,7 @@ class PlayerRenderComponent extends RenderComponent {
                 this.disappear = 2;
             }
         }
-        else {
+        else if (this.disappear == 2) {
             
             this.spr.animate(2, 5, -1, ANIM_SPEED, ev.step);
             if (this.spr.getFrame() == -1) {
@@ -442,6 +442,10 @@ class PlayerRenderComponent extends RenderComponent {
                 this.spr.setFrame(0, 0);
                 this.disappear = 0;
             }
+        }
+        else if (this.disappear == 3) {
+
+            this.spr.animate(2, 4, 5, ANIM_SPEED, ev.step);
         }
     }
 
@@ -528,6 +532,9 @@ class PlayerRenderComponent extends RenderComponent {
 
             d.kill(true);
         }
+
+        this.spr.setFrame(2, 4);
+        this.disappear = 3;
     }
 
 
@@ -554,7 +561,9 @@ class PlayerRenderComponent extends RenderComponent {
         if (this.disappear != 0) {
 
             this.animateDisappear(ev);
-            return;
+
+            if (this.disappear < 3)
+                return;
         }
 
         // Animate head
@@ -589,10 +598,15 @@ class PlayerRenderComponent extends RenderComponent {
         }
 
         // Animate propeller
-        let propSpeed = (PROPELLER_SPEED_BASE -
-                PROPELLER_VARY*this.base.speed.len()) | 0;
-        this.sprPropeller.animate(2, 0, 3, 
-            propSpeed, ev.step);
+        let propSpeed : number;
+        
+        if (this.disappear != 0) {
+
+            propSpeed = (PROPELLER_SPEED_BASE -
+                    PROPELLER_VARY*this.base.speed.len()) | 0;
+            this.sprPropeller.animate(2, 0, 3, 
+                propSpeed, ev.step);
+        }
 
         // Animate arm(s)
         this.animateArms(ev);
@@ -631,7 +645,10 @@ class PlayerRenderComponent extends RenderComponent {
             this.spr.getRow() + jump2,
             x, y, this.flip);
 
-        if (this.disappear > 0) return;
+        if (this.disappear > 0) {
+
+            return;
+        }
 
         // Draw arm
         c.drawSpriteFrame(this.sprArm, bmp,
@@ -757,7 +774,7 @@ class PlayerRenderComponent extends RenderComponent {
 
         if (this.disappear != 0) return;
 
-        this.disappear = 1;
+        this.disappear = 0;
         this.spr.setFrame(2, 0);
 
         this.sprPropeller.setFrame(2, 0);
@@ -765,6 +782,16 @@ class PlayerRenderComponent extends RenderComponent {
         this.shooting = false;
         this.shootWait = 0;
         this.sprArm.setFrame(3, 0);
+    }
+
+
+    // Force reappear
+    public forceReappear() {
+
+        this.disappear = 2;
+
+        this.spr.setFrame(2, 5);
+        this.sprPropeller.setFrame(2, 0);
     }
 
 
@@ -805,6 +832,7 @@ class Player extends Entity {
 
         this.rendRef = new PlayerRenderComponent(this.base, lstate);
         this.renderComp = this.rendRef;
+        this.renderComp.reset();
         this.ai = 
             (this.aiRef = new PlayerAI(this.base, this.rendRef, this.blade, lstate));
 

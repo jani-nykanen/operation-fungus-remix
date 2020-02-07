@@ -221,6 +221,11 @@ class HUDRenderer {
 
             x = (MOVE * (1.0 - this.startTimer / DISAPPEAR_TIME)) | 0;
         }
+        else if (this.startTimer >= this.START_TIME - DISAPPEAR_TIME) {
+
+            x = (MOVE * ( (this.startTimer - (this.START_TIME-DISAPPEAR_TIME)) 
+                / DISAPPEAR_TIME)) | 0;
+        }
 
         // Draw mission info
         c.drawText(c.getBitmap("fontBig"), "MISSION 1",
