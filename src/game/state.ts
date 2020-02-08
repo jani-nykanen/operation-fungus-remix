@@ -1,5 +1,5 @@
 /**
- * Operating Fungus Remix
+ * Operation Fungus Remix
  * (c) 2020 Jani Nykänen
  */
 
