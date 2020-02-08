@@ -14,11 +14,23 @@ class GameScene implements Scene {
     private objm : ObjectManager;
 
     private paused : boolean;
+    private pauseMenu : Menu;
 
 
     constructor() {
 
-        // ...
+        // Create pause menu
+        this.pauseMenu = new Menu(
+            [
+                new MenuButton("Resume", (ev : CoreEvent) => {
+                    this.paused = false;
+                }),
+                new MenuButton("Self-destruct", (ev : CoreEvent) => {
+                    this.objm.killPlayer();
+                    this.paused = false;
+                })
+            ]
+        );
     }
 
 
@@ -43,14 +55,16 @@ class GameScene implements Scene {
         // middle point of the ground
         const BACKGROUND_SPEED = 1.0 / 1.40;
 
-        if (ev.gamepad.getButtonState("start") == State.Pressed) {
-
-            this.paused = !this.paused;
-        }
-
+        // Check pause
         if (this.paused) {
 
+            this.pauseMenu.update(ev);
             return;
+        }
+        else if (ev.gamepad.getButtonState("start") == State.Pressed) {
+
+            this.paused = true;
+            this.pauseMenu.setCursorPos(0);
         }
 
         // Update stage
@@ -84,11 +98,13 @@ class GameScene implements Scene {
 
         if (this.paused) {
 
-            c.setColor(0, 0, 0, 0.5);
+            c.setColor(0, 0, 0, 0.67);
             c.fillRect(0, 0, 256, 192);
 
-            c.drawText(c.getBitmap("font"), "GAME PAUSED",
-                c.width/2, c.height/2 - 4, 0, 0, true);
+            c.drawText(c.getBitmap("fontBig"), "GAME PAUSED",
+                c.width/2, 56, -6, 0, true);
+
+            this.pauseMenu.draw(c, 64, 80, -1, 12);
         }
     }
 

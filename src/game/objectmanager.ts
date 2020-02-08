@@ -276,4 +276,11 @@ class ObjectManager {
 
         this.enemyGen.reset();
     }
+
+
+    // Kill the player
+    public killPlayer() {
+
+        this.player.kill(false);
+    }
 }

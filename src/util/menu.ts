@@ -59,12 +59,10 @@ class Menu {
     public update(ev : CoreEvent) {
 
         const EPS = 0.1;
-        const WAVE_SPEED = 0.05;
+        const WAVE_SPEED = Math.PI*2 / 60.0;
 
         // Update moving
         if (this.moving) {
-
-            this.cursorWave = 0.0;
 
             if ((this.cursorTimer -= ev.step) <= 0) {
 
@@ -106,7 +104,7 @@ class Menu {
     // Draw menu
     public draw(c : Canvas, x : number, y : number, xoff = 0, yoff = 12) {
 
-        const CURSOR_OFF = 12;
+        const CURSOR_OFF = 10;
         const CURSOR_AMPLITUDE = 2.0;
 
         // Draw text
@@ -123,9 +121,27 @@ class Menu {
 
         }
 
+        let ypos = y + this.cursorPos * yoff;
+        let t : number;
+        if (this.moving) {
+
+            t = this.cursorTimer / this.MOVE_TIME;
+            ypos = ypos * t + (y + this.targetPos * yoff) * (1-t);
+        }
+
         // Draw cursor
         c.drawBitmapRegion(c.getBitmap("fontYellow"), 0, 32, 8, 8,
             x + Math.round(Math.sin(this.cursorWave) * CURSOR_AMPLITUDE),
-            y + this.cursorPos * yoff);
+            ypos);
+    }
+
+
+    // Set cursor position
+    public setCursorPos(p : number) {
+
+        this.cursorPos = negMod(p, this.buttons.length);
+        this.targetPos = this.cursorPos;
+        this.cursorTimer = 0.0;
+        this.moving = false;
     }
 }
