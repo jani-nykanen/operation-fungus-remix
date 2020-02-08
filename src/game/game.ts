@@ -15,6 +15,8 @@ class GameScene implements Scene {
 
     private paused : boolean;
     private pauseMenu : Menu;
+    private gameoverMenu : Menu;
+    private gameoverActivated : boolean;
 
 
     constructor() {
@@ -22,12 +24,32 @@ class GameScene implements Scene {
         // Create pause menu
         this.pauseMenu = new Menu(
             [
-                new MenuButton("Resume", (ev : CoreEvent) => {
+                new MenuButton("RESUME", (ev : CoreEvent) => {
                     this.paused = false;
                 }),
-                new MenuButton("Self-destruct", (ev : CoreEvent) => {
+                new MenuButton("SELF-DESTRUCT", (ev : CoreEvent) => {
                     this.objm.killPlayer();
                     this.paused = false;
+                })
+            ]
+        );
+
+        // Create the game over menu
+        this.gameoverMenu = new Menu(
+            [
+                new MenuButton("RETRY", (ev : CoreEvent) => {
+
+                    ev.tr.activate(true, 2.0, TransitionType.Fade, 4,
+                        (ev : CoreEvent) => {
+
+                        this.gameoverActivated = false;
+
+                        this.objm.reset(this.lstate, this.stage, this.hud);
+                        this.objm.update(this.lstate, this.stage, this.hud, ev);
+                    });
+                }),
+                new MenuButton("UPGRADE SKILLS", (ev : CoreEvent) => {
+                    alert("Not implemented.");
                 })
             ]
         );
@@ -44,6 +66,7 @@ class GameScene implements Scene {
         this.objm = new ObjectManager(this.lstate);
 
         this.paused = false;
+        this.gameoverActivated = false;
     }
 
 
@@ -54,6 +77,18 @@ class GameScene implements Scene {
         // This gives the unit speed for the
         // middle point of the ground
         const BACKGROUND_SPEED = 1.0 / 1.40;
+
+        // Check if the game is over
+        if (this.objm.isGameOver()) {
+
+            if (!this.gameoverActivated) {
+
+                this.gameoverMenu.setCursorPos(0);
+            }
+
+            this.gameoverMenu.update(ev);
+            return;
+        }
 
         // Check pause
         if (this.paused) {
@@ -87,6 +122,28 @@ class GameScene implements Scene {
 
         c.clear(170, 170, 170);
 
+        // Draw the game over menu
+        if (this.objm.isGameOver()) {
+
+            // Copy current background to the buffer
+            if (!this.gameoverActivated) {
+
+                c.copyToBuffer();
+                this.gameoverActivated = true;
+            }
+
+            c.drawBitmap(c.getCanvasBuffer(), 0, 0);
+            c.setColor(0, 0, 0, 0.67);
+            c.fillRect(0, 0, 256, 192);
+
+            c.drawText(c.getBitmap("fontBig"), "YOU DIED.",
+                c.width/2, 56, -6, 0, true);
+
+            this.gameoverMenu.draw(c, 64, 80, 0, 12);
+
+            return;
+        }
+
         // Draw stage
         this.stage.draw(c);
 
@@ -104,7 +161,7 @@ class GameScene implements Scene {
             c.drawText(c.getBitmap("fontBig"), "GAME PAUSED",
                 c.width/2, 56, -6, 0, true);
 
-            this.pauseMenu.draw(c, 64, 80, -1, 12);
+            this.pauseMenu.draw(c, 64, 80, 0, 12);
         }
     }
 

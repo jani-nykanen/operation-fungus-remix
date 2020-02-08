@@ -8,12 +8,13 @@
 class Canvas {
 
 
-    private canvas : HTMLCanvasElement
-    private ctx : CanvasRenderingContext2D
+    private canvas : HTMLCanvasElement;
+    private canvasBuffer : HTMLCanvasElement;
+    private ctx : CanvasRenderingContext2D;
 
-    public readonly width : number
-    public readonly height : number
-    private tr : Vector2
+    public readonly width : number;
+    public readonly height : number;
+    private tr : Vector2;
 
     private readonly assets : AssetPack;
 
@@ -49,9 +50,15 @@ class Canvas {
         cdiv.setAttribute("style", 
             "position: absolute; top: 0; left: 0; z-index: -1");
 
+        // Create the main canvas
         this.canvas = document.createElement("canvas");
         this.canvas.width = w;
         this.canvas.height = h;
+
+        // Create the canvas buffer
+        this.canvasBuffer = document.createElement("canvas");
+        this.canvasBuffer.width = w;
+        this.canvasBuffer.height = h;
 
         this.canvas.setAttribute(
             "style", 
@@ -254,7 +261,7 @@ class Canvas {
     
 
     // Draws a funky pseudo-3D floor
-    draw3DFloor(bmp : Bitmap, dy : number, h : number, 
+    public draw3DFloor(bmp : Bitmap, dy : number, h : number, 
         shift : number, angle : number, 
         width? : number, midy? : 
         number, eps? : number) {
@@ -312,8 +319,8 @@ class Canvas {
     }
         
 
-     // Draw a sprite frame (another way)
-     drawSpriteFrame(spr : Sprite, bmp : Bitmap, 
+    // Draw a sprite frame (another way)
+    public drawSpriteFrame(spr : Sprite, bmp : Bitmap, 
         frame : number, row : number, 
         x : number, y : number, flip? : boolean)  {
 
@@ -322,7 +329,7 @@ class Canvas {
 
 
     // Draw a sprite (another way)
-    drawSprite(spr : Sprite, bmp : Bitmap, 
+    public drawSprite(spr : Sprite, bmp : Bitmap, 
         x : number, y : number, flip? : boolean)  {
 
         spr.draw(this, bmp, x, y, flip);
@@ -330,7 +337,7 @@ class Canvas {
 
 
     // Set global alpha
-    setAlpha(alpha? : number) {
+    public setAlpha(alpha? : number) {
 
         if (alpha == undefined)
             alpha = 1.0;
@@ -360,5 +367,22 @@ class Canvas {
     public getBitmap(name : string) : Bitmap {
 
         return this.assets.getBitmap(name);
+    }
+
+
+    // Copy the current canvas to a buffer
+    public copyToBuffer() {
+
+        let ctx = this.canvasBuffer.getContext("2d");
+        ctx.imageSmoothingEnabled = false;
+
+        ctx.drawImage(this.canvas, 0, 0);
+    }
+
+
+    // Get the canvas buffer as a bitmap
+    public getCanvasBuffer() : Bitmap {
+
+        return new Bitmap(this.canvasBuffer);
     }
 }

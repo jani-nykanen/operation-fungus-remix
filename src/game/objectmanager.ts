@@ -178,13 +178,14 @@ class ObjectManager {
 
         // GAME OVER!
         if (this.player.doesExist() == false) {
-
+/*
             ev.tr.activate(true, 2.0, TransitionType.Fade, 4,
                 (ev : CoreEvent) => {
 
                     this.reset(lstate, stage, hud);
                     this.update(lstate, stage, hud, ev); // To get the animation right
                 });
+                */
             return;
         }
 
@@ -282,5 +283,12 @@ class ObjectManager {
     public killPlayer() {
 
         this.player.kill(false);
+    }
+
+
+    // Check if the game is over
+    public isGameOver() : boolean {
+
+        return !this.player.doesExist();
     }
 }
