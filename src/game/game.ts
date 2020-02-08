@@ -120,8 +120,6 @@ class GameScene implements Scene {
 
         c.moveTo();
 
-        c.clear(170, 170, 170);
-
         // Draw the game over menu
         if (this.objm.isGameOver()) {
 

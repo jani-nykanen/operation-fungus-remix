@@ -374,6 +374,7 @@ class Canvas {
     public copyToBuffer() {
 
         let ctx = this.canvasBuffer.getContext("2d");
+        ctx.globalAlpha = 1.0;
         ctx.imageSmoothingEnabled = false;
 
         ctx.drawImage(this.canvas, 0, 0);
