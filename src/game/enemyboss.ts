@@ -188,7 +188,7 @@ class BossAI extends AIComponent {
             new Vector2(
                 -Math.cos(angle) * speed,
                 Math.sin(angle) * speed
-            ), 60, 2);
+            ), 60, 3);
         }
     }
 
@@ -268,10 +268,11 @@ class BossAI extends AIComponent {
         const VERTICAL_SPEED = 1.0;
         const RUSH_SPEED = 2.0;
         const RUSH_MOD = 1.0;
-        const SPEED_MOD = 1.0;
+        const SPEED_MOD = 0.5;
 
         // Compute speed modifier
-        this.speedMod = 1.0 + SPEED_MOD * (1.0 - this.base.health / this.base.maxHealth);
+        this.speedMod = 1.0 + SPEED_MOD * 
+            Math.floor(3 * (1- this.base.health / this.base.maxHealth));
 
         // Appear
         if (!this.ready) {

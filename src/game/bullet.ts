@@ -112,7 +112,7 @@ class Bullet extends Entity {
         power = 1) {
 
         const HITBOX_SIZE = 
-            [6, 6, 12];
+            [6, 6, 12, 12];
 
         this.base.exist = true;
         this.base.dying = false;
@@ -143,4 +143,5 @@ class Bullet extends Entity {
 
     // Getters
     public isFriendly = () => this.friendly;
+    public getRow = () => this.renderComp.getSpriteRow();
 }

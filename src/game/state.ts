@@ -29,6 +29,7 @@ class LocalState {
     private multiplier : number;
     private mulTimer : number;
     private power : number;
+    private full : boolean;
 
     // Skill levels (this is an array
     // to make shopping easier!)
@@ -45,6 +46,7 @@ class LocalState {
     private regenSpeed : number;
     private flickerTime : number;
     private bulletWait : number;
+    private deflectPower : number;
 
     // Bonues timers
     private bonusTimers : Array<number>;
@@ -96,10 +98,12 @@ class LocalState {
         this.bulletPower = 5 + x + this.skillLevels[Skill.Accuracy]*2;
         this.bulletSpeed = 3 + x/10.0 + this.skillLevels[Skill.Agility]/10.0;
         this.reloadSpeed = x + this.skillLevels[Skill.Agility]*2;
-        this.swordPower = 10 + 2*x + this.skillLevels[Skill.Strength]*4;
+        this.swordPower = 8 + 
+            Math.round(1.5*x) + this.skillLevels[Skill.Strength]*4;
         this.moveSpeed = 1 + x/40.0 + this.skillLevels[Skill.Dexterity]/20.0;
         this.maxHealth = 100 + 10 * x + this.skillLevels[Skill.Vitality]*20;
         this.flickerTime = 1.0 + this.skillLevels[Skill.Dexterity]/5.0;
+        this.deflectPower = 0.5 + 0.1 * this.skillLevels[Skill.Strength];
 
         let l = this.skillLevels[Skill.Diversity];
         this.bulletWait = l == 0 ? -1 : (5 - this.skillLevels[Skill.Diversity]);
@@ -142,6 +146,7 @@ class LocalState {
     public getRegenSpeed  = () => this.regenSpeed;
     public getFlickerTime = () => this.flickerTime;
     public getBulletWait  = () => this.bulletWait;
+    public getDeflectPower = () => this.deflectPower;
     public getBulletBonus = () => 
         (this.bonusTimers[3] > 0 ? 1 : 0);
     public getDamageReduction = () => 
@@ -150,6 +155,8 @@ class LocalState {
 
     public getSkillLevel = (index : number) => 
         this.skillLevels[clamp(index, 0, this.skillLevels.length)]; // Sorry
+
+    public isFull = () => this.full;
 
 
     // Update
@@ -209,7 +216,11 @@ class LocalState {
 
             // Just some random number for now
             this.power += inc / STAR_AMOUNT[Math.floor(this.power)]; 
-            this.power = Math.min(3.0, this.power);
+            if (this.power >= 3.0) {
+
+                this.power = 3.0;
+                this.full = true;
+            }
         }
     }
 
@@ -240,6 +251,7 @@ class LocalState {
             this.bonusTimers[i] = 0.0;
         }
         this.power = 0;
+        this.full = false;
     }
 
 

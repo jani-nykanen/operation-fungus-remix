@@ -111,7 +111,7 @@ class ObjectManager {
 
         // Check if finished
         if (!this.finished && 
-            lstate.getPower() >= 3.0) {
+            lstate.isFull()) {
 
             this.finished = true;
             this.enemyGen.startBossBattle(stage);
@@ -161,13 +161,23 @@ class ObjectManager {
 
         // Update player
         this.player.update(ev);
+        let s : Vector2;
         for (let b of this.bullets) {
 
-            if (b.isFriendly()) continue;
+            if (b.isFriendly() || b.isDying() || !b.doesExist()) 
+                continue;
 
             if (blade != null) {
 
-                b.entityCollision(blade, true, false);
+                s = b.getSpeed();
+                if (b.entityCollision(blade, true, false) > 0) {
+
+                    this.spawnBullet(b.getRow()-1, b.getPos(), new Vector2(
+                        -s.x, -s.y
+                    ), true, b.getPower() * lstate.getDeflectPower());
+
+                    continue;
+                }
             }
 
             if (this.player.entityCollision(b, true) > 0) {
@@ -176,16 +186,9 @@ class ObjectManager {
             }
         }
 
-        // GAME OVER!
+        // Game over, stop here
         if (this.player.doesExist() == false) {
-/*
-            ev.tr.activate(true, 2.0, TransitionType.Fade, 4,
-                (ev : CoreEvent) => {
 
-                    this.reset(lstate, stage, hud);
-                    this.update(lstate, stage, hud, ev); // To get the animation right
-                });
-                */
             return;
         }
 

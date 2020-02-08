@@ -88,7 +88,7 @@ class Transition {
 
             if (this.param > 0) {
 
-                t = Math.floor(t * this.param) / this.param;
+                t = Math.round(t * this.param) / this.param;
             }
             c.setColor(0, 0, 0, t);
             c.fillRect(0, 0, c.width, c.height);
