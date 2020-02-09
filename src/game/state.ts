@@ -9,8 +9,8 @@ enum Skill {
 
     Accuracy     = 0, // Bullet power
     Agility      = 1, // Reload & bullet speed
-    Dexterity    = 2, // Movement & invisibility time
-    Strength     = 3, // Sword power
+    Dexterity    = 2, // Movement & invincibility time
+    Strength     = 3, // Sword power & deflect power
     Vitality     = 4, // Total health
     Growth       = 5, // More EXP
     Regeneration = 6, // Health regen
@@ -34,6 +34,7 @@ class LocalState {
     // Skill levels (this is an array
     // to make shopping easier!)
     private skillLevels : Array<number>;
+    private skillPoints : number;
 
     // Gameplay stats
     private maxHealth : number;
@@ -66,6 +67,7 @@ class LocalState {
         this.multiplier = 0;
         this.mulTimer = 0;
         this.power = 0;
+        this.skillPoints = 0;
 
         this.bonusTimers = new Array<number> (4);
         for (let i = 0; i < this.bonusTimers.length; ++ i) {
@@ -155,6 +157,7 @@ class LocalState {
 
     public getSkillLevel = (index : number) => 
         this.skillLevels[clamp(index, 0, this.skillLevels.length)]; // Sorry
+    public getSkillPoints = () => this.skillPoints;
 
     public isFull = () => this.full;
 
@@ -208,6 +211,9 @@ class LocalState {
             this.xp -= this.xpReq;
             ++ this.level;
 
+            // Obtain one skill point per level
+            ++ this.skillPoints;
+
             this.recomputeStats();
         }
 
@@ -230,6 +236,17 @@ class LocalState {
 
         ++ this.multiplier;
         this.mulTimer = 1.0;
+    }
+
+
+    // Increase a skill level
+    public increaseSkillLevel(index : number) {
+
+        if (index < 0 || index >= this.skillLevels.length) {
+
+            ++ this.skillLevels[index];
+            -- this.skillPoints;
+        }
     }
 
 
@@ -259,5 +276,13 @@ class LocalState {
     public setPower(x : number) {
 
         this.power = clamp(x, 0, 3.0);
+    }
+
+
+    // Reduce a skill point
+    public reduceSkillPoint() {
+
+        if (this.skillPoints > 0)
+            -- this.skillPoints;
     }
 }

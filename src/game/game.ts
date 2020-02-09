@@ -18,6 +18,7 @@ class GameScene implements Scene {
     private gameoverMenu : Menu;
     private gameoverActivated : boolean;
     private canvasCopied : boolean;
+    private skills : SkillMenu;
 
 
     constructor() {
@@ -53,7 +54,7 @@ class GameScene implements Scene {
                     });
                 }),
                 new MenuButton("UPGRADE SKILLS", (ev : CoreEvent) => {
-                    alert("Not implemented.");
+                    this.skills.activate();
                 })
             ]
         );
@@ -66,7 +67,7 @@ class GameScene implements Scene {
 
         this.lstate = new LocalState();
         this.hud = new HUDRenderer(this.lstate);
-        
+        this.skills = new SkillMenu(this.lstate);
         this.objm = new ObjectManager(this.lstate);
 
         this.paused = false;
@@ -95,7 +96,10 @@ class GameScene implements Scene {
             }
             else {
 
-                this.gameoverMenu.update(ev);
+                this.skills.update(ev);
+
+                if (!this.skills.isActive())
+                    this.gameoverMenu.update(ev);
             }
 
             return;
@@ -163,6 +167,18 @@ class GameScene implements Scene {
     }
 
 
+    // Draw the skill menu
+    public drawSkillMenu(c : Canvas) {
+
+        c.drawBitmap(c.getCanvasBuffer(), 0, 0);
+
+        c.setColor(0, 0, 0, 0.67);
+        c.fillRect(0, 0, 256, 192);
+
+        this.skills.draw(c);
+    }
+
+
     public draw(c : Canvas) {
 
         c.moveTo();
@@ -170,7 +186,10 @@ class GameScene implements Scene {
         // Draw the game over menu
         if (this.objm.isGameOver()) {
 
-            this.drawPauseMenu(c, "YOU DIED.", this.gameoverMenu);
+            if (this.skills.isActive())
+                this.drawSkillMenu(c);
+            else
+                this.drawPauseMenu(c, "YOU DIED.", this.gameoverMenu);
             return;
         }
         // Draw the pause screen
