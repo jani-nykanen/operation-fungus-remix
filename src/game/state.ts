@@ -63,7 +63,7 @@ class LocalState {
         
         this.xp = 0;
         this.xpReq = 0;
-        this.level = 16;
+        this.level = 8;
         this.multiplier = 0;
         this.mulTimer = 0;
         this.power = 0;
