@@ -88,6 +88,8 @@ class SkillMenu {
     public draw(c : Canvas) {
 
         const SKILL_POINT_Y = 8;
+        const TITLE_BOX_Y = SKILL_POINT_Y-1;
+        const TITLE_BOX_HEIGHT = 17;
 
         const BOX_X = 16;
         const BOX_Y = 32;
@@ -95,6 +97,10 @@ class SkillMenu {
         const BOX_H = 116;
 
         if (!this.active) return;
+
+        // Draw a box for the stitle
+        drawBoxWithBorders(c, BOX_X, TITLE_BOX_Y, BOX_W, TITLE_BOX_HEIGHT,
+            [[255, 255, 255], [0, 0, 0], [72, 145, 255]]);
 
         // Draw skill points
         c.drawText(c.getBitmap("fontBig"), 

@@ -67,7 +67,7 @@ class LocalState {
         this.multiplier = 0;
         this.mulTimer = 0;
         this.power = 0;
-        this.skillPoints = 0;
+        this.skillPoints = this.level-1;
 
         this.bonusTimers = new Array<number> (4);
         for (let i = 0; i < this.bonusTimers.length; ++ i) {
@@ -78,7 +78,7 @@ class LocalState {
         this.skillLevels = new Array<number> (8);
         for (let i = 0; i < this.skillLevels.length; ++ i) {
 
-            this.skillLevels[i] = 2;
+            this.skillLevels[i] = 0;
         }
 
         this.recomputeStats();
@@ -242,11 +242,14 @@ class LocalState {
     // Increase a skill level
     public increaseSkillLevel(index : number) {
 
-        if (index < 0 || index >= this.skillLevels.length) {
+        if (index < 0 || index >= this.skillLevels.length ||
+            this.skillLevels[index] >= 5)
+            return;
 
-            ++ this.skillLevels[index];
-            -- this.skillPoints;
-        }
+        ++ this.skillLevels[index];
+        -- this.skillPoints;
+
+        this.recomputeStats();
     }
 
 

@@ -96,10 +96,10 @@ class GameScene implements Scene {
             }
             else {
 
-                this.skills.update(ev);
-
                 if (!this.skills.isActive())
                     this.gameoverMenu.update(ev);
+                else
+                    this.skills.update(ev);
             }
 
             return;
