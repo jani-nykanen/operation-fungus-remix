@@ -38,12 +38,16 @@ class Controller {
     // Analogue stick
     private stick : Vector2;
 
+    private forceStickReturn : boolean;
+
 
     constructor() {
 
         this.stick = new Vector2();
 
         this.buttons = new Array<ControllerButton> ();
+
+        this.forceStickReturn = false;
     }
 
 
@@ -123,6 +127,14 @@ class Controller {
             this.stick.y = padStick.y;
         }
         
+        if (this.forceStickReturn) {
+
+            if (hypot(this.stick.x, this.stick.y) <= EPS) {
+
+                this.forceStickReturn = false;
+            }
+            this.stick.zeroes();
+        }
     }
 
 
@@ -143,4 +155,11 @@ class Controller {
 
     // Other getters
     public getStick = () => this.stick.clone();
+
+    // Force the stick return to the origin before
+    // accepting further stick movement
+    public forceStickReturnToOrigin() {
+
+        this.forceStickReturn = true;
+    }
 }

@@ -234,6 +234,7 @@ class Canvas {
         if (center) {
 
             dx -= (str.length * (cw + xoff))/ 2.0 ;
+            dx |= 0;
             x = dx;
         }
 

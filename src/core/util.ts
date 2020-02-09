@@ -78,3 +78,19 @@ let hypot = (x : number, y : number) => {
 
     return Math.sqrt(x*x + y*y);
 }
+
+
+// Draw a simple box with borders
+let drawBoxWithBorders = function(c : Canvas, 
+    x : number, y : number, w : number, h : number, 
+    colors = [[255, 255, 255], [0, 0, 0], [109, 109, 85]]) {
+
+    let len = colors.length -1;
+
+    for (let i = len; i >= 0; -- i) {
+
+        c.setColor(colors[len-i][0], colors[len-i][1], colors[len-i][2]);
+        c.fillRect(x-i, y-i,
+            w+i*2, h+i*2);
+    }
+}

@@ -17,6 +17,7 @@ class GameScene implements Scene {
     private pauseMenu : Menu;
     private gameoverMenu : Menu;
     private gameoverActivated : boolean;
+    private canvasCopied : boolean;
 
 
     constructor() {
@@ -26,10 +27,12 @@ class GameScene implements Scene {
             [
                 new MenuButton("RESUME", (ev : CoreEvent) => {
                     this.paused = false;
+                    this.canvasCopied = false;
                 }),
                 new MenuButton("SELF-DESTRUCT", (ev : CoreEvent) => {
                     this.objm.killPlayer();
                     this.paused = false;
+                    this.canvasCopied = false;
                 })
             ]
         );
@@ -43,6 +46,7 @@ class GameScene implements Scene {
                         (ev : CoreEvent) => {
 
                         this.gameoverActivated = false;
+                        this.canvasCopied = false;
 
                         this.objm.reset(this.lstate, this.stage, this.hud);
                         this.objm.update(this.lstate, this.stage, this.hud, ev);
@@ -67,6 +71,7 @@ class GameScene implements Scene {
 
         this.paused = false;
         this.gameoverActivated = false;
+        this.canvasCopied = false;
     }
 
 
@@ -83,10 +88,16 @@ class GameScene implements Scene {
 
             if (!this.gameoverActivated) {
 
+                ev.gamepad.forceStickReturnToOrigin();
                 this.gameoverMenu.setCursorPos(0);
+
+                this.gameoverActivated = true;
+            }
+            else {
+
+                this.gameoverMenu.update(ev);
             }
 
-            this.gameoverMenu.update(ev);
             return;
         }
 
@@ -99,7 +110,10 @@ class GameScene implements Scene {
         else if (ev.gamepad.getButtonState("start") == State.Pressed) {
 
             this.paused = true;
+            ev.gamepad.forceStickReturnToOrigin();
             this.pauseMenu.setCursorPos(0);
+
+            this.canvasCopied = false;
         }
 
         // Update stage
@@ -116,6 +130,39 @@ class GameScene implements Scene {
     }
 
 
+    // Draw pause menu
+    private drawPauseMenu(c : Canvas, title : string, menu : Menu) {
+
+        const TITLE_Y = 64;
+        const BOX_X = 64;
+        const BOX_Y = 88;
+
+        const BOX_W = 128;
+        const BOX_H = 28;
+
+        // Copy current background to the buffer
+        if (!this.canvasCopied) {
+
+            c.copyToBuffer();
+            this.canvasCopied = true;
+        }
+
+        c.drawBitmap(c.getCanvasBuffer(), 0, 0);
+
+        c.setColor(0, 0, 0, 0.67);
+        c.fillRect(0, 0, 256, 192);
+
+        c.drawText(c.getBitmap("fontBig"), title,
+               c.width/2, TITLE_Y, -6, 0, true);
+
+        // Draw box
+        drawBoxWithBorders(c, BOX_X, BOX_Y, BOX_W, BOX_H,
+            [[255, 255, 255], [0, 0, 0], [72, 145, 255]]);
+
+        menu.draw(c, BOX_X+4, BOX_Y+4, 0, 12);
+    }
+
+
     public draw(c : Canvas) {
 
         c.moveTo();
@@ -123,22 +170,13 @@ class GameScene implements Scene {
         // Draw the game over menu
         if (this.objm.isGameOver()) {
 
-            // Copy current background to the buffer
-            if (!this.gameoverActivated) {
+            this.drawPauseMenu(c, "YOU DIED.", this.gameoverMenu);
+            return;
+        }
+        // Draw the pause screen
+        else if (this.paused) {
 
-                c.copyToBuffer();
-                this.gameoverActivated = true;
-            }
-
-            c.drawBitmap(c.getCanvasBuffer(), 0, 0);
-            c.setColor(0, 0, 0, 0.67);
-            c.fillRect(0, 0, 256, 192);
-
-            c.drawText(c.getBitmap("fontBig"), "YOU DIED.",
-                c.width/2, 56, -6, 0, true);
-
-            this.gameoverMenu.draw(c, 64, 80, 0, 12);
-
+            this.drawPauseMenu(c, "GAME PAUSED", this.pauseMenu);
             return;
         }
 
@@ -151,16 +189,6 @@ class GameScene implements Scene {
         // Draw HUD
         this.hud.draw(c);
 
-        if (this.paused) {
-
-            c.setColor(0, 0, 0, 0.67);
-            c.fillRect(0, 0, 256, 192);
-
-            c.drawText(c.getBitmap("fontBig"), "GAME PAUSED",
-                c.width/2, 56, -6, 0, true);
-
-            this.pauseMenu.draw(c, 64, 80, 0, 12);
-        }
     }
 
 

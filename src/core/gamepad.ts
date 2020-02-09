@@ -41,6 +41,7 @@ class GamePad {
             // Update stuff
             this.updateGamepad(this.pad);
         });
+
     }
 
 
