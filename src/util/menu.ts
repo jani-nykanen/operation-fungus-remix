@@ -144,4 +144,8 @@ class Menu {
         this.cursorTimer = 0.0;
         this.moving = false;
     }
+
+    
+    // Getters
+    public getCursorPos = () => this.cursorPos;
 }

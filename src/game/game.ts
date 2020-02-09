@@ -157,7 +157,7 @@ class GameScene implements Scene {
         c.fillRect(0, 0, 256, 192);
 
         c.drawText(c.getBitmap("fontBig"), title,
-               c.width/2, TITLE_Y, -6, 0, true);
+               c.width/2, TITLE_Y, -4, 0, true);
 
         // Draw box
         drawBoxWithBorders(c, BOX_X, BOX_Y, BOX_W, BOX_H,

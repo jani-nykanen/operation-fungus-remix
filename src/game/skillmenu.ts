@@ -23,13 +23,13 @@ class SkillMenu {
     // but I'm lazy
     private readonly SKILL_DESCRIPTIONS = [
         "Increases the bullet power.",
-        "Increases the reload and\nbullet speed.",
+        "Increases the fire rate\nand the speed of bullets.",
         "Increases the movement\nspeed and invincibility\ntime.",
-        "Increases the sword attack\nand deflect power.",
-        "Increases the maximum health.",
-        "Increases the amount of\n experience earned.",
-        "Increases the amount of\nhealth regenerated per\nsecond.",
-        "Increases the period of\nan additional bullet."
+        "Increases the sword power\nand the power of deflected\nbullets.",
+        "Increases the maximum\nhealth.",
+        "Increases the amount of\nexperience gained.",
+        "Improves the automatic\nhealth regeneration.",
+        "An additional bullet spawns\nmore often."
     ];
 
 
@@ -96,6 +96,13 @@ class SkillMenu {
         const BOX_W = 256 - BOX_X*2;
         const BOX_H = 116;
 
+        const SKILL_OFF = 2;
+        const SKILL_BEGIN_X = BOX_X + BOX_W - (SKILL_OFF+8)*5;
+        const Y_OFF = 12;
+
+        const DESCP_Y = BOX_Y + BOX_H + 7;
+        const DESCP_H = 192-4 - DESCP_Y;
+
         if (!this.active) return;
 
         // Draw a box for the stitle
@@ -105,7 +112,7 @@ class SkillMenu {
         // Draw skill points
         c.drawText(c.getBitmap("fontBig"), 
             "SKILL POINTS: " + String(this.lstate.getSkillPoints()),
-            c.width/2, SKILL_POINT_Y, -6, 0, true);
+            c.width/2, SKILL_POINT_Y, -4, 0, true);
 
         // Draw a box for the skill names
         drawBoxWithBorders(c, BOX_X, BOX_Y, BOX_W, BOX_H,
@@ -113,8 +120,35 @@ class SkillMenu {
 
         // Draw the skill menu
         this.skillMenu.draw(
-            c, BOX_X + 4, BOX_Y + 4
+            c, BOX_X + 4, BOX_Y + 4, 0, Y_OFF
         );
+
+        // Draw the skill levels
+        let sx = 0;
+        let sy = 8;
+        let font = c.getBitmap("font");
+        for (let i = 0; i < 8; ++ i) {
+
+            for (let j = 0; j < 5; ++ j) {
+
+                sx = this.lstate.getSkillLevel(i) > j ? 8 : 0;
+
+                c.drawBitmapRegion(font, sx, sy, 8, 8,
+                    SKILL_BEGIN_X + j * (8+SKILL_OFF),
+                    BOX_Y + 4 + i * Y_OFF);
+            }
+        }
+
+        if (this.skillMenu.getCursorPos() < 8) {
+
+            // Draw explanation box
+            drawBoxWithBorders(c, BOX_X, DESCP_Y, BOX_W, DESCP_H,
+                [[255, 255, 255], [0, 0, 0], [72, 145, 255]]);
+
+            c.drawText(font, 
+                this.SKILL_DESCRIPTIONS[this.skillMenu.getCursorPos()],
+                BOX_X + 4, DESCP_Y+2, 0, 2);
+        }
     }
 
 

@@ -229,7 +229,7 @@ class HUDRenderer {
 
         // Draw mission info
         c.drawText(c.getBitmap("fontBig"), "MISSION 1",
-            c.width/2 + x, BIG_Y, -6, 0, true);
+            c.width/2 + x, BIG_Y, -4, 0, true);
         
         c.drawText(c.getBitmap("font"), "Green Plains",
             c.width/2 - x, BIG_Y+BIG_OFF, -1, 0, true);
