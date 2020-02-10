@@ -23,7 +23,7 @@ class MenuButton {
 
 class Menu {
 
-    private readonly MOVE_TIME = 15;
+    private readonly MOVE_TIME = 10;
 
 
     private cursorPos : number;

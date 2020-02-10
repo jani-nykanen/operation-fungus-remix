@@ -204,7 +204,7 @@ class LocalState {
 
         let inc =  amount * (10 + this.multiplier);
 
-        this.xp += inc * (1 + this.skillLevels[Skill.Growth]/10.0);
+        this.xp += inc * (1 + this.skillLevels[Skill.Growth] * 0.40);
 
         if (this.xp >= this.xpReq) {
 

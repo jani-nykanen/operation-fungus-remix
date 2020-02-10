@@ -37,6 +37,7 @@ class SkillMenu {
     private readonly lstate : LocalState;
 
     private skillMenu : Menu;
+    private confirm : ConfirmBox;
     private active : boolean;
 
 
@@ -52,7 +53,7 @@ class SkillMenu {
 
             buttons.push(new MenuButton(
                 this.SKILL_NAMES[i], 
-                (ev) => this.increaseSkill(i)
+                (ev) => this.confirm.activate(1)
             ));
         }
         buttons.push(new MenuButton(
@@ -63,6 +64,10 @@ class SkillMenu {
         ));
 
         this.skillMenu = new Menu(buttons);
+        this.confirm = new ConfirmBox("Upgrade this skill?",
+            (ev : CoreEvent) => {
+                this.increaseSkill(this.skillMenu.getCursorPos());
+            });
     }
 
 
@@ -79,6 +84,12 @@ class SkillMenu {
     public update(ev : CoreEvent) {
 
         if (!this.active) return;
+
+        if (this.confirm.isActive()) {
+
+            this.confirm.update(ev);
+            return;
+        }
 
         this.skillMenu.update(ev);
     }
@@ -149,6 +160,15 @@ class SkillMenu {
                 this.SKILL_DESCRIPTIONS[this.skillMenu.getCursorPos()],
                 BOX_X + 4, DESCP_Y+2, 0, 2);
         }
+
+        // Draw confirmation box
+        if (this.confirm.isActive()) {
+
+            c.setColor(0, 0, 0, 0.67);
+            c.fillRect(0, 0, c.width, c.height);
+
+            this.confirm.draw(c);
+        }
     }
 
 
@@ -159,6 +179,7 @@ class SkillMenu {
 
         this.skillMenu.setCursorPos(this.SKILL_NAMES.length);
         this.active = true;
+        
     }
 
 

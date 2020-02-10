@@ -154,7 +154,7 @@ class HUDRenderer {
         this.powerBar = updateSpeedAxis(
             this.powerBar,
             this.lstate.getPower(),
-            DELTA_SPEED * ev.step
+            3 * DELTA_SPEED * ev.step
         );
 
         // Update bonus flickering
