@@ -294,4 +294,11 @@ class ObjectManager {
 
         return !this.player.doesExist();
     }
+
+
+    // Is the mission clear
+    public missionClear() : boolean {
+
+        return this.enemyGen.bossDead();
+    }
 }

@@ -641,4 +641,12 @@ class EnemyGenerator {
             });
         
     }
+
+
+    // Is the boss dead
+    public bossDead() : boolean {
+
+        return this.boss != null && 
+            !this.boss.doesExist();
+    }
 }

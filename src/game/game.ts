@@ -20,6 +20,8 @@ class GameScene implements Scene {
     private canvasCopied : boolean;
     private skills : SkillMenu;
 
+    private confirm : ConfirmBox;
+
 
     constructor() {
 
@@ -31,9 +33,7 @@ class GameScene implements Scene {
                     this.canvasCopied = false;
                 }),
                 new MenuButton("SELF-DESTRUCT", (ev : CoreEvent) => {
-                    this.objm.killPlayer();
-                    this.paused = false;
-                    this.canvasCopied = false;
+                    this.confirm.activate(1);
                 })
             ]
         );
@@ -57,6 +57,15 @@ class GameScene implements Scene {
                     this.skills.activate();
                 })
             ]
+        );
+
+        this.confirm = new ConfirmBox(
+            "Are you sure?",
+            (ev : CoreEvent) => {
+                this.objm.killPlayer();
+                this.paused = false;
+                this.canvasCopied = false;
+            }
         );
     }
 
@@ -108,7 +117,10 @@ class GameScene implements Scene {
         // Check pause
         if (this.paused) {
 
-            this.pauseMenu.update(ev);
+            if (this.confirm.isActive())
+                this.confirm.update(ev);
+            else
+                this.pauseMenu.update(ev);
             return;
         }
         else if (ev.gamepad.getButtonState("start") == State.Pressed) {
@@ -125,6 +137,11 @@ class GameScene implements Scene {
 
         // Update objects
         this.objm.update(this.lstate, this.stage, this.hud, ev);
+        // Start the ending sequence
+        if (this.objm.missionClear()) {
+
+            this.hud.enableEndMessage();
+        }
 
         // Update HUD
         this.hud.update(ev);
@@ -143,18 +160,6 @@ class GameScene implements Scene {
 
         const BOX_W = 128;
         const BOX_H = 28;
-
-        // Copy current background to the buffer
-        if (!this.canvasCopied) {
-
-            c.copyToBuffer();
-            this.canvasCopied = true;
-        }
-
-        c.drawBitmap(c.getCanvasBuffer(), 0, 0);
-
-        c.setColor(0, 0, 0, 0.67);
-        c.fillRect(0, 0, 256, 192);
 
         c.drawText(c.getBitmap("fontBig"), title,
                c.width/2, TITLE_Y, -4, 0, true);
@@ -183,6 +188,23 @@ class GameScene implements Scene {
 
         c.moveTo();
 
+        // Draw the stored frame
+        if (this.objm.isGameOver() ||
+            this.paused) {
+        
+            // Copy current background to the buffer
+            if (!this.canvasCopied) {
+
+                c.copyToBuffer();
+                this.canvasCopied = true;
+            }
+
+            c.drawBitmap(c.getCanvasBuffer(), 0, 0);
+
+            c.setColor(0, 0, 0, 0.67);
+            c.fillRect(0, 0, c.width, c.height);
+        }
+
         // Draw the game over menu
         if (this.objm.isGameOver()) {
 
@@ -195,7 +217,15 @@ class GameScene implements Scene {
         // Draw the pause screen
         else if (this.paused) {
 
-            this.drawPauseMenu(c, "GAME PAUSED", this.pauseMenu);
+            if (this.confirm.isActive()) {
+
+                c.setColor(0, 0, 0, 0.67);
+                c.fillRect(0, 0, c.width, c.height);
+
+                this.confirm.draw(c);
+            }
+            else
+                this.drawPauseMenu(c, "GAME PAUSED", this.pauseMenu);
             return;
         }
 

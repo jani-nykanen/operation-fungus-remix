@@ -8,6 +8,8 @@
 class HUDRenderer {
 
     private readonly START_TIME = 150;
+    private readonly END_TIME = 30.0;
+
 
     // Bar values for rendering
     private healthBar : number;
@@ -20,6 +22,9 @@ class HUDRenderer {
 
     private bossAlertTimer : number;
     private startTimer : number;
+    private endTimer : number;
+
+    private showEndMessage : boolean;
 
 
     constructor(state : LocalState) {
@@ -31,6 +36,9 @@ class HUDRenderer {
         this.bonusFlicker = 0;
         this.bossAlertTimer = 0.0;
         this.startTimer = this.START_TIME;
+
+        this.showEndMessage = false;
+        this.endTimer = 0.0;
 
         this.lstate = state;
     }
@@ -167,6 +175,12 @@ class HUDRenderer {
         // Update start timer
         if (this.startTimer > 0) 
             this.startTimer -= ev.step;
+
+        // Update end timer
+        if (this.endTimer > 0) {
+
+            this.endTimer = Math.max(0, this.endTimer - ev.step);
+        }
     }
 
 
@@ -208,7 +222,7 @@ class HUDRenderer {
     }
 
 
-    // Draw the start timer
+    // Draw the start text
     private drawStart(c : Canvas) {
 
         const DISAPPEAR_TIME = 30;
@@ -233,6 +247,23 @@ class HUDRenderer {
         
         c.drawText(c.getBitmap("font"), "Green Plains",
             c.width/2 - x, BIG_Y+BIG_OFF, -1, 0, true);
+    }
+
+
+    // Draw the end text
+    private drawEnd(c : Canvas) {
+
+        const TEXT_Y = 64;
+
+        let x = c.width/2;
+        if (this.endTimer > 0) {
+
+            x = -c.width/2 + c.width * (1.0 - this.endTimer/this.END_TIME);
+            x |= 0;
+        }
+
+        c.drawText(c.getBitmap("fontBig"), "MISSION CLEAR",
+            x, TEXT_Y, -4, 0, true);
     }
 
 
@@ -289,6 +320,12 @@ class HUDRenderer {
 
             this.drawStart(c);
         }
+
+        // Draw the ending text
+        if (this.showEndMessage) {
+
+            this.drawEnd(c);
+        }
     }
 
 
@@ -307,6 +344,16 @@ class HUDRenderer {
     public setBossAlert(time : number) {
 
         this.bossAlertTimer = time;
+    }
+
+
+    // Enable the end message
+    public enableEndMessage() {
+
+        if (this.showEndMessage) return;
+
+        this.showEndMessage = true;
+        this.endTimer = this.END_TIME;
     }
 
 
