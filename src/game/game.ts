@@ -140,7 +140,15 @@ class GameScene implements Scene {
         // Start the ending sequence
         if (this.objm.missionClear()) {
 
-            this.hud.enableEndMessage();
+            this.hud.enableEndMessage(
+                (ev : CoreEvent) => {
+
+                    ev.tr.activate(true, 1.0, TransitionType.Fade, 4,
+                        (ev : CoreEvent) => {
+                    ev.changeScene(new EndingScene());
+                        });
+                }
+            );
         }
 
         // Update HUD

@@ -8,7 +8,8 @@
 class HUDRenderer {
 
     private readonly START_TIME = 150;
-    private readonly END_TIME = 30.0;
+    private readonly END_APPEAR = 30.0;
+    private readonly END_WAIT = 120;
 
 
     // Bar values for rendering
@@ -25,6 +26,8 @@ class HUDRenderer {
     private endTimer : number;
 
     private showEndMessage : boolean;
+
+    private endCB : MenuButtonCallback;
 
 
     constructor(state : LocalState) {
@@ -180,6 +183,10 @@ class HUDRenderer {
         if (this.endTimer > 0) {
 
             this.endTimer = Math.max(0, this.endTimer - ev.step);
+            if (this.endTimer <= 0 && this.endCB != undefined) {
+
+                this.endCB(ev);
+            }
         }
     }
 
@@ -256,9 +263,10 @@ class HUDRenderer {
         const TEXT_Y = 64;
 
         let x = c.width/2;
-        if (this.endTimer > 0) {
+        if (this.endTimer > this.END_WAIT) {
 
-            x = -c.width/2 + c.width * (1.0 - this.endTimer/this.END_TIME);
+            x = -c.width/2 + c.width * 
+                (1.0 - (this.endTimer-this.END_WAIT)/this.END_APPEAR);
             x |= 0;
         }
 
@@ -348,12 +356,14 @@ class HUDRenderer {
 
 
     // Enable the end message
-    public enableEndMessage() {
+    public enableEndMessage(endCB? : MenuButtonCallback) {
 
         if (this.showEndMessage) return;
 
         this.showEndMessage = true;
-        this.endTimer = this.END_TIME;
+        this.endTimer = this.END_APPEAR + this.END_WAIT;
+
+        this.endCB = endCB;
     }
 
 

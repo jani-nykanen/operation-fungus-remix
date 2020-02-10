@@ -58,7 +58,8 @@ class Core {
             this.assets,
             this.input,
             this.gamepad,
-            this.tr
+            this.tr,
+            this
         );
 
         // Set initial values
@@ -185,5 +186,12 @@ class Core {
         this.oldTime = 0;
         this.timeSum = 0;
         this.loop(0);
+    }
+
+
+    // Change the scene
+    public changeScene(s : Scene) {
+
+        this.activeScene = s;
     }
 }
