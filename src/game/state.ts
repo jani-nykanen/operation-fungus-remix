@@ -101,7 +101,7 @@ class LocalState {
         this.bulletSpeed = 3 + x/10.0 + this.skillLevels[Skill.Agility]/10.0;
         this.reloadSpeed = x + this.skillLevels[Skill.Agility]*2;
         this.swordPower = 8 + 
-            Math.round(1.5*x) + this.skillLevels[Skill.Strength]*4;
+            2 * x + this.skillLevels[Skill.Strength]*4;
         this.moveSpeed = 1 + x/40.0 + this.skillLevels[Skill.Dexterity]/20.0;
         this.maxHealth = 100 + 10 * x + this.skillLevels[Skill.Vitality]*20;
         this.flickerTime = 1.0 + this.skillLevels[Skill.Dexterity]/5.0;
