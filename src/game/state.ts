@@ -63,10 +63,10 @@ class LocalState {
         
         this.xp = 0;
         this.xpReq = 0;
-        this.level = 8;
+        this.level = 16;
         this.multiplier = 0;
         this.mulTimer = 0;
-        this.power = 0;
+        this.power = 2.99;
         this.skillPoints = this.level-1;
 
         this.bonusTimers = new Array<number> (4);
@@ -78,7 +78,7 @@ class LocalState {
         this.skillLevels = new Array<number> (8);
         for (let i = 0; i < this.skillLevels.length; ++ i) {
 
-            this.skillLevels[i] = 0;
+            this.skillLevels[i] = 2;
         }
 
         this.recomputeStats();

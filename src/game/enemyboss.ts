@@ -166,7 +166,11 @@ class BossAI extends AIComponent {
         const MOUTH_TIME = 30;
         const SPEED_MIN = 2.0;
         const SPEED_VARY = 1.0;
-        const ANGLE = Math.PI/3 / 5;
+
+        let bulletCount = 3 + 
+            2 * Math.floor(3 * (1- this.base.health / this.base.maxHealth));
+
+        let bAngle = Math.PI/3 / bulletCount;
 
         this.rendComp.animateMouth(MOUTH_TIME);
 
@@ -176,9 +180,9 @@ class BossAI extends AIComponent {
         // Create bullets
         let angle = 0;
         let speed = 0;
-        for (let i = -2; i <= 2; ++ i) {
+        for (let i = -Math.floor(bulletCount/2); i <= Math.floor(bulletCount/2); ++ i) {
 
-            angle = i * ANGLE;
+            angle = i * bAngle;
 
             speed = SPEED_MIN + Math.random()*SPEED_VARY * 
                 this.speedMod;
@@ -196,13 +200,13 @@ class BossAI extends AIComponent {
     // Open the eye
     private openEye(ev : CoreEvent) {
 
-        const COUNT_1 = 4;
+        const COUNT_1 = 3;
 
         const EYE_TIME = 30;
         const SPEED_1 = 4.0;
         const SPEED_2 = 3.0;
-        const SPEED_REDUCE = 0.75;
-        const ANGLE = Math.PI / 6.0;
+        const SPEED_REDUCE = 0.5;
+        const ANGLE = Math.PI / 12.0;
 
         this.rendComp.animateEye(EYE_TIME);
 
@@ -216,13 +220,15 @@ class BossAI extends AIComponent {
             this.base.pos.y-8
         );
 
+        let bonus = Math.floor(3 * (1- this.base.health / this.base.maxHealth));
+
         let angle = 0;
         let speed = 0;
         switch(mode) {
 
         case 0:
 
-            for (let i = 0; i < COUNT_1; ++ i) {
+            for (let i = 0; i < COUNT_1 + bonus; ++ i) {
 
                 this.shootCB(
                     pos, 
@@ -237,7 +243,7 @@ class BossAI extends AIComponent {
         case 1:
 
             speed = SPEED_2 + (this.speedMod-1.0);
-            for (let i = -1; i <= 1; ++ i) {
+            for (let i = -1 - bonus; i <= 1 + bonus; ++ i) {
 
                 angle = ANGLE * i;
                 this.shootCB(pos,
