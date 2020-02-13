@@ -14,6 +14,7 @@ class CoreEvent {
     public readonly gamepad : Controller;
     public readonly tr : Transition;
     private readonly core : Core;
+    public readonly audio : AudioPlayer;
 
 
     constructor(framerate : number, 
@@ -21,6 +22,7 @@ class CoreEvent {
         input? : InputManager,
         gamepad? : Controller,
         tr? : Transition,
+        audio? : AudioPlayer,
         core? : Core) {
 
         this.step = 60.0 / framerate;
@@ -29,6 +31,7 @@ class CoreEvent {
         this.input = input;
         this.gamepad = gamepad;
         this.tr = tr;
+        this.audio = audio;
         this.core = core;
     }
 

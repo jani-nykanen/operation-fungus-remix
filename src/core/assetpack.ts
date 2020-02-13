@@ -3,12 +3,15 @@
  * (c) 2020 Jani Nykänen
  */
 
+declare var Howl : any;
+
 
 // A simple asset manager
 class AssetPack {
 
 
     private bitmaps : Array<KeyValuePair<Bitmap>>;
+    private sounds : Array<KeyValuePair<any>>;
     private total : number
     private loaded : number
 
@@ -16,6 +19,7 @@ class AssetPack {
     constructor(path : string) {
 
         this.bitmaps = new Array<KeyValuePair<Bitmap>> ();
+        this.sounds = new Array<KeyValuePair<any>> ();
 
         this.total = 1;
         this.loaded = 0;
@@ -49,7 +53,7 @@ class AssetPack {
 
 
     // Start loading a bitmap
-    loadBitmap(name : string, path : string) {
+    private loadBitmap(name : string, path : string) {
 
         ++ this.total;
 
@@ -63,16 +67,42 @@ class AssetPack {
     }
 
 
+    // Start loading a sample
+    private loadSample(name : string, path : string) {
+
+        ++ this.total;
+        
+        this.sounds.push(new KeyValuePair<any> (name, 
+            new Howl({
+                src: [path],
+                onload: () => { 
+                    ++ this.loaded;
+                }
+            })
+        ));
+    }
+
+
     // Parse asset list
     private parseAssetList(data : any) {
 
+        // Load bitmaps
         let bitmapPath = data.bitmapPath;
-
         for (let b of data.bitmaps) {
 
             this.loadBitmap(
                 b.name,
                 bitmapPath + b.path
+            );
+        }
+
+        // Load sounds
+        let soundPath = data.soundPath;
+        for (let b of data.sounds) {
+
+            this.loadSample(
+                b.name,
+                soundPath + b.path
             );
         }
     }
@@ -103,4 +133,17 @@ class AssetPack {
         }
         return null;
     }
+
+
+    // Get a sound
+    public getSound(name : string) : any {
+
+        for (let b of this.sounds) {
+
+            if (b.key == name)
+                return b.value;
+        }
+        return null;
+    }
+
 }

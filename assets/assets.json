@@ -23,5 +23,9 @@
         {"name": "pickup",  "path": "coin.png"},
         {"name": "boss",  "path": "boss.png"},
         {"name": "spikeball",  "path": "spikeball.png"}
+    ],
+    "soundPath" : "assets/audio/",
+    "sounds" : [
+        {"name": "theme",   "path": "theme.ogg"}
     ]
 }

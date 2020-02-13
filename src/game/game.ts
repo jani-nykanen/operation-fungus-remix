@@ -4,6 +4,9 @@
  */
 
 
+const MUSIC_VOLUME = 0.40;
+
+
 // Game scene
 class GameScene implements Scene {
 
@@ -31,6 +34,7 @@ class GameScene implements Scene {
                 new MenuButton("RESUME", (ev : CoreEvent) => {
                     this.paused = false;
                     this.canvasCopied = false;
+                    ev.audio.resumeMusic();
                 }),
                 new MenuButton("SELF-DESTRUCT", (ev : CoreEvent) => {
                     this.confirm.activate(1);
@@ -51,6 +55,9 @@ class GameScene implements Scene {
 
                         this.objm.reset(this.lstate, this.stage, this.hud);
                         this.objm.update(this.lstate, this.stage, this.hud, ev);
+
+                        // Restart music
+                        ev.audio.fadeInMusic(ev.assets.getSound("theme"), MUSIC_VOLUME, 1000);
                     });
                 }),
                 new MenuButton("UPGRADE SKILLS", (ev : CoreEvent) => {
@@ -62,12 +69,17 @@ class GameScene implements Scene {
         this.confirm = new ConfirmBox(
             "Are you sure?",
             (ev : CoreEvent) => {
+
+                ev.audio.resumeMusic();
+                ev.audio.stopMusic();
+
                 this.objm.killPlayer();
                 this.paused = false;
                 this.canvasCopied = false;
             }
         );
     }
+
 
 
     public activate(param : any, ev : CoreEvent) {
@@ -82,6 +94,9 @@ class GameScene implements Scene {
         this.paused = false;
         this.gameoverActivated = false;
         this.canvasCopied = false;
+
+        ev.tr.activate(false, 2.0, TransitionType.Fade, 4);
+        ev.audio.fadeInMusic(ev.assets.getSound("theme"), MUSIC_VOLUME, 1000);
     }
 
 
@@ -130,6 +145,10 @@ class GameScene implements Scene {
             this.pauseMenu.setCursorPos(0);
 
             this.canvasCopied = false;
+
+            ev.audio.pauseMusic();
+
+            return;
         }
 
         // Update stage

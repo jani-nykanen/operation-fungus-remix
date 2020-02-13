@@ -108,6 +108,7 @@ class ObjectManager {
 
         let oldLevel = lstate.getLevel();
         let blade = this.player.getBlade();
+        let oldDeathState = this.player.isDying();
 
         // Check if finished
         if (!this.finished && 
@@ -184,6 +185,13 @@ class ObjectManager {
 
                 lstate.resetMultiplier();
             }
+        }
+
+        // If started to die, stop the music
+        if (!oldDeathState && 
+             this.player.isDying()) {
+
+            ev.audio.stopMusic();
         }
 
         // Game over, stop here

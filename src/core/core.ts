@@ -14,6 +14,7 @@ class Core {
     private gamepad : Controller
     private ev : CoreEvent
     private tr : Transition;
+    private audio : AudioPlayer;
     
     private initialized : boolean
     private timeSum : number
@@ -52,6 +53,9 @@ class Core {
         // Create transition
         this.tr = new Transition();
 
+        // Create an audio player
+        this.audio = new AudioPlayer();
+
         // Create an event... thing
         this.ev = new CoreEvent(
             Number(conf.getParam("framerate", "60")),
@@ -59,7 +63,7 @@ class Core {
             this.input,
             this.gamepad,
             this.tr,
-            this
+            this.audio
         );
 
         // Set initial values
