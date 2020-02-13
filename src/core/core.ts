@@ -63,7 +63,8 @@ class Core {
             this.input,
             this.gamepad,
             this.tr,
-            this.audio
+            this.audio,
+            this
         );
 
         // Set initial values

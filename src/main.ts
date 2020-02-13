@@ -20,5 +20,5 @@ window.onload = () => {
                           .addButton("up", "ArrowUp", 12)
                           .addButton("right", "ArrowRight", 15)
                           .addButton("down", "ArrowDown", 13)
-    )).run(new GameScene())
+    )).run(new AudioIntroScene())
 }
