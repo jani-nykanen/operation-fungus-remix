@@ -57,6 +57,7 @@ class GameScene implements Scene {
                         this.objm.update(this.lstate, this.stage, this.hud, ev);
 
                         // Restart music
+                        ev.audio.stopMusic();
                         ev.audio.fadeInMusic(ev.assets.getSound("theme"), MUSIC_VOLUME, 1000);
                     });
                 }),
