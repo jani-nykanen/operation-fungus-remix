@@ -41,8 +41,8 @@ class TitleScreenScene implements Scene {
 
     public draw(c : Canvas) {
 
-        const AMPLITUDE = 16.0;
-        const SHIFT = Math.PI * 2 / 24;
+        const LOGO_AMPL = 4;
+        const LOGO_Y = 24;
         const PRESS_ENTER_Y_OFF = 48;
         const PERIOD = Math.PI * 2 / 11;
         const FONT_OFF = 12;
@@ -56,25 +56,13 @@ class TitleScreenScene implements Scene {
         c.drawBitmapRegion(c.getBitmap("sky"), 0,
             288, 256, 144, 0, 0);
 
-        // Draw the sun
-        c.drawBitmap(c.getBitmap("sun"), 184, 8);
-
         // Draw logo
-        c.drawBitmapRegion(bmp, 0, 0, 256, 96, 0, 32);
-
-        // Draw shadow
-        c.setAlpha(0.333);
-        let x = 0;
-        for (let y = 0; y < 24; ++ y) {
-
-            x = (Math.sin(this.wave + SHIFT*y) * (y / 24.0 *  AMPLITUDE)) | 0;
-            c.drawBitmapRegion(bmp, 0, 96+y, 256, 1, x, 128+y);
-        }
-        c.setAlpha();
+        let y = (Math.sin(this.wave) * LOGO_AMPL) | 0;
+        c.drawBitmapRegion(bmp, 0, 0, 256, 96, 0, LOGO_Y + y);
 
         // Draw "press enter"
         let fontBig = c.getBitmap("fontBig");
-        x = c.width/2 - 11 * FONT_OFF / 2;
+        let x = c.width/2 - 11 * FONT_OFF / 2;
 
         let str = "PRESS ENTER";
 
