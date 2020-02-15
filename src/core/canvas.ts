@@ -387,4 +387,64 @@ class Canvas {
 
         return new Bitmap(this.canvasBuffer);
     }
+
+
+    // Fill the area outside a circle
+    public fillCircleOutside(r : number, cx : number, cy : number) {
+
+        if (r <= 0) {
+
+            this.fillRect(0, 0, this.width, this.height);
+            return;
+        }
+        else if (r*r >= this.width*this.width + this.height*this.height) {
+
+            return;
+        }
+
+        if (cx == null)
+            cx = this.width / 2;
+        if (cy == null)
+            cy = this.height / 2;
+
+        
+        let start = Math.max(0, cy - r) | 0;
+        let end = Math.min(this.height, cy + r) | 0;
+
+        // Draw rectangle areas
+        if (start > 0)
+            this.fillRect(0, 0, this.width, start);
+
+        if (end < this.height)
+            this.fillRect(0, end, this.width, this.height-end);
+
+        // Draw the  circle area line by line
+        let dy;
+        let px1, px2;
+        for (let y = start; y < end; ++ y) {
+
+            dy = y - cy;
+
+            // A full line
+            if (Math.abs(dy) >= r) {
+
+                this.fillRect(0, y, this.width, 1);
+                continue;
+            }
+
+            px1 = cx - Math.sqrt(r*r - dy*dy);
+            px2 = cx + Math.sqrt(r*r - dy*dy);
+
+            px1 |= 0;
+            px2 |= 0;
+
+            // Fill left
+            if (px1 > 0)
+                this.fillRect(0, y, px1, 1);
+            // Fill right
+            if (px2 < this.width)
+                this.fillRect(px2, y, this.width-px1, 1);
+        }
+    }
+
 }

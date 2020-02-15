@@ -7,6 +7,7 @@
 enum TransitionType {
 
     Fade = 0,
+    CircleOutside = 1,
 }
 
 
@@ -81,6 +82,17 @@ class Transition {
         if (!this.active) return;
 
         let t = this.getScaledTime(); 
+        let r : number;
+
+        let cx = c.width/2;
+        let cy = c.height/2;
+
+        let maxRadius = Math.max(
+                hypot(cx, cy),
+                hypot(c.width-cx, cy),
+                hypot(c.width-cx, c.height-cy),
+                hypot(cx, c.height-cy)
+            );
 
         switch(this.type) {
 
@@ -93,6 +105,15 @@ class Transition {
             c.setColor(0, 0, 0, t);
             c.fillRect(0, 0, c.width, c.height);
             
+            break;
+
+        case TransitionType.CircleOutside:
+
+            
+            r = (1-t) * maxRadius;
+            c.setColor(0);
+            c.fillCircleOutside(r, cx, cy);
+
             break;
 
         default:

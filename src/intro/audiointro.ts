@@ -19,9 +19,7 @@ class AudioIntroScene implements Scene {
             "Enable audio?",
             (ev : CoreEvent) => {
                 ev.audio.toggle(true);
-                ev.changeScene(new TitleScreenScene());
-
-                ev.tr.activate(false, 2.0, TransitionType.Fade, 4);
+                ev.changeScene(new CreatedByScene());
             }
         );
         this.confirm.activate(0);

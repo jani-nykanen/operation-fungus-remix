@@ -24,7 +24,9 @@
         {"name": "boss",  "path": "boss.png"},
         {"name": "spikeball",  "path": "spikeball.png"},
 
-        {"name": "logo",  "path": "logo.png"}
+        {"name": "logo",  "path": "logo.png"},
+        {"name": "creator",  "path": "creator.png"},
+        {"name": "cloudsTitle",  "path": "clouds_title.png"}
     ],
     "soundPath" : "assets/audio/",
     "sounds" : [
