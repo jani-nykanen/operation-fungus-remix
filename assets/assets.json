@@ -22,7 +22,9 @@
         {"name": "enemies",  "path": "enemies.png"},
         {"name": "pickup",  "path": "coin.png"},
         {"name": "boss",  "path": "boss.png"},
-        {"name": "spikeball",  "path": "spikeball.png"}
+        {"name": "spikeball",  "path": "spikeball.png"},
+
+        {"name": "logo",  "path": "logo.png"}
     ],
     "soundPath" : "assets/audio/",
     "sounds" : [

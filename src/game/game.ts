@@ -96,7 +96,6 @@ class GameScene implements Scene {
         this.gameoverActivated = false;
         this.canvasCopied = false;
 
-        ev.tr.activate(false, 2.0, TransitionType.Fade, 4);
         ev.audio.fadeInMusic(ev.assets.getSound("theme"), MUSIC_VOLUME, 1000);
     }
 
