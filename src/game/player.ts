@@ -252,14 +252,16 @@ class PlayerAI extends AIComponent {
         let fire1 = ev.gamepad.getButtonState("fire1");
 
         // Sword attack
+        let oldState = this.renderComp.getShootType();
         if (ev.gamepad.getButtonState("fire3") == State.Pressed) {
 
             if (!this.renderComp.isSwordActive()) {
 
                 this.blade.increaseAttackIndex();
                 this.renderComp.animateShooting(1);
-                
-                ev.audio.playSample(ev.assets.getSound("blade"), 0.45);
+
+                if (!oldState && this.renderComp.getShootType())
+                    ev.audio.playSample(ev.assets.getSound("blade"), 0.40);
             }
         }
         // Shoot a bullet
@@ -280,6 +282,8 @@ class PlayerAI extends AIComponent {
 
             this.renderComp.startDisappearing();
             this.disappear = 1;
+
+            ev.audio.playSample(ev.assets.getSound("evade"), 0.50);
         }
 
         // Regen
@@ -883,6 +887,7 @@ class PlayerRenderComponent extends RenderComponent {
 
     // Getters
     public isShooting = () => this.shooting;
+    public getShootType = () => this.shootMode;
     public getBodyFrame = () => this.spr.getFrame();
     public getDisappearPhase = () => this.disappear;
     public getWaveDelta = () => this.waveDelta;

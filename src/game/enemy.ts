@@ -63,9 +63,14 @@ class EnemyRenderer extends RenderComponent {
     private shootTimer : number;
 
 
+    private deathPlayed : boolean;
+
+
     constructor(base : EntityBase) {
 
         super(base, 24, 24);
+
+        this.deathPlayed = false;
     }
 
 
@@ -75,6 +80,8 @@ class EnemyRenderer extends RenderComponent {
         this.animSpeed = speed;
         this.speedMod = speedMod;
         this.flickerTime = 0.0;
+
+        this.deathPlayed = false;
     }
 
 
@@ -124,6 +131,12 @@ class EnemyRenderer extends RenderComponent {
     public animateDeath(ev : CoreEvent) : boolean {
 
         const DEATH_SPEED = 4;
+
+        if (!this.deathPlayed) {
+
+            ev.audio.playSample(ev.assets.getSound("hurtEnemy"), 0.40);
+            this.deathPlayed = true;
+        }
 
         this.spr.animate(0, 0, 6, 
             DEATH_SPEED, ev.step);

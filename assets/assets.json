@@ -41,6 +41,7 @@
         {"name": "hurt",   "path": "hurt.wav"},
         {"name": "die",   "path": "die.wav"},
         {"name": "blade",   "path": "blade.wav"},
-        {"name": "hurtEnemy",   "path": "hurt_enemy.wav"}
+        {"name": "hurtEnemy",   "path": "hurt_enemy.wav"},
+        {"name": "evade",   "path": "evade.wav"}
     ]
 }
