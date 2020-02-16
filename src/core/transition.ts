@@ -122,6 +122,13 @@ class Transition {
     }
 
 
+    // Change the transition type
+    public changeTransitionType(type = TransitionType.Fade) {
+
+        this.type = type;
+    }
+
+
     // Get time scaled to [0,1] interval
     public getScaledTime() : number {
 

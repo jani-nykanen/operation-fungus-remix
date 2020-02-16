@@ -138,6 +138,8 @@ class PlayerAI extends AIComponent {
     public reset() {
 
         this.appearing = true;
+        this.extraBulletTimer = 0;
+        this.extraBulletDir = false;
     }
 
 
@@ -149,12 +151,7 @@ class PlayerAI extends AIComponent {
         let min = 0;
         let max = 0;
 
-        let extra = false;
-
         let wait = this.lstate.getBulletWait();
-        extra = wait == 0 && this.lstate.getBulletBonus() > 0;
-        if (this.lstate.getBulletBonus() > 0)
-            wait = 0;
 
         if (wait >= 0) {
 
@@ -173,9 +170,21 @@ class PlayerAI extends AIComponent {
             }
         }
 
-        if (extra) {
+        if (this.lstate.getBulletBonus() > 0) {
 
-            if (min == -1)
+            if (min == 0 && max == 0) {
+
+                if (this.extraBulletDir) {
+
+                    max = 1;
+                }
+                else {
+
+                    min = -1;
+                }
+                this.extraBulletDir = !this.extraBulletDir;
+            }
+            else if (min == -1)
                 max = 1;
             else if (min == 0)
                 min = -1;

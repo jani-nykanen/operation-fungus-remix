@@ -108,7 +108,7 @@ class LocalState {
         this.deflectPower = 0.5 + 0.1 * this.skillLevels[Skill.Strength];
 
         let l = this.skillLevels[Skill.Diversity];
-        this.bulletWait = l == 0 ? -1 : (5 - this.skillLevels[Skill.Diversity]);
+        this.bulletWait = l == 0 ? -1 : (6 - this.skillLevels[Skill.Diversity]);
 
         l = this.skillLevels[Skill.Regeneration];
         this.regenSpeed = l == 0 ? 0 : (60 - l*10);

@@ -47,17 +47,16 @@ class TitleScreenScene implements Scene {
             if (this.flickerTimer <= FLICKER_BONUS &&
                 !ev.tr.isActive()) {
 
-                ev.tr.activate(true, 2.0, TransitionType.CircleOutside, 0,
+                ev.tr.activate(true, 2.0, TransitionType.CircleOutside, 4,
                     (ev : CoreEvent) => {
-                        ev.tr.activate(false, 2.0, TransitionType.Fade, 4);
+                        ev.tr.changeTransitionType();
                         ev.changeScene(new GameScene());
                     });
                 return;
             }
         }
-
         // Check for input
-        if (ev.gamepad.getButtonState("start") == State.Pressed ||
+        else if (ev.gamepad.getButtonState("start") == State.Pressed ||
             ev.gamepad.getButtonState("fire1") == State.Pressed) {
 
             this.flickerTimer = FLICKER_TIME + FLICKER_BONUS;

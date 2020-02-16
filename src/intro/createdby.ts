@@ -41,7 +41,7 @@ class CreatedByScene implements Scene {
 
                 if (++ this.phase == 2) {
 
-                    ev.tr.activate(false, 2.0, TransitionType.CircleOutside);
+                    ev.tr.changeTransitionType(TransitionType.CircleOutside);
                     ev.changeScene(new TitleScreenScene());
                 }
             });
