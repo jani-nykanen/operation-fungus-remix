@@ -32,6 +32,7 @@
     "sounds" : [
         {"name": "theme",   "path": "theme.ogg"},
         {"name": "boss",   "path": "boss.ogg"},
+        {"name": "title",   "path": "title.ogg"},
 
         {"name": "accept",   "path": "accept.wav"},
         {"name": "start",   "path": "start.wav"},
@@ -49,6 +50,8 @@
         {"name": "speedUp",   "path": "speedup.wav"},
         {"name": "bulletsUp",   "path": "bulletsup.wav"},
         {"name": "healthUp",   "path": "healthup.wav"},
-        {"name": "levelUp",   "path": "levelup.wav"}
+        {"name": "levelUp",   "path": "levelup.wav"},
+        {"name": "explode",   "path": "explode.wav"},
+        {"name": "alert",   "path": "alert.wav"}
     ]
 }

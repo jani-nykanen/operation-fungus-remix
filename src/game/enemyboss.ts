@@ -371,6 +371,7 @@ class BossRenderer extends RenderComponent {
 
     private mouthTimer : number;
     private eyeTimer : number;
+    private musicStopped : boolean;
 
     private readonly endCB? : (() => any);
 
@@ -399,6 +400,8 @@ class BossRenderer extends RenderComponent {
         this.eyeTimer = 0;
 
         this.endCB = endCB;
+
+        this.musicStopped = false;
     }
 
 
@@ -426,6 +429,13 @@ class BossRenderer extends RenderComponent {
 
         let oldTime = this.deathTimer;
         this.deathTimer -= ev.step;
+
+        if (!this.musicStopped) {
+
+            ev.audio.playSample(ev.assets.getSound("explode"), 0.40);
+            ev.audio.stopMusic();
+            this.musicStopped = true;
+        }
 
         if (this.endCB != undefined &&
             oldTime > this.DEATH_TIME2 &&
@@ -564,7 +574,7 @@ class Boss extends Enemy {
 
 
     // Refresh
-    public refresh() {
+    public refresh(ev : CoreEvent) {
 
         if (!this.doesExist()) return;
 

@@ -21,6 +21,8 @@ class TitleScreenScene implements Scene {
         this.wave = 0.0;
         this.cloudPos = 0.0;
         this.flickerTimer = 0.0;
+
+        ev.audio.fadeInMusic(ev.assets.getSound("title"), 0.40, 1000);
     }
 
 
@@ -59,6 +61,7 @@ class TitleScreenScene implements Scene {
         else if (ev.gamepad.getButtonState("start") == State.Pressed ||
             ev.gamepad.getButtonState("fire1") == State.Pressed) {
 
+            ev.audio.stopMusic();
             ev.audio.playSample(ev.assets.getSound("start"), 0.40);
             this.flickerTimer = FLICKER_TIME + FLICKER_BONUS;
         }
