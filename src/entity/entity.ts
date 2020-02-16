@@ -163,6 +163,12 @@ class Entity {
     // Start flickering
     public flicker(time : number) {
 
+        let remainder = (this.renderComp.flickerTime | 0) % 2;
+
+        if ( (time % 2) != remainder) {
+
+            time += remainder;
+        }
         this.renderComp.flickerTime = time;
     }
 

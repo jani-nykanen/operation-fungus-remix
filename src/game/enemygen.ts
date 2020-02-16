@@ -510,6 +510,8 @@ class EnemyGenerator {
                         e.setHurtIndex(blade.getAttackIndex());
 
                         lstate.addExperience(e.getXP(dmg));
+
+                        ev.audio.playSample(ev.assets.getSound("hurtEnemy"), 0.50);
                     }
 
                 }
