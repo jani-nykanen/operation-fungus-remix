@@ -135,7 +135,7 @@ class ObjectManager {
             // Player collision
             id = p.getSpriteRow();
             if (!this.player.isDisappearing() &&
-                p.entityCollision(this.player, true, false) > 0) {
+                p.entityCollision(this.player, true, false, ev) > 0) {
 
                 if (id < 4) {
 

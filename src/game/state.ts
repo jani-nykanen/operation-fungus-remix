@@ -111,7 +111,7 @@ class LocalState {
         this.bulletWait = l == 0 ? -1 : (6 - this.skillLevels[Skill.Diversity]);
 
         l = this.skillLevels[Skill.Regeneration];
-        this.regenSpeed = l == 0 ? 0 : (60 - l*10);
+        this.regenSpeed = l == 0 ? 0 : (30 - l*5);
 
         this.xpReq = this.computeExpRequired(this.level);
     }

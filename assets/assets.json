@@ -42,6 +42,11 @@
         {"name": "die",   "path": "die.wav"},
         {"name": "blade",   "path": "blade.wav"},
         {"name": "hurtEnemy",   "path": "hurt_enemy.wav"},
-        {"name": "evade",   "path": "evade.wav"}
+        {"name": "evade",   "path": "evade.wav"},
+        {"name": "dmgUp",   "path": "dmgup.wav"},
+        {"name": "defUp",   "path": "defup.wav"},
+        {"name": "speedUp",   "path": "speedup.wav"},
+        {"name": "bulletsUp",   "path": "bulletsup.wav"},
+        {"name": "healthUp",   "path": "healthup.wav"}
     ]
 }

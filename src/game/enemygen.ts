@@ -398,7 +398,8 @@ class EnemyGenerator {
 
     // Spawn a pickup item
     private spawnPickUp(lstate : LocalState, 
-        pickups : Array<PickUp>, pos : Vector2) {
+        pickups : Array<PickUp>, pos : Vector2,
+        ev : CoreEvent) {
 
         const LIFE_CHANCE = 0.125;
         const COIN_CHANCE = 0.25; // Assuming life did not happen
@@ -534,7 +535,7 @@ class EnemyGenerator {
 
                     lstate.increaseMultiplier();
 
-                    this.spawnPickUp(lstate, pickups, e.getPos());
+                    this.spawnPickUp(lstate, pickups, e.getPos(), ev);
                 }
             }
     }

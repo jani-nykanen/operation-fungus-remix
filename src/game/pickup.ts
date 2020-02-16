@@ -133,6 +133,7 @@ class PickUp extends Entity {
         );
 
         this.lstate = lstate;
+
     }
 
 
@@ -164,8 +165,9 @@ class PickUp extends Entity {
 
 
     // Hostile collision
-    protected hostileCollision(e : Entity, kill = true) {
+    protected hostileCollision(e : Entity, kill = true, ev? : CoreEvent) {
 
+        const SOUNDS = ["dmgUp", "defUp", "speedUp", "bulletsUp", "healthUp"];
         const BONUS_TIME = 5;
 
         this.kill();
@@ -179,5 +181,7 @@ class PickUp extends Entity {
             this.lstate.increaseBonusTimer(BONUS_TIME * 60, 
                 this.aiRef.getId());
         }
+
+        ev.audio.playSample(ev.assets.getSound(SOUNDS[this.aiRef.getId()]), 0.50);
     }
 }

@@ -235,6 +235,7 @@ class PlayerAI extends AIComponent {
     public control(ev : CoreEvent) {
 
         const BASE_SPEED = 2;
+        const REGEN_COUNT = 1;
 
         let stick = ev.gamepad.getStick();
 
@@ -295,7 +296,7 @@ class PlayerAI extends AIComponent {
 
                 this.regenTimer -= this.lstate.getRegenSpeed();
                 
-                ++ this.base.health;
+                this.base.health += REGEN_COUNT;
 
                 this.lstate.updateHealth(this.base.health);
             }
