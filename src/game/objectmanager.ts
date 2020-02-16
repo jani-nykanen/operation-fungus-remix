@@ -208,6 +208,8 @@ class ObjectManager {
             this.spawnFlyingText("LEVEL UP!",
                 p.x, p.y-12
                 );
+
+            ev.audio.playSample(ev.assets.getSound("levelUp"), 0.60);
         }
 
         // Update the flying text

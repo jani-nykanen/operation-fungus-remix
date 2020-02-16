@@ -47,6 +47,7 @@
         {"name": "defUp",   "path": "defup.wav"},
         {"name": "speedUp",   "path": "speedup.wav"},
         {"name": "bulletsUp",   "path": "bulletsup.wav"},
-        {"name": "healthUp",   "path": "healthup.wav"}
+        {"name": "healthUp",   "path": "healthup.wav"},
+        {"name": "levelUp",   "path": "levelup.wav"}
     ]
 }
