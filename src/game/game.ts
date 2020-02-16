@@ -4,11 +4,12 @@
  */
 
 
-const MUSIC_VOLUME = 0.40;
 
 
 // Game scene
 class GameScene implements Scene {
+
+    private readonly MUSIC_VOLUME = 0.50;
 
     // Components
     private stage : Stage
@@ -35,9 +36,11 @@ class GameScene implements Scene {
                     this.paused = false;
                     this.canvasCopied = false;
                     ev.audio.resumeMusic();
+                    return true;
                 }),
                 new MenuButton("SELF-DESTRUCT", (ev : CoreEvent) => {
                     this.confirm.activate(1);
+                    return true;
                 })
             ]
         );
@@ -58,11 +61,15 @@ class GameScene implements Scene {
 
                         // Restart music
                         ev.audio.stopMusic();
-                        ev.audio.fadeInMusic(ev.assets.getSound("theme"), MUSIC_VOLUME, 1000);
+                        ev.audio.fadeInMusic(ev.assets.getSound("theme"), 
+                            this.MUSIC_VOLUME, 1000);
                     });
+
+                    return true;
                 }),
                 new MenuButton("UPGRADE SKILLS", (ev : CoreEvent) => {
                     this.skills.activate();
+                    return true;
                 })
             ]
         );
@@ -77,6 +84,8 @@ class GameScene implements Scene {
                 this.objm.killPlayer();
                 this.paused = false;
                 this.canvasCopied = false;
+
+                return true;
             }
         );
     }
@@ -96,7 +105,8 @@ class GameScene implements Scene {
         this.gameoverActivated = false;
         this.canvasCopied = false;
 
-        ev.audio.fadeInMusic(ev.assets.getSound("theme"), MUSIC_VOLUME, 1000);
+        ev.audio.fadeInMusic(ev.assets.getSound("theme"), 
+            this.MUSIC_VOLUME, 1000);
     }
 
 
@@ -166,6 +176,8 @@ class GameScene implements Scene {
                         (ev : CoreEvent) => {
                     ev.changeScene(new EndingScene());
                         });
+
+                    return true;
                 }
             );
         }

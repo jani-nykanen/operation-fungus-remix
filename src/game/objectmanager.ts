@@ -181,7 +181,7 @@ class ObjectManager {
                 }
             }
 
-            if (this.player.entityCollision(b, true) > 0) {
+            if (this.player.entityCollision(b, true, false, ev) > 0) {
 
                 lstate.resetMultiplier();
             }

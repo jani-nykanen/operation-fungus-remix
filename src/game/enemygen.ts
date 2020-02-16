@@ -493,7 +493,7 @@ class EnemyGenerator {
             // Bullet  & player collisions
             if (e.doesExist() && !e.isDying()) {
 
-                if (player.entityCollision(e, true, false) > 0) {
+                if (player.entityCollision(e, true, false, ev) > 0) {
 
                     lstate.resetMultiplier();
                 }

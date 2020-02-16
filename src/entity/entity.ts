@@ -107,10 +107,10 @@ class Entity {
     }
 
 
-    protected hostileCollision?(e : Entity, kill? : boolean) : any;
+    protected hostileCollision?(e : Entity, kill? : boolean, ev? : CoreEvent) : any;
 
     // Collision with another entity
-    public entityCollision(e : Entity, hostile? : boolean, kill = true) : number {
+    public entityCollision(e : Entity, hostile? : boolean, kill = true, ev? : CoreEvent) : number {
 
         if (!e.doesExist() || !this.base.exist ||
              e.isDying() || this.base.dying) return;
@@ -136,7 +136,7 @@ class Entity {
         if (hostile && collide && 
             this.hostileCollision != undefined) {
 
-            this.hostileCollision(e, kill);
+            this.hostileCollision(e, kill, ev);
             return this.immune ? 0 : e.getPower();
         }
 

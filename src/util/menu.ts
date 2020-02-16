@@ -4,7 +4,7 @@
  */
 
 
-type MenuButtonCallback = ((ev : CoreEvent) => any);
+type MenuButtonCallback = ((ev : CoreEvent) => boolean);
 
 
 class MenuButton {
@@ -32,6 +32,7 @@ class Menu {
     private cursorTimer : number;
     private moving : boolean;
     private buttons : Array<MenuButton>;
+
 
 
     constructor(buttons : Array<MenuButton>) {
@@ -76,6 +77,7 @@ class Menu {
 
         // Control the cursor
         let s = ev.gamepad.getStick().y;
+        let res : boolean;
         if (Math.abs(s) > EPS) {
 
             this.targetPos = 
@@ -84,6 +86,8 @@ class Menu {
 
             this.moving = true;
             this.cursorTimer = this.MOVE_TIME;
+
+            ev.audio.playSample(ev.assets.getSound("next"), 0.60);
         }
         // Check if activated
         else {
@@ -92,7 +96,16 @@ class Menu {
                 ev.gamepad.getButtonState("start") == State.Pressed ||
                 ev.gamepad.getButtonState("fire1") == State.Pressed)) {
 
-                this.buttons[this.cursorPos].cb(ev);
+                res = this.buttons[this.cursorPos].cb(ev);
+
+                if (res) {
+
+                    ev.audio.playSample(ev.assets.getSound("accept"), 0.60);
+                }
+                else {
+
+                    ev.audio.playSample(ev.assets.getSound("deny"), 0.60);
+                }
             }
         }
 

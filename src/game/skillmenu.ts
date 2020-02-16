@@ -53,13 +53,26 @@ class SkillMenu {
 
             buttons.push(new MenuButton(
                 this.SKILL_NAMES[i], 
-                (ev) => this.confirm.activate(1)
+                (ev) => {
+
+                    if (lstate.getSkillPoints() <= 0 ||
+                        lstate.getSkillLevel(i) >= 5) {
+
+                        return false;
+                    }
+                    else {
+
+                        this.confirm.activate(1);
+                    }
+                    return true;
+                }
             ));
         }
         buttons.push(new MenuButton(
             "BACK", (ev) => {
 
                 this.active = false;
+                return false;
             }
         ));
 
@@ -67,6 +80,7 @@ class SkillMenu {
         this.confirm = new ConfirmBox("Upgrade this skill?",
             (ev : CoreEvent) => {
                 this.increaseSkill(this.skillMenu.getCursorPos());
+                return true;
             });
     }
 

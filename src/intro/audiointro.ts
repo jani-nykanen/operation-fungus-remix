@@ -20,6 +20,7 @@ class AudioIntroScene implements Scene {
             (ev : CoreEvent) => {
                 ev.audio.toggle(true);
                 ev.changeScene(new CreatedByScene());
+                return true;
             }
         );
         this.confirm.activate(0);

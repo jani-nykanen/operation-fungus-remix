@@ -45,9 +45,15 @@ class BulletAI  extends AIComponent {
 // Bullet render component
 class BulletRenderComponent extends RenderComponent {
 
+
+    private deathPlayed : boolean;
+
+
     constructor(base : EntityBase) {
 
         super(base, 16, 16);
+
+        this.deathPlayed = false;
     }
 
 
@@ -55,6 +61,8 @@ class BulletRenderComponent extends RenderComponent {
     public reset(row : number) {
 
         this.spr.setFrame(row, 0);
+
+        this.deathPlayed = false;
     }
 
 
@@ -75,6 +83,12 @@ class BulletRenderComponent extends RenderComponent {
     public animateDeath(ev : CoreEvent) : boolean {
 
         const DEATH_SPEED = 4;
+
+        if (!this.deathPlayed) {
+
+            ev.audio.playSample(ev.assets.getSound("hit"), 0.40);
+            this.deathPlayed = true;
+        }
 
         this.spr.animate(this.spr.getRow(), 3, 7, 
             DEATH_SPEED, ev.step);

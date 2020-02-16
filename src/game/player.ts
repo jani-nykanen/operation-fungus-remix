@@ -258,6 +258,8 @@ class PlayerAI extends AIComponent {
 
                 this.blade.increaseAttackIndex();
                 this.renderComp.animateShooting(1);
+                
+                ev.audio.playSample(ev.assets.getSound("blade"), 0.45);
             }
         }
         // Shoot a bullet
@@ -268,6 +270,8 @@ class PlayerAI extends AIComponent {
                 this.bulletCB != undefined) {
                     
                 this.shootBullets();
+            
+                ev.audio.playSample(ev.assets.getSound("shoot"), 0.40);
             }
         }
 
@@ -382,6 +386,7 @@ class PlayerRenderComponent extends RenderComponent {
     private disappear : number;
     private deathTimer : number;
     private beamTimer : number;
+    private deathPlayed : boolean;
 
     private readonly lstate : LocalState;
 
@@ -407,6 +412,7 @@ class PlayerRenderComponent extends RenderComponent {
         this.waveDelta = 0.0;
         this.deathTimer = 0.0;
         this.beamTimer = 0.0;
+        this.deathPlayed = false;
 
         this.base.power = 1; // For pick-up collisions
 
@@ -423,6 +429,13 @@ class PlayerRenderComponent extends RenderComponent {
         const DEATH_SPEED = 2;
         const ORB_ANIM_SPEED = 4;
         const BUFF_SPEED = 4;
+
+        // Yes we play the sound effect here...
+        if (!this.deathPlayed) {
+
+            ev.audio.playSample(ev.assets.getSound("die"), 0.40);
+            this.deathPlayed = true;
+        }
 
         this.sprOrb.animate(0, 8, 10, ORB_ANIM_SPEED, ev.step);
 
@@ -542,6 +555,7 @@ class PlayerRenderComponent extends RenderComponent {
         this.wave = 0.0;
         this.waveDelta = 0.0;
         this.deathTimer = 0.0;
+        this.deathPlayed = false;
 
         for (let d of this.dust) {
 
@@ -954,7 +968,7 @@ class Player extends Entity {
 
 
     // Hostile collision
-    protected hostileCollision(e : Entity, kill = true) {
+    protected hostileCollision(e : Entity, kill = true, ev? : CoreEvent) {
 
         if (this.renderComp.flickerTime > 0 ||
             this.rendRef.isDisappering()) return;
@@ -964,6 +978,12 @@ class Player extends Entity {
         
         if (kill)
             e.kill();
+
+        if (ev != undefined &&
+            this.base.health > 0) {
+
+            ev.audio.playSample(ev.assets.getSound("hurt"), 0.50);
+        }
     }
 
 

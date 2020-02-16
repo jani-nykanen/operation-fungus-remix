@@ -59,6 +59,7 @@ class TitleScreenScene implements Scene {
         else if (ev.gamepad.getButtonState("start") == State.Pressed ||
             ev.gamepad.getButtonState("fire1") == State.Pressed) {
 
+            ev.audio.playSample(ev.assets.getSound("start"), 0.40);
             this.flickerTimer = FLICKER_TIME + FLICKER_BONUS;
         }
         

@@ -24,10 +24,12 @@ class ConfirmBox {
 
                     cb(ev);
                     this.active = false;
+                    return true;
                 }),
                 new MenuButton("NO", (ev : CoreEvent) => {
 
                     this.active = false;
+                    return false;
                 })
             ]
         );

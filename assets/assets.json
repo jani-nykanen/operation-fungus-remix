@@ -30,6 +30,16 @@
     ],
     "soundPath" : "assets/audio/",
     "sounds" : [
-        {"name": "theme",   "path": "theme.ogg"}
+        {"name": "theme",   "path": "theme.ogg"},
+
+        {"name": "accept",   "path": "accept.wav"},
+        {"name": "start",   "path": "start.wav"},
+        {"name": "next",   "path": "next.wav"},
+        {"name": "deny",   "path": "deny.wav"},
+        {"name": "shoot",   "path": "shoot.wav"},
+        {"name": "hit",   "path": "hit.wav"},
+        {"name": "hurt",   "path": "hurt.wav"},
+        {"name": "die",   "path": "die.wav"},
+        {"name": "blade",   "path": "blade.wav"}
     ]
 }
