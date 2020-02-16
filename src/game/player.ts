@@ -24,7 +24,7 @@ class Blade extends Entity {
 
         // this.renderComp = new RenderComponent(this.base, 32,  16);
 
-        this.base.hitbox = new Vector2(28, 16);
+        this.base.hitbox = new Vector2(32, 24);
 
         this.attackIndex = 0;
 
