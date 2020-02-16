@@ -31,6 +31,7 @@
     "soundPath" : "assets/audio/",
     "sounds" : [
         {"name": "theme",   "path": "theme.ogg"},
+        {"name": "boss",   "path": "boss.ogg"},
 
         {"name": "accept",   "path": "accept.wav"},
         {"name": "start",   "path": "start.wav"},

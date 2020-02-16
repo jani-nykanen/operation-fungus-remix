@@ -9,7 +9,7 @@
 // Game scene
 class GameScene implements Scene {
 
-    private readonly MUSIC_VOLUME = 0.50;
+    private readonly MUSIC_VOLUME = 0.60;
 
     // Components
     private stage : Stage

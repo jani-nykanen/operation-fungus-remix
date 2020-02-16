@@ -118,6 +118,9 @@ class ObjectManager {
             this.enemyGen.startBossBattle(stage);
             stage.toggleSkyShift(true);
             hud.setBossAlert(BOSS_ALERT_TIME);
+
+            ev.audio.stopMusic();
+            ev.audio.fadeInMusic(ev.assets.getSound("boss"), 0.50, 1000);
         }
 
         // Update bullets
