@@ -52,6 +52,10 @@
         {"name": "healthUp",   "path": "healthup.wav"},
         {"name": "levelUp",   "path": "levelup.wav"},
         {"name": "explode",   "path": "explode.wav"},
-        {"name": "alert",   "path": "alert.wav"}
+        {"name": "pause",   "path": "pause.wav"},
+        {"name": "enemyShoot",   "path": "enemyshoot.wav"},
+        {"name": "enemyShoot2",   "path": "enemyshoot2.wav"},
+        {"name": "alert",   "path": "alert.wav"},
+        {"name": "jump",   "path": "jump.wav"}
     ]
 }

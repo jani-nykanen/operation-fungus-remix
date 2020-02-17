@@ -164,6 +164,8 @@ class JumpMovement extends MovementLogic {
 
                     this.jumpHeight *= JUMP_MUL_FORWARDS;    
                 }
+
+                ev.audio.playSample(ev.assets.getSound("jump"), 0.40);
             }
         }
 

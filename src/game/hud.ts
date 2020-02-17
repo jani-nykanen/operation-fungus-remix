@@ -131,7 +131,7 @@ class HUDRenderer {
 
         if (full < 3) {
             
-            w = ((WIDTH-4) * (fill % 1.0)) | 0;
+            w = ((WIDTH-4 + full) * (fill % 1.0)) | 0;
 
             c.drawBitmapRegion(bmp, 16+2, 56, w, HEIGHT,
                 x, y);

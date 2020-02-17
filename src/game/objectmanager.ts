@@ -121,7 +121,7 @@ class ObjectManager {
 
             ev.audio.stopMusic();
             ev.audio.playSample(ev.assets.getSound("alert"), 0.70);
-            ev.audio.fadeInMusic(ev.assets.getSound("boss"), 0.50, 1000);
+            ev.audio.fadeInMusic(ev.assets.getSound("boss"), 0.70, 1000);
         }
 
         // Update bullets

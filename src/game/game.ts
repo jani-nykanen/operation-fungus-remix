@@ -9,7 +9,7 @@
 // Game scene
 class GameScene implements Scene {
 
-    private readonly MUSIC_VOLUME = 0.60;
+    private readonly MUSIC_VOLUME = 0.70;
 
     // Components
     private stage : Stage
@@ -151,6 +151,7 @@ class GameScene implements Scene {
         else if (ev.gamepad.getButtonState("start") == State.Pressed) {
 
             this.paused = true;
+            ev.audio.playSample(ev.assets.getSound("pause"), 0.50);
             ev.gamepad.forceStickReturnToOrigin();
             this.pauseMenu.setCursorPos(0);
 

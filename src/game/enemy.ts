@@ -62,7 +62,7 @@ class EnemyRenderer extends RenderComponent {
     private speedMod : number;
     private shootTimer : number;
 
-
+    private shootPlayed : boolean;
     private deathPlayed : boolean;
 
 
@@ -71,6 +71,7 @@ class EnemyRenderer extends RenderComponent {
         super(base, 24, 24);
 
         this.deathPlayed = false;
+        this.shootPlayed = false;
     }
 
 
@@ -82,6 +83,7 @@ class EnemyRenderer extends RenderComponent {
         this.flickerTime = 0.0;
 
         this.deathPlayed = false;
+        this.shootPlayed = false;
     }
 
 
@@ -89,6 +91,12 @@ class EnemyRenderer extends RenderComponent {
 
         let start = 0;
         if (this.shootTimer > 0) {
+
+            if (!this.shootPlayed) {
+
+                ev.audio.playSample(ev.assets.getSound("enemyShoot"), 0.50);
+                this.shootPlayed = true;
+            }
 
             this.shootTimer -= ev.step;
             if (this.shootTimer <= 0) {
@@ -116,10 +124,13 @@ class EnemyRenderer extends RenderComponent {
     // Animate shooting
     public animateShooting(time : number) {
 
+    
         if (this.shootTimer <= 0) {
 
             this.spr.setFrame(this.spr.getRow(),
                 this.spr.getFrame() + 4);
+
+            this.shootPlayed = false;
         }
 
         this.shootTimer = time;

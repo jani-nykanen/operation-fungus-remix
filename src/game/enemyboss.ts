@@ -167,6 +167,8 @@ class BossAI extends AIComponent {
         const SPEED_MIN = 2.0;
         const SPEED_VARY = 1.0;
 
+        ev.audio.playSample(ev.assets.getSound("enemyShoot2"), 0.50);
+
         let bulletCount = 3 + 
             2 * Math.floor(3 * (1- this.base.health / this.base.maxHealth));
 
@@ -207,6 +209,8 @@ class BossAI extends AIComponent {
         const SPEED_2 = 3.0;
         const SPEED_REDUCE = 0.5;
         const ANGLE = Math.PI / 12.0;
+
+        ev.audio.playSample(ev.assets.getSound("enemyShoot"), 0.50);
 
         this.rendComp.animateEye(EYE_TIME);
 

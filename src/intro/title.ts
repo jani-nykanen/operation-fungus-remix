@@ -22,7 +22,7 @@ class TitleScreenScene implements Scene {
         this.cloudPos = 0.0;
         this.flickerTimer = 0.0;
 
-        ev.audio.fadeInMusic(ev.assets.getSound("title"), 0.40, 1000);
+        ev.audio.fadeInMusic(ev.assets.getSound("title"), 0.50, 1000);
     }
 
 
@@ -128,6 +128,10 @@ class TitleScreenScene implements Scene {
         // Draw copyright
         c.drawText(c.getBitmap("fontYellow"), "©2020 Jani Nykänen",
             c.width/2, c.height-10, 0, 0, true);
+
+        // Draw version info
+        c.drawText(c.getBitmap("font"), "Demo v.0.90",
+            1, 1, -1, 0, false);
     }
 
 

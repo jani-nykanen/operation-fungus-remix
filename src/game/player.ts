@@ -262,7 +262,7 @@ class PlayerAI extends AIComponent {
                 this.renderComp.animateShooting(1);
 
                 if (!oldState && this.renderComp.getShootType())
-                    ev.audio.playSample(ev.assets.getSound("blade"), 0.40);
+                    ev.audio.playSample(ev.assets.getSound("blade"), 0.30);
             }
         }
         // Shoot a bullet
@@ -274,7 +274,7 @@ class PlayerAI extends AIComponent {
                     
                 this.shootBullets();
             
-                ev.audio.playSample(ev.assets.getSound("shoot"), 0.40);
+                ev.audio.playSample(ev.assets.getSound("shoot"), 0.30);
             }
         }
 
