@@ -28,6 +28,7 @@ class HUDRenderer {
     private showEndMessage : boolean;
 
     private endCB : MenuButtonCallback;
+    private endMusicPlayed : boolean; // Not the best place for this, but oh well
 
 
     constructor(state : LocalState) {
@@ -43,6 +44,7 @@ class HUDRenderer {
         this.showEndMessage = false;
         this.endTimer = 0.0;
 
+        this.endMusicPlayed = false;
         this.lstate = state;
     }
 
@@ -181,6 +183,12 @@ class HUDRenderer {
 
         // Update end timer
         if (this.endTimer > 0) {
+
+            if (!this.endMusicPlayed) {
+
+                ev.audio.playSample(ev.assets.getSound("victory"), 0.50);
+                this.endMusicPlayed = true;
+            }
 
             this.endTimer = Math.max(0, this.endTimer - ev.step);
             if (this.endTimer <= 0 && this.endCB != undefined) {
@@ -343,6 +351,7 @@ class HUDRenderer {
         this.healthBar = 1.0;
         this.powerBar = 0.0;
         this.startTimer = this.START_TIME;
+        this.endMusicPlayed = false;
 
         this.bonusFlicker = 0;
     }

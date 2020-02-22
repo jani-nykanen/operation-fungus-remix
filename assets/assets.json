@@ -33,6 +33,7 @@
         {"name": "theme",   "path": "theme.ogg"},
         {"name": "boss",   "path": "boss.ogg"},
         {"name": "title",   "path": "title.ogg"},
+        {"name": "victory",   "path": "victory.ogg"},
 
         {"name": "accept",   "path": "accept.wav"},
         {"name": "start",   "path": "start.wav"},
