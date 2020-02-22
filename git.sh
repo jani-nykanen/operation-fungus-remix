@@ -7,6 +7,7 @@ git add README.md
 git add tsconfig.json
 git add dev
 git add lib
+git add dist.sh
 
 # Remove unnecessary files
 rm *.map
