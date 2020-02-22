@@ -103,7 +103,7 @@ class ObjectManager {
 
         const MESSAGES = [
             "DAMAGE", "DEFENSE",
-            "FIRE RATE", "BULLET"
+            "SPEED", "BULLET"
         ];
 
         let oldLevel = lstate.getLevel();

@@ -130,7 +130,7 @@ class TitleScreenScene implements Scene {
             c.width/2, c.height-10, 0, 0, true);
 
         // Draw version info
-        c.drawText(c.getBitmap("font"), "Demo v.0.90",
+        c.drawText(c.getBitmap("font"), "Demo v.0.92",
             1, 1, -1, 0, false);
     }
 

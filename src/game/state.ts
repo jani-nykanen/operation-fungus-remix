@@ -143,7 +143,8 @@ class LocalState {
     public getSwordSpeed  = () => this.swordSpeed;
     public getSwordPower  = () => 
         this.swordPower * (this.bonusTimers[0] > 0 ? 2 : 1);
-    public getMoveSpeed   = () => this.moveSpeed;
+    public getMoveSpeed   = () => 
+        this.moveSpeed * (this.bonusTimers[2] > 0 ? 1.25 : 1);
     public getRegenSpeed  = () => this.regenSpeed;
     public getFlickerTime = () => this.flickerTime;
     public getBulletWait  = () => this.bulletWait;
