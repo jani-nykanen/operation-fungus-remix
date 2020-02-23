@@ -29,7 +29,13 @@ class AudioIntroScene implements Scene {
 
     public update(ev : CoreEvent) {
 
+        
         this.confirm.update(ev);
+
+        if (this.confirm.isActive() == false) {
+
+            ev.changeScene(new CreatedByScene());
+        }
     }
 
 
